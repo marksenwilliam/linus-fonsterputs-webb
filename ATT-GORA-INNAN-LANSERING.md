@@ -108,11 +108,22 @@ redan Linus egna.
 ## Om tillgänglighetslagen
 
 Lagen om vissa produkters och tjänsters tillgänglighet (2023:254) gäller sedan
-28 juni 2025 för bland annat e-handelstjänster. **Mikroföretag som
-tillhandahåller tjänster är undantagna** – färre än 10 anställda och högst
-2 miljoner euro i omsättning. En enmansfirma omfattas alltså inte av kraven.
-Sidan är ändå byggd mot WCAG 2.1 AA, så om verksamheten växer förbi gränsen
-behöver ingenting göras om.
+28 juni 2025 för bland annat e-handelstjänster. Webbplatsen med sin bokning
+räknas som en sådan tjänst.
+
+**Mikroföretag som tillhandahåller tjänster är undantagna.** Ett mikroföretag
+har *färre än 10 anställda* och dessutom en omsättning *eller* en
+balansomslutning på högst 2 miljoner euro, alltså ungefär 23 miljoner kronor.
+Båda villkoren ska vara uppfyllda. För en fönsterputsfirma är det antalet
+anställda som är den gräns som kan nås först – och där går strecket vid tio,
+inte vid två eller tre.
+
+Undantaget gäller **tjänster**. Om verksamheten någon gång även börjar sälja
+produkter via webben gäller andra regler för själva produkterna, och då är
+mikroföretag inte undantagna på samma sätt.
+
+Sidan är byggd mot WCAG 2.1 AA oavsett. Växer företaget förbi tio anställda
+behöver alltså ingenting byggas om.
 
 ---
 
