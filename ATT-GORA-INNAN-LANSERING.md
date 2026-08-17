@@ -27,16 +27,30 @@ konkret, kontrollerbart påstående om ett antal omdömen som inte finns.
 riktiga kunder, som har lämnat dem och godkänt att de publiceras med namn. Har
 du inga än – ta bort hela avsnittet tills du har det.
 
-### 1.2 Bokningen skickas inte vidare
+### 1.2 Bokningen skickas inte vidare – GoHighLevel ska kopplas på
 
 I `app.js` finns konstanten `BOKNING_URL`, som just nu är tom. Så länge den är
-tom får kunden en bekräftelse på skärmen medan **du inte får någon bokning
-alls**. Sätt den till adressen dit bokningarna ska skickas – ett
-formulärskript hos webbhotellet, en e-posttjänst eller ett eget API.
+tom får kunden en bekräftelse på skärmen medan **ingen bokning når fram**. Det
+är ett medvetet läge så länge sidan visas upp som exempel.
 
-Kravet är att mottagaren ligger i EU/EES eller har giltig skyddsmekanism, och
-att du har **personuppgiftsbiträdesavtal** med leverantören innan den används
-skarpt. Det följer av GDPR artikel 28.
+**Planen är GoHighLevel.** Sätt `BOKNING_URL` till webhook-adressen från ett
+inkommande webhook-steg i ett GHL-workflow. `skickaBokning` postar redan JSON
+med tjänst, tid, pris, kunduppgifter och de två godkännandena, vilket är det
+format GHL tar emot.
+
+Två saker måste vara på plats innan riktiga kunduppgifter börjar flöda dit:
+
+1. **Personuppgiftsbiträdesavtal** med HighLevel, enligt GDPR artikel 28.
+2. **Grund för överföring till USA.** HighLevel Inc. är amerikanskt, så
+   uppgifterna lämnar EU/EES. Kontrollera om de är anslutna till EU–US Data
+   Privacy Framework; är de inte det krävs EU-kommissionens
+   standardavtalsklausuler plus en bedömning av överföringen.
+
+**Då måste också integritetspolicyn ändras.** `integritetspolicy.html` punkt 5
+säger i dag att uppgifterna behandlas inom EU/EES. Det stämmer inte längre när
+GHL är inkopplat. Skriv om stycket så att det namnger HighLevel som mottagare,
+anger att uppgifter överförs till USA och vilken skyddsmekanism som gäller.
+Lägg samtidigt in HighLevel i listan över mottagare i samma punkt.
 
 ### 1.3 HTTPS
 

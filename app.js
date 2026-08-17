@@ -1044,11 +1044,15 @@
   /* ------------------------------------------------------------------
      LEVERANS AV BOKNINGEN
 
-     [BYT UT] Sätt BOKNING_URL till adressen dit bokningarna ska skickas –
-     ett formulärskript hos webbhotellet, en e-posttjänst eller ett eget
-     API. Adressen måste ligga på egen eller EU-baserad server, och avtal
-     om personuppgiftsbiträde ska finnas med leverantören innan den
-     används skarpt (se integritetspolicyn, punkt 5).
+     [BYT UT] Sätt BOKNING_URL till webhook-adressen från GoHighLevel –
+     ett inkommande webhook-steg i ett workflow tar emot exakt den JSON
+     som bokningsData() bygger nedan.
+
+     Innan riktiga kunduppgifter skickas dit krävs personuppgiftsbiträdes-
+     avtal med HighLevel, och en giltig grund för överföring till USA
+     (Data Privacy Framework eller standardavtalsklausuler). Punkt 5 i
+     integritetspolicyn måste då skrivas om – den säger i dag att
+     uppgifterna stannar inom EU/EES.
 
      Så länge BOKNING_URL är tom går bokningen INTE fram någonstans. Sidan
      är då en demo: kunden får en bekräftelse på skärmen men Linus får
