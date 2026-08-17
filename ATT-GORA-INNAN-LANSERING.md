@@ -158,3 +158,31 @@ behöver alltså ingenting byggas om.
 | app.js | 1 |
 | stil.css | 1 |
 | **Totalt** | **53** |
+
+---
+
+## Förhandsvisningsläge
+
+Sidan ligger just nu i **förhandsvisningsläge**, för att kunna visas upp för
+granskning utan att framstå som en verksamhet i drift.
+
+Det innebär:
+
+- `noindex, nofollow` i varje HTML-sida
+- `robots.txt` blockerar alla robotar
+- `vercel.json` sätter `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet`
+  som svarshuvud, vilket gäller även för robotar som struntar i robots.txt
+- En banner högst upp på varje sida
+- En märkning direkt ovanför omdömena, före betyget och Google-raden
+
+Slå av det med:
+
+```
+node forhandsvisning.js av
+```
+
+Slå på igen med `node forhandsvisning.js pa`. Kör granskningen efteråt så att
+läget blev det avsedda.
+
+**Innan läget slås av måste omdömena vara utbytta** (se punkt 1.1). Märkningen
+ovanför dem är det som gör exempeltexterna försvarbara medan sidan ligger uppe.

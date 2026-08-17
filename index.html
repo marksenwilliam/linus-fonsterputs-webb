@@ -17,6 +17,7 @@
 <!-- Kanonisk adress. [BYT UT] domänen när den är klar – utan rätt domän här
      riskerar Google att indexera dubbletter (med/utan www, http/https). -->
 <link rel="canonical" href="https://linusfonsterputs.se/">
+<meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#0B2E59">
 
 <!-- Open Graph -->
@@ -239,6 +240,15 @@
      STARTSIDAN (döljs när bokningsvyn öppnas)
      ========================================================================== -->
 <div id="hemsida">
+
+<!-- FÖRHANDSVISNING – tas bort med: node forhandsvisning.js av -->
+<div class="forhandsvisning" role="note">
+  <div class="wrap">
+    <b>Förhandsvisning.</b> Sidan visas upp för granskning och är inte i drift.
+    Omdömen och företagsuppgifter är exempelinnehåll, och bokningar tas inte emot.
+  </div>
+</div>
+
 
 <!-- ==========================================================================
      1. STICKY HEADER
@@ -601,6 +611,10 @@
       <span class="etikett">Omdömen</span>
       <h2>Omdömen från kunder i Uppsala län</h2>
     </div>
+
+    <p class="exempelmarke in"><svg aria-hidden="true"><use href="#i-varning"/></svg>
+      <span><b>Exempelomdömen.</b> Texterna, betyget och antalet är påhittade och
+      kommer inte från Google. De ersätts med riktiga kundomdömen innan sidan tas i drift.</span></p>
 
     <div class="betyg-topp in">
       <span class="betyg-siffra">4,9</span>

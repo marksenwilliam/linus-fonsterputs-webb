@@ -1501,3 +1501,30 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .gdpr-kort a:hover{color:var(--marin);}
 .gdpr-kort + .gdpr-kort{margin-top:12px;}
 .gdpr-kort span:last-child{font-size:.9rem;line-height:1.55;}
+
+/* ==========================================================================
+   26. FÖRHANDSVISNINGSBANNER
+   Ligger i sidflödet, inte fastklistrad – syns vid inläsning på varje sida
+   och rullar sedan undan, så att den inte stör granskningen av designen.
+   ========================================================================== */
+.forhandsvisning{
+  background:#78350F;color:#FEF3C7;
+  font-size:.8rem;line-height:1.5;padding:9px 0;
+  border-bottom:2px solid #B45309;
+}
+.forhandsvisning .wrap{display:block;}
+.forhandsvisning b{color:#FDE68A;}
+@media(min-width:1024px){.forhandsvisning{font-size:.85rem;text-align:center;}}
+
+/* Märkning direkt på omdömesavsnittet, där intrycket annars uppstår */
+.exempelmarke{
+  display:flex;gap:11px;align-items:flex-start;
+  max-width:720px;margin:0 auto 22px;
+  background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radie-s);
+  padding:13px 16px;font-size:.86rem;line-height:1.55;color:#78350F;text-align:left;
+}
+.exempelmarke svg{
+  width:19px;height:19px;flex:none;margin-top:1px;
+  stroke:#B45309;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.exempelmarke b{color:#78350F;}
