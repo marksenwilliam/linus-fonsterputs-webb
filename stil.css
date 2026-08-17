@@ -1,0 +1,1503 @@
+/* ==========================================================================
+   1. DESIGNSYSTEM – variabler
+   ========================================================================== */
+:root{
+  --marin:#0B2E59;      /* Mörk marinblå: rubriker, footer, overlays */
+  --bla:#2563EB;        /* Primär klarblå: knappar, länkar, accenter */
+  --bla-hover:#1D4ED8;  /* Hover på primärknappar */
+  --himmel:#38BDF8;     /* Ljus accent: gradienter, ikoner, detaljer */
+  --isbla:#EFF6FF;      /* Ljusblå sektionsbakgrund */
+  --dimma:#F8FAFC;      /* Alternativ ljusgrå-blå sektionsbakgrund */
+  --vit:#FFFFFF;
+  --text:#1E293B;       /* Brödtext */
+  --text-2:#64748B;     /* Sekundär text */
+  --stjarna:#FBBF24;    /* ENDAST recensionsstjärnor */
+  --gron:#16A34A;       /* ENDAST bekräftelser och godkänd validering (ikoner, ramar, ytor) */
+  /* Mörkare nyans av systemgrönt, används ENDAST när grönt sätts som text eller
+     som botten bakom vit text. #16A34A ger bara 3,3:1 mot vitt och klarar därför
+     inte WCAG AA för text – denna nyans ger 5,0:1. Samma roll, tillgänglig kontrast. */
+  --gron-text:#15803D;
+
+  --kant:#DBEAFE;                                  /* Ljusblå linje */
+  --skugga:0 8px 24px rgba(37,99,235,.10);         /* Standardskugga på kort */
+  --skugga-hog:0 16px 40px rgba(37,99,235,.18);    /* Hover-skugga */
+  --radie:16px;
+  --radie-s:12px;
+  --pill:999px;
+  --max:1140px;
+  --grad:linear-gradient(135deg,#0B2E59,#2563EB);
+
+  /* Linus riktiga logotyp, inbäddad som data-URL. Definieras EN gång här och
+     återanvänds via background-image i header, hero, footer och bokningsvyn.
+     --logga-mork: originalfärger, för vita bottnar.
+     --logga-ljus: vit knockout med ljusblå skrapa, för marinblå/gradient. */
+  --logga-mork:url("bilder/logga-mork.png");
+  --logga-ljus:url("bilder/logga-ljus.png");
+  --logga-forh:3.897;
+
+  /* Hero-bakgrund: foto på Linus vid glasfasad i solnedgång (JPEG 2752x1536).
+     Uppskalad 2x från källans 1376x768 med högkvalitativ omsampling: vid
+     DPR 2 slipper webbläsaren sträcka ut bilden, vilket ger märkbart skarpare
+     resultat. Linus står redan till höger, så ingen spegling behövs –
+     textspalten ligger till vänster. Används även av CTA-sektionen. */
+  --hero-foto:url("bilder/hero-linus-glasfasad.jpg");
+  --overgang:.25s cubic-bezier(.4,0,.2,1);
+}
+
+/* ==========================================================================
+   2. Grundreset och typografi
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:16px;line-height:1.65;
+  color:var(--text);background:var(--vit);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body.laast{overflow:hidden;} /* används när mobilmenyn är öppen */
+h1,h2,h3,h4{color:var(--marin);line-height:1.2;margin:0 0 .5em;font-weight:800;letter-spacing:-.02em;}
+h1{font-size:clamp(1.9rem,6vw,3.4rem);}
+h2{font-size:clamp(1.6rem,4.5vw,2.5rem);}
+h3{font-size:clamp(1.15rem,2.6vw,1.4rem);font-weight:700;}
+h4{font-size:1.02rem;font-weight:700;}
+p{margin:0 0 1rem;}
+a{color:var(--bla);text-decoration:none;}
+a:hover{text-decoration:underline;}
+img,svg{max-width:100%;display:block;}
+ul{margin:0;padding:0;list-style:none;}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;font-size:16px;color:var(--text);}
+
+/* Synlig fokusmarkering överallt (WCAG) */
+:focus-visible{outline:3px solid var(--himmel);outline-offset:3px;border-radius:4px;}
+
+/* Hoppa till innehåll – för tangentbordsanvändare */
+.hoppa{position:absolute;left:-9999px;top:0;z-index:200;background:var(--vit);color:var(--marin);
+  padding:12px 20px;border-radius:0 0 var(--radie-s) 0;font-weight:700;}
+.hoppa:focus{left:0;}
+
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
+/* ==========================================================================
+   3. Layoutbyggstenar
+   ========================================================================== */
+.wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 20px;}
+/* Ankarlänkar ska inte hamna under den fasta headern */
+section[id],footer[id]{scroll-margin-top:84px;}
+section{padding:64px 0;}
+@media(min-width:1024px){section{padding:96px 0;}}
+.bg-is{background:var(--isbla);}
+.bg-dim{background:var(--dimma);}
+
+.sekt-topp{text-align:center;max-width:680px;margin:0 auto 44px;}
+.sekt-topp p{color:var(--text-2);font-size:1.05rem;margin:0;}
+.etikett{
+  display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--bla);background:var(--isbla);padding:6px 14px;border-radius:var(--pill);margin-bottom:14px;
+}
+
+/* ==========================================================================
+   4. Knappar
+   ========================================================================== */
+.knapp{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:52px;padding:14px 28px;border-radius:var(--pill);
+  font-weight:700;font-size:1rem;text-align:center;text-decoration:none;
+  transition:transform var(--overgang),box-shadow var(--overgang),background var(--overgang),color var(--overgang);
+  border:2px solid transparent;white-space:nowrap;
+}
+.knapp:hover{text-decoration:none;}
+.knapp-primar{background:var(--bla);color:var(--vit);box-shadow:0 6px 18px rgba(37,99,235,.30);}
+.knapp-primar:hover{background:var(--bla-hover);transform:translateY(-2px);box-shadow:0 12px 26px rgba(37,99,235,.38);}
+.knapp-primar:active{transform:translateY(0);background:#1E40AF;}
+.knapp-sekundar{background:var(--vit);color:var(--bla);border-color:var(--bla);}
+.knapp-sekundar:hover{background:var(--isbla);transform:translateY(-2px);box-shadow:var(--skugga);}
+.knapp-sekundar:active{transform:translateY(0);background:var(--kant);}
+.knapp-vit{background:var(--vit);color:var(--marin);box-shadow:0 8px 24px rgba(0,0,0,.20);}
+.knapp-vit:hover{background:var(--isbla);color:var(--bla);transform:translateY(-2px);}
+.knapp-liten{min-height:44px;padding:10px 20px;font-size:.94rem;}
+.knapp-bred{width:100%;}
+.knapp[disabled],.knapp[aria-disabled="true"]{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+/* På riktigt smala skärmar måste långa knapptexter få brytas,
+   annars spränger knappen spalten (.knapp har white-space:nowrap). */
+@media(max-width:430px){.knapp{white-space:normal;max-width:100%;}}
+
+/* ==========================================================================
+   5. Kort
+   ========================================================================== */
+.kort{
+  background:var(--vit);border-radius:var(--radie);padding:28px;
+  box-shadow:var(--skugga);border:1px solid rgba(37,99,235,.07);
+  transition:transform var(--overgang),box-shadow var(--overgang);
+}
+/* Gemensam hovermarkering för alla kort: lyft, blå kant och en mjuk
+   isblå ton. Håller sig helt inom det blå-vita spektrumet. */
+.kort-hover:hover,.gal-kort:hover,.valj-kort:hover,.badge:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(37,99,235,.22);
+  border-color:var(--bla);
+  background:linear-gradient(180deg,var(--vit) 0%,var(--isbla) 100%);
+}
+.kort-hover,.gal-kort{border:1px solid rgba(37,99,235,.07);}
+/* Kortet känns tryckbart */
+.kort-hover:active,.gal-kort:active{transform:translateY(-1px);box-shadow:0 8px 20px rgba(37,99,235,.20);}
+
+/* Blå ikoncirkel */
+.ikon-cirkel{
+  width:56px;height:56px;border-radius:50%;background:var(--isbla);
+  display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex:none;
+}
+.ikon-cirkel svg{width:28px;height:28px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Bocklista */
+.bocklista li{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:.95rem;color:var(--text);}
+.bocklista li svg{width:18px;height:18px;flex:none;margin-top:4px;stroke:var(--bla);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ==========================================================================
+   6. Sticky header
+   ========================================================================== */
+.topp{
+  position:fixed;inset:0 0 auto 0;z-index:90;
+  transition:background var(--overgang),box-shadow var(--overgang);
+  background:transparent;
+}
+.topp.fast{background:var(--vit);box-shadow:0 2px 14px rgba(11,46,89,.10);}
+.topp-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;height:72px;}
+
+.logga{display:flex;align-items:center;gap:10px;text-decoration:none;flex:none;}
+.logga:hover{text-decoration:none;}
+.logga svg{width:36px;height:36px;flex:none;}
+.logga-bild{
+  display:block;height:48px;aspect-ratio:var(--logga-forh);
+  background-repeat:no-repeat;background-position:left center;background-size:contain;
+}
+@media(max-width:479px){.logga-bild{height:38px;}}
+.logga-bild.ljus{background-image:var(--logga-ljus);}
+.logga-bild.mork{background-image:var(--logga-mork);}
+/* Headern ligger transparent över heron -> ljus logotyp.
+   När den blir vid scroll (eller menyn öppnas) -> mörk logotyp. */
+.topp .logga .mork{display:none;}
+.topp.fast .logga .ljus,.topp.meny-oppen .logga .ljus{display:none;}
+.topp.fast .logga .mork,.topp.meny-oppen .logga .mork{display:block;}
+
+.nav{display:none;}
+@media(min-width:1024px){
+  .nav{display:flex;align-items:center;gap:26px;}
+  .nav a{color:var(--text);font-weight:600;font-size:.95rem;text-decoration:none;position:relative;padding:6px 0;}
+  .nav a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:var(--bla);transition:right var(--overgang);}
+  .nav a:hover::after{right:0;}
+  .topp:not(.fast) .nav a{color:rgba(255,255,255,.92);}
+  .topp:not(.fast) .nav a::after{background:var(--himmel);}
+}
+.topp-cta{display:none;}
+@media(min-width:1024px){.topp-cta{display:inline-flex;}}
+.topp:not(.fast) .topp-cta{background:var(--vit);color:var(--bla);}
+.topp:not(.fast) .topp-cta:hover{background:var(--isbla);}
+
+/* Hamburgare */
+.burgare{
+  display:flex;flex-direction:column;justify-content:center;gap:5px;
+  width:48px;height:48px;padding:12px;border-radius:var(--radie-s);flex:none;
+}
+@media(min-width:1024px){.burgare{display:none;}}
+.burgare span{display:block;height:2px;width:100%;background:var(--marin);border-radius:2px;transition:transform var(--overgang),opacity var(--overgang);}
+.topp:not(.fast) .burgare span{background:var(--vit);}
+.burgare[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.burgare[aria-expanded="true"] span:nth-child(2){opacity:0;}
+.burgare[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.topp.meny-oppen{background:var(--vit);box-shadow:0 2px 14px rgba(11,46,89,.10);}
+.topp.meny-oppen .burgare span{background:var(--marin);}
+
+/* Mobilmeny */
+.mobmeny{
+  position:fixed;left:0;right:0;top:72px;bottom:0;z-index:89;
+  background:var(--vit);padding:22px 20px 40px;overflow-y:auto;
+  transform:translateX(100%);transition:transform var(--overgang);
+  visibility:hidden;
+}
+.mobmeny.oppen{transform:translateX(0);visibility:visible;}
+@media(min-width:1024px){.mobmeny{display:none;}}
+.mobmeny a.mlank{
+  display:block;padding:16px 4px;font-size:1.1rem;font-weight:600;color:var(--marin);
+  border-bottom:1px solid var(--kant);text-decoration:none;
+}
+.mobmeny a.mlank:hover{color:var(--bla);}
+.mobmeny .knapp{margin-top:26px;}
+/* Andra knappen i menyn ligger tätt under den första */
+.mobmeny .knapp + .knapp{margin-top:12px;}
+.mobmeny .mob-tel{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;font-weight:600;color:var(--text-2);}
+.mobmeny .mob-tel svg{width:18px;height:18px;stroke:var(--bla);fill:none;stroke-width:2;}
+
+/* ==========================================================================
+   7. Hero
+   ========================================================================== */
+/* MOBIL FÖRST. Fotot ligger som bakgrund över hela heron på alla bredder;
+   Linus står till höger och textspalten till vänster. Hero-innehållet är en
+   kolumn där rubriken ligger högst upp och betyget trycks ned med
+   margin-top:auto, så det alltid avslutar sektionen. */
+.hero{
+  position:relative;min-height:88vh;display:flex;align-items:stretch;
+  padding:96px 0 28px;background:var(--marin);overflow:hidden;
+}
+.hero-inner{display:flex;flex-direction:column;}
+.hero-txt{flex:none;}
+.hero-botten{margin-top:auto;display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
+.hero-botten .usp{margin-bottom:0;}
+.hero .hero-badge{margin-bottom:0;align-self:flex-start;}
+@media(min-width:1024px){.hero{min-height:100vh;padding:130px 0 90px;}}
+.hero-bild{
+  position:absolute;inset:0;z-index:0;
+  background-image:var(--hero-foto);
+  background-size:cover;
+  /* Mobil först: skjut bilden åt höger så Linus står bredvid textspalten */
+  background-position:86% center;
+  background-repeat:no-repeat;
+}
+@media(min-width:1024px){.hero-bild{background-position:center;}}
+
+/* Mörkblå gradientoverlay så texten alltid är läsbar */
+/* Mörkblå gradient som håller texten läsbar. Tung till vänster där texten
+   ligger, betydligt lättare till höger så att fotot syns tydligt. */
+/* Tät till vänster där texten ligger, klar till höger där Linus står. */
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(105deg,
+    rgba(11,46,89,.96) 0%,
+    rgba(11,46,89,.93) 30%,
+    rgba(11,46,89,.78) 52%,
+    rgba(11,46,89,.40) 74%,
+    rgba(11,46,89,.22) 100%);
+}
+@media(min-width:1024px){
+  .hero-overlay{
+    background:linear-gradient(100deg,
+      rgba(11,46,89,.95) 0%,
+      rgba(11,46,89,.91) 28%,
+      rgba(11,46,89,.82) 46%,
+      rgba(11,46,89,.46) 63%,
+      rgba(11,46,89,.20) 82%,
+      rgba(11,46,89,.12) 100%);
+  }
+}
+
+/* Subtila glasreflexer – sneda transparenta vita band */
+.glasreflex{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
+.glasreflex i{
+  position:absolute;top:-40%;height:180%;transform:rotate(18deg);
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.10),rgba(255,255,255,0));
+}
+.glasreflex i:nth-child(1){left:8%;width:120px;}
+.glasreflex i:nth-child(2){left:26%;width:56px;opacity:.7;}
+.glasreflex i:nth-child(3){right:14%;width:180px;opacity:.55;}
+/* I heron finns redan riktiga reflexer i fotot – dämpa de dekorativa banden */
+.hero .glasreflex{opacity:.45;}
+
+.hero-inner{position:relative;z-index:3;width:100%;}
+.hero-txt{max-width:72%;}
+@media(min-width:640px){.hero-txt{max-width:62%;}}
+@media(min-width:1024px){.hero-txt{max-width:640px;}}
+@media(max-width:399px){.hero-txt{max-width:80%;}}
+.hero h1{
+  color:var(--vit);margin-bottom:18px;max-width:11ch;
+  font-size:clamp(1.75rem,7.2vw,3.4rem);
+  text-shadow:0 2px 20px rgba(11,46,89,.45);
+}
+@media(min-width:1024px){.hero h1{max-width:15ch;margin-bottom:24px;}}
+.hero-under{color:rgba(255,255,255,.93);font-size:1.06rem;line-height:1.7;margin-bottom:26px;max-width:560px;}
+@media(min-width:640px){.hero-under{font-size:1.14rem;}}
+
+/* De två chipsen ligger på samma rad och är lika höga. Utan brödtext blir
+   heron luftigare, så rubriken får lite mer plats och chipsen bär budskapet. */
+.hero-txt > .prisbadge{margin:0 0 22px;max-width:min(100%,420px);}
+@media(min-width:1024px){.hero-txt > .prisbadge{max-width:560px;}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
+  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  padding:10px 16px;border-radius:var(--pill);
+  color:var(--vit);font-size:.88rem;font-weight:600;justify-content:center;
+}
+.hero-badge .stjarnor{display:inline-flex;gap:2px;}
+/* Betygschipet bryts till två rader i chip-raden. Separatorpricken skulle då
+   hamna ensam i radslutet, så den utgår helt – raderna läses ändå tydligt. */
+.hero-badge .prick{display:none;}
+
+.stjarnor svg{width:16px;height:16px;fill:var(--stjarna);}
+.stjarnor.stor svg{width:22px;height:22px;}
+.stjarnor .tom{fill:rgba(251,191,36,.32);}
+
+/* Större och tydligare huvudknapp, med extra luft ovanför så den hamnar
+   längre ned i heron. */
+.hero-knappar{display:flex;flex-wrap:wrap;gap:14px;margin:38px 0 26px;}
+.hero-knappar .knapp{min-height:62px;padding:18px 34px;font-size:1.06rem;}
+@media(min-width:1024px){.hero-knappar{margin-top:44px;}.hero-knappar .knapp{min-height:66px;font-size:1.12rem;padding:20px 40px;}}
+@media(max-width:1023px){.hero-knappar{max-width:320px;}.hero-knappar .knapp{width:100%;}}
+
+/* Prisbadge i heron – sidans starkaste erbjudande */
+.prisbadge{
+  display:inline-flex;align-items:center;gap:12px;
+  background:linear-gradient(120deg,var(--himmel),#7DD3FC);
+  color:var(--marin);font-weight:800;
+  padding:12px 20px;border-radius:var(--pill);
+  box-shadow:0 10px 30px rgba(56,189,248,.35);
+  font-size:.95rem;line-height:1.35;
+}
+.prisbadge svg{width:24px;height:24px;flex:none;stroke:var(--marin);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.prisbadge b{font-size:1.06rem;}
+
+.usp{display:flex;flex-wrap:wrap;gap:8px 22px;margin-bottom:22px;}
+@media(max-width:1023px){.usp li{font-size:.84rem;}}
+.usp li{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.94);font-size:.9rem;font-weight:600;}
+.usp svg{width:18px;height:18px;flex:none;stroke:var(--himmel);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ==========================================================================
+   8. Tjänstekort
+   ========================================================================== */
+.tjanster-grid{display:grid;gap:24px;grid-template-columns:1fr;}
+@media(min-width:640px){.tjanster-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.tjanster-grid{grid-template-columns:repeat(3,1fr);}}
+
+.tjanst-kort{display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:pointer;}
+.tjanst-kort.framhavd{border:2px solid var(--bla);}
+.tjanst-kort .flagga{
+  position:absolute;top:0;right:0;z-index:2;
+  display:flex;align-items:center;gap:6px;
+  background:linear-gradient(120deg,#F97316,#FB923C);color:var(--vit);
+  font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:7px 14px;border-radius:0 var(--radie) 0 var(--radie);
+  box-shadow:0 4px 12px rgba(249,115,22,.35);
+}
+.tjanst-kort .flagga svg{width:14px;height:14px;fill:var(--vit);stroke:none;flex:none;}
+.tjanst-kort h3{
+  margin-bottom:8px;
+  font-size:clamp(1.55rem,4.4vw,1.9rem);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1.15;
+}
+.tjanst-kort .ingress{color:var(--text-2);font-size:.95rem;margin-bottom:18px;}
+/* Mobil: nätare kort så att alla tre går att skanna utan lång scroll */
+@media(max-width:639px){
+  .tjanst-kort{padding:20px 18px;}
+  .tjanst-kort h3{font-size:1.45rem;}
+  .tjanst-kort .ingress{font-size:.88rem;margin-bottom:14px;}
+  .tjanst-kort .ikon-cirkel{width:46px;height:46px;margin-bottom:12px;}
+  .tjanst-kort .ikon-cirkel svg{width:23px;height:23px;}
+  .tjanst-kort .bocklista li{font-size:.87rem;margin-bottom:7px;}
+  .tjanst-kort .bocklista{margin-bottom:16px;}
+  .tjanst-kort .pris-rad{padding-top:14px;margin-bottom:14px;}
+  .tjanst-kort .pris-tal{font-size:1.7rem;}
+  .tjanst-kort .fastpris-chip{padding:8px 13px;font-size:.98rem;margin-bottom:13px;}
+  .tjanst-kort .ingar-rubrik{margin-bottom:9px;}
+  .tjanster-grid{gap:16px;}
+}
+.tjanst-kort .ingar-rubrik{font-size:.76rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--bla);margin-bottom:12px;}
+.tjanst-kort .bocklista{margin-bottom:22px;}
+.tjanst-kort .pris-rad{margin-top:auto;padding-top:18px;border-top:1px solid var(--kant);margin-bottom:18px;}
+.pris-fran{font-size:.8rem;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;}
+.pris-tal{font-size:2rem;font-weight:800;color:var(--marin);line-height:1.15;letter-spacing:-.03em;}
+.pris-suffix{font-size:.86rem;color:var(--text-2);font-weight:600;}
+
+/* Stor prisbadge på fönsterputskortet */
+.fastpris-chip{
+  display:inline-flex;align-items:baseline;gap:8px;
+  background:var(--isbla);border:1.5px dashed var(--bla);
+  color:var(--marin);font-weight:800;border-radius:var(--radie-s);
+  padding:10px 16px;margin-bottom:16px;font-size:1.05rem;
+}
+.fastpris-chip small{font-weight:600;font-size:.8rem;color:var(--bla);}
+
+/* Intern länk vidare till tjänstesidan – ger både SEO-värde och en väg
+   för besökare som vill läsa mer innan de bokar. */
+.las-mer{
+  display:block;text-align:center;margin-top:12px;
+  font-size:.9rem;font-weight:600;color:var(--bla);text-decoration:underline;
+  text-underline-offset:3px;
+}
+.las-mer:hover{color:var(--bla-hover);}
+
+.rut-rad{
+  text-align:center;margin-top:28px;color:var(--text-2);font-size:.92rem;
+  display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;
+}
+.rut-rad svg{width:18px;height:18px;stroke:var(--bla);fill:none;stroke-width:2;flex:none;}
+
+/* Prisjämförelse mot marknaden */
+/* Prisjämförelsen ska sticka ut mer, men stanna i det blå-vita spektrumet:
+   tydligare blå botten, hel blå kant och en blåtonad skugga. */
+.jamfor{
+  margin-top:34px;
+  background:linear-gradient(135deg,#DBEAFE 0%,var(--isbla) 55%,var(--vit) 100%);
+  border:2px solid var(--bla);
+  box-shadow:0 10px 30px rgba(37,99,235,.16);
+  border-radius:var(--radie);padding:26px;max-width:760px;margin-left:auto;margin-right:auto;
+}
+.jamfor h3{font-size:1.05rem;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.jamfor h3 svg{width:22px;height:22px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+.jamfor-rad{
+  display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:space-between;align-items:baseline;
+  padding:12px 0;border-bottom:1px dashed rgba(37,99,235,.35);font-size:.93rem;
+}
+.jamfor-rad:last-of-type{border-bottom:none;}
+.jamfor-rad .namn{font-weight:700;color:var(--marin);}
+.jamfor-rad .marknad{color:var(--text-2);}
+.jamfor-rad .vi{
+  font-weight:800;color:var(--vit);white-space:nowrap;
+  background:var(--bla);padding:3px 12px;border-radius:var(--pill);font-size:.86rem;
+}
+.jamfor .kalla{font-size:.78rem;color:var(--text-2);margin:14px 0 0;}
+
+/* ==========================================================================
+   9. Så funkar det
+   ========================================================================== */
+.steg-grid{display:grid;gap:24px;grid-template-columns:1fr;counter-reset:steg;}
+@media(min-width:768px){.steg-grid{grid-template-columns:repeat(3,1fr);}}
+.steg-kort{position:relative;padding-top:40px;}
+.steg-nr{
+  position:absolute;top:-22px;left:28px;
+  width:52px;height:52px;border-radius:50%;background:var(--grad);color:var(--vit);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.25rem;
+  box-shadow:0 8px 20px rgba(37,99,235,.35);
+}
+.steg-kort h3{margin-bottom:8px;}
+.steg-kort p{color:var(--text-2);font-size:.96rem;margin:0;}
+
+/* ==========================================================================
+   10. Om Linus
+   ========================================================================== */
+.om-grid{display:grid;gap:36px;grid-template-columns:1fr;align-items:center;}
+@media(min-width:1024px){.om-grid{grid-template-columns:.85fr 1.15fr;gap:56px;}}
+.om-bild{border-radius:var(--radie);overflow:hidden;box-shadow:var(--skugga-hog);background:var(--isbla);}
+.om-bild svg{width:100%;height:auto;display:block;}
+.om-bild img{width:100%;height:auto;display:block;}
+.om-text .citat{
+  font-size:1.06rem;line-height:1.75;color:var(--text);
+  border-left:4px solid var(--bla);padding-left:20px;margin:0 0 26px;
+}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;}
+@media(min-width:640px){.badges{grid-template-columns:repeat(4,1fr);}}
+.badge{
+  background:var(--vit);border:1px solid var(--kant);border-radius:var(--radie-s);
+  padding:16px 12px;text-align:center;transition:transform var(--overgang),box-shadow var(--overgang);
+}
+.badge:hover{transform:translateY(-4px);box-shadow:var(--skugga);}
+.badge svg{width:28px;height:28px;margin:0 auto 8px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.badge span{display:block;font-size:.82rem;font-weight:700;color:var(--marin);line-height:1.35;}
+.omraden{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--isbla);border-radius:var(--radie-s);padding:16px 18px;
+  font-size:.93rem;color:var(--text);
+}
+.omraden svg{width:22px;height:22px;flex:none;margin-top:2px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ==========================================================================
+   11. Galleri + före/efter-slider
+   ========================================================================== */
+.galleri-grid{display:grid;gap:20px;grid-template-columns:repeat(2,1fr);}
+@media(min-width:1024px){.galleri-grid{grid-template-columns:repeat(3,1fr);}}
+.gal-kort{
+  background:var(--vit);border-radius:var(--radie);overflow:hidden;
+  box-shadow:var(--skugga);border:1px solid rgba(37,99,235,.07);
+  transition:transform var(--overgang),box-shadow var(--overgang);
+}
+.gal-kort:hover{transform:translateY(-4px);box-shadow:var(--skugga-hog);}
+.gal-kort .bild{background:var(--isbla);line-height:0;}
+.gal-kort .bild svg{width:100%;height:auto;}
+.gal-kort .txt{padding:16px 18px 20px;}
+.gal-tagg{
+  display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--bla);background:var(--isbla);padding:4px 10px;border-radius:var(--pill);margin-bottom:8px;
+}
+.gal-kort h3{font-size:.98rem;margin-bottom:4px;}
+.gal-kort p{font-size:.86rem;color:var(--text-2);margin:0;}
+
+/* Före/efter-kortet: dubbel bredd på desktop */
+.fe-kort{grid-column:1/-1;}
+@media(min-width:1024px){.fe-kort{grid-column:span 2;}}
+
+.fe{position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y;overflow:hidden;line-height:0;cursor:ew-resize;}
+.fe .lager{position:relative;width:100%;}
+.fe .lager svg{width:100%;height:auto;display:block;}
+/* "Efter"-lagret ligger exakt ovanpå "före" och beskärs med clip-path av JS */
+.fe .efter{position:absolute;inset:0;clip-path:inset(0 0 0 50%);}
+.fe .efter svg{width:100%;height:100%;display:block;}
+.fe-handtag{
+  position:absolute;top:0;bottom:0;left:50%;width:4px;background:var(--vit);
+  transform:translateX(-2px);box-shadow:0 0 0 1px rgba(11,46,89,.18),0 0 18px rgba(11,46,89,.35);
+  z-index:4;
+}
+.fe-knopp{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:48px;height:48px;border-radius:50%;background:var(--vit);
+  box-shadow:0 6px 18px rgba(11,46,89,.35);
+  display:flex;align-items:center;justify-content:center;cursor:ew-resize;
+}
+.fe-knopp svg{width:24px;height:24px;stroke:var(--bla);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.fe-etikett{
+  position:absolute;top:14px;z-index:3;
+  font-size:.72rem;font-weight:800;letter-spacing:.12em;
+  padding:6px 12px;border-radius:var(--pill);
+  background:rgba(11,46,89,.82);color:var(--vit);line-height:1.2;
+}
+.fe-etikett.f{left:14px;}
+.fe-etikett.e{right:14px;background:rgba(37,99,235,.92);}
+.fe-hjalp{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;
+  background:rgba(255,255,255,.92);color:var(--marin);font-size:.76rem;font-weight:700;
+  padding:6px 14px;border-radius:var(--pill);white-space:nowrap;line-height:1.2;
+  transition:opacity var(--overgang);
+}
+.fe.rord .fe-hjalp{opacity:0;}
+/* Osynligt reglage över hela ytan ger drag med mus, touch och tangentbord.
+   pan-y låter sidan scrollas vertikalt medan vågrätt drag styr slidern. */
+.fe-slider{position:absolute;inset:0;z-index:5;opacity:0;width:100%;height:100%;margin:0;cursor:ew-resize;touch-action:pan-y;}
+
+/* --- Slideshow som håller flera före/efter-jämförelser --------------- */
+.fe-show{position:relative;}
+.fe-slide{display:none;}
+.fe-slide.aktiv{display:block;animation:tona .3s ease;}
+.fe-pil{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:8;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(11,46,89,.28);
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--overgang),transform var(--overgang);
+}
+.fe-pil:hover{background:var(--vit);transform:translateY(-50%) scale(1.08);}
+.fe-pil svg{width:20px;height:20px;stroke:var(--bla);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+.fe-pil.bak{left:12px;}
+.fe-pil.fram{right:12px;}
+.fe-pil.fram svg{transform:rotate(180deg);}
+.fe-scen{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:56px;z-index:8;
+  background:rgba(11,46,89,.86);color:var(--vit);
+  font-size:.78rem;font-weight:700;letter-spacing:.03em;
+  padding:6px 16px;border-radius:var(--pill);white-space:nowrap;
+}
+.fe-punkter{
+  position:absolute;left:50%;transform:translateX(-50%);bottom:16px;z-index:8;
+  display:flex;gap:8px;
+}
+.fe-punkt{
+  width:10px;height:10px;border-radius:50%;padding:0;
+  background:rgba(255,255,255,.55);box-shadow:0 1px 4px rgba(11,46,89,.35);
+  transition:background var(--overgang),width var(--overgang);
+}
+.fe-punkt[aria-selected="true"]{background:var(--vit);width:26px;border-radius:var(--pill);}
+@media(max-width:639px){
+  .fe-pil{width:38px;height:38px;}
+  .fe-scen{bottom:48px;font-size:.72rem;padding:5px 12px;}
+  .fe-hjalp{display:none;}
+}
+
+/* --- Gallerikort med riktigt foto ------------------------------------ */
+.gal-foto{
+  aspect-ratio:400/260;width:100%;height:auto;display:block;
+  object-fit:cover;object-position:center;
+}
+.gal-foto.bred{aspect-ratio:900/540;}
+/* Liten notis om att bilderna är exempelbilder */
+.galleri-notis{
+  text-align:center;margin:22px auto 0;max-width:640px;
+  font-size:.82rem;color:var(--text-2);
+}
+.fe-slider:focus-visible+.fe-handtag{box-shadow:0 0 0 3px var(--himmel),0 0 18px rgba(11,46,89,.35);}
+
+/* ==========================================================================
+   12. Omdömen
+   ========================================================================== */
+.betyg-topp{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 24px;
+  background:var(--vit);border-radius:var(--radie);box-shadow:var(--skugga);
+  padding:24px 28px;max-width:560px;margin:0 auto 40px;text-align:center;
+}
+.betyg-siffra{font-size:3.2rem;font-weight:800;color:var(--marin);line-height:1;letter-spacing:-.04em;}
+.betyg-info{text-align:left;}
+@media(max-width:479px){.betyg-topp{flex-direction:column;}.betyg-info{text-align:center;}}
+.betyg-info p{margin:6px 0 0;font-size:.9rem;color:var(--text-2);display:flex;align-items:center;gap:7px;justify-content:inherit;}
+.g-logga{width:18px;height:18px;flex:none;}
+
+.omd-grid{display:grid;gap:20px;grid-template-columns:1fr;}
+@media(min-width:640px){.omd-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.omd-grid{grid-template-columns:repeat(3,1fr);}}
+.omd-kort{position:relative;display:flex;flex-direction:column;}
+.omd-huvud{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.avatar{
+  width:46px;height:46px;border-radius:50%;background:var(--grad);color:var(--vit);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;flex:none;
+}
+.omd-namn{font-weight:700;color:var(--marin);font-size:.96rem;line-height:1.3;}
+.omd-meta{font-size:.8rem;color:var(--text-2);}
+.omd-kort .stjarnor{margin-bottom:10px;}
+.omd-kort p{font-size:.94rem;color:var(--text);margin:0;line-height:1.65;}
+.omd-g{position:absolute;top:22px;right:22px;opacity:.85;}
+
+/* ==========================================================================
+   13. FAQ
+   ========================================================================== */
+.faq{max-width:800px;margin:0 auto;}
+.faq-post{
+  background:var(--vit);border:1px solid var(--kant);border-radius:var(--radie-s);
+  margin-bottom:12px;overflow:hidden;transition:box-shadow var(--overgang),border-color var(--overgang);
+}
+.faq-post.oppen{box-shadow:var(--skugga);border-color:var(--bla);}
+.faq-fraga{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;
+  padding:18px 20px;min-height:60px;text-align:left;
+  font-weight:700;font-size:1rem;color:var(--marin);
+}
+.faq-fraga:hover{background:var(--isbla);}
+.faq-ikon{
+  width:30px;height:30px;flex:none;border-radius:50%;background:var(--isbla);
+  display:flex;align-items:center;justify-content:center;transition:transform var(--overgang),background var(--overgang);
+}
+.faq-ikon svg{width:16px;height:16px;stroke:var(--bla);fill:none;stroke-width:2.5;stroke-linecap:round;}
+.faq-post.oppen .faq-ikon{transform:rotate(180deg);background:var(--bla);}
+.faq-post.oppen .faq-ikon svg{stroke:var(--vit);}
+.faq-svar{max-height:0;overflow:hidden;transition:max-height .32s cubic-bezier(.4,0,.2,1);}
+.faq-svar-inner{padding:0 20px 20px;color:var(--text-2);font-size:.96rem;line-height:1.7;}
+
+/* ==========================================================================
+   14. Avslutande CTA
+   ========================================================================== */
+/* CTA-sektionen får samma foto som heron, men beskuret mot tvålfönstret och
+   under en tät blå gradient – knyter ihop sidan utan extra bildvikt. */
+.cta{
+  position:relative;color:var(--vit);text-align:center;overflow:hidden;
+  background-image:
+    linear-gradient(135deg,rgba(11,46,89,.93) 0%,rgba(11,46,89,.86) 45%,rgba(37,99,235,.82) 100%),
+    var(--hero-foto);
+  background-size:cover,cover;
+  background-position:center,62% center;
+  background-repeat:no-repeat,no-repeat;
+}
+.cta h2{color:var(--vit);}
+.cta p{color:rgba(255,255,255,.92);font-size:1.08rem;max-width:520px;margin:0 auto 28px;}
+.cta-inner{position:relative;z-index:2;}
+/* auto i sidled behövs – .cta p sätter max-width:520px, och utan auto
+   fastnar stycket till vänster i stället för att centreras. */
+.cta .tel-rad{margin:22px auto 0;max-width:none;font-size:1rem;color:rgba(255,255,255,.92);}
+.cta .tel-rad a{color:var(--vit);font-weight:800;text-decoration:underline;text-underline-offset:4px;white-space:nowrap;}
+
+/* ==========================================================================
+   15. Footer
+   ========================================================================== */
+.footer{background:var(--marin);color:rgba(255,255,255,.78);padding:56px 0 0;}
+.footer h4{color:var(--vit);font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
+.footer-grid{display:grid;gap:32px;grid-template-columns:1fr;}
+@media(min-width:640px){.footer-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:1024px){.footer-grid{grid-template-columns:1.4fr 1fr 1.15fr 1.1fr;gap:40px;}}
+.footer p{font-size:.9rem;line-height:1.7;}
+.footer a{color:rgba(255,255,255,.82);text-decoration:none;font-size:.9rem;}
+.footer a:hover{color:var(--himmel);text-decoration:underline;}
+.footer li{margin-bottom:9px;}
+.footer .kontakt li{display:flex;gap:10px;align-items:flex-start;}
+.footer .kontakt svg{width:17px;height:17px;flex:none;margin-top:4px;stroke:var(--himmel);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.footer .fskatt{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:14px;}
+.footer-slut{
+  border-top:1px solid rgba(255,255,255,.14);margin-top:44px;padding:20px 0 24px;
+  text-align:center;font-size:.82rem;color:rgba(255,255,255,.6);
+}
+@media(max-width:1023px){.footer{padding-bottom:84px;}} /* plats för sticky mobil-CTA */
+
+/* ==========================================================================
+   16. Sticky mobil-CTA
+   ========================================================================== */
+.mob-cta{
+  position:fixed;left:0;right:0;bottom:0;z-index:80;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 -4px 20px rgba(11,46,89,.14);
+  transform:translateY(120%);transition:transform var(--overgang);
+}
+.mob-cta.visa{transform:translateY(0);}
+@media(min-width:1024px){.mob-cta{display:none;}}
+
+/* ==========================================================================
+   17. Scroll-in-animation
+   ========================================================================== */
+.in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s cubic-bezier(.4,0,.2,1);}
+.in.syns{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
+  .in{opacity:1;transform:none;}
+}
+
+/* ==========================================================================
+   18. BOKNINGSVYN – helskärmsvy
+   ========================================================================== */
+#bokning{display:none;background:var(--dimma);min-height:100vh;}
+body.bokar #hemsida{display:none;}
+body.bokar #bokning{display:block;}
+body.bokar .mob-cta{display:none!important;}
+body.bokar .topp,body.bokar .mobmeny{display:none;}
+
+.bok-topp{
+  position:sticky;top:0;z-index:60;background:var(--vit);
+  box-shadow:0 2px 12px rgba(11,46,89,.08);
+}
+.bok-topp-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;height:68px;}
+.tillbaka-lank{
+  display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:8px 4px;
+  color:var(--bla);font-weight:700;font-size:.92rem;text-decoration:none;
+}
+.tillbaka-lank:hover{color:var(--bla-hover);}
+.tillbaka-lank svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Stegindikator */
+.stegrad{background:var(--vit);border-bottom:1px solid var(--kant);padding:14px 0;}
+.stegrad ol{display:flex;align-items:center;gap:4px;justify-content:space-between;max-width:640px;margin:0 auto;}
+.stegrad li{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.stegrad li:last-child{flex:none;}
+.steg-knapp{display:flex;align-items:center;gap:8px;min-width:0;padding:2px;border-radius:var(--pill);}
+.steg-boll{
+  width:30px;height:30px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:800;
+  background:var(--isbla);color:var(--text-2);border:2px solid var(--kant);
+  transition:background var(--overgang),color var(--overgang),border-color var(--overgang);
+}
+.steg-boll svg{width:15px;height:15px;stroke:var(--vit);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.steg-namn{font-size:.85rem;font-weight:700;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(max-width:639px){.steg-namn{display:none;}}
+.stegrad li .strack{flex:1;height:2px;background:var(--kant);border-radius:2px;min-width:10px;transition:background var(--overgang);}
+.stegrad li.klar .steg-boll{background:var(--gron-text);border-color:var(--gron-text);color:var(--vit);}
+.stegrad li.klar .steg-namn{color:var(--marin);}
+.stegrad li.klar .strack{background:var(--gron);}
+.stegrad li.aktiv .steg-boll{background:var(--bla);border-color:var(--bla);color:var(--vit);}
+.stegrad li.aktiv .steg-namn{color:var(--bla);}
+.stegrad li.klar .steg-knapp{cursor:pointer;}
+.stegrad li.klar .steg-knapp:hover .steg-namn{text-decoration:underline;}
+.stegrad li:not(.klar) .steg-knapp{cursor:default;}
+
+.bok-kropp{padding:32px 0 56px;}
+@media(min-width:1024px){.bok-kropp{padding:44px 0 80px;}}
+.bok-steg{display:none;}
+.bok-steg.aktiv{display:block;animation:tona .35s ease;}
+@keyframes tona{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+.bok-rubrik{text-align:center;max-width:640px;margin:0 auto 32px;}
+/* Pil bakåt: absolut placerad så att rubriken förblir centrerad */
+.bok-rubrik.med-bak{position:relative;padding:0 48px;}
+.bak-knapp{
+  position:absolute;left:0;top:2px;flex:none;width:40px;height:40px;border-radius:50%;
+  background:var(--isbla);border:1px solid var(--kant);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--overgang),border-color var(--overgang),transform var(--overgang);
+}
+.bak-knapp:hover{background:var(--vit);border-color:var(--himmel);transform:translateX(-2px);}
+.bak-knapp:focus-visible{outline:3px solid var(--himmel);outline-offset:2px;}
+.bak-knapp svg{width:20px;height:20px;stroke:var(--marin);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+@media(max-width:400px){.bok-rubrik.med-bak{padding:0 44px;}}
+.bok-rubrik h2{margin-bottom:8px;font-size:clamp(1.45rem,4vw,2.1rem);}
+.bok-rubrik p{color:var(--text-2);margin:0;}
+
+/* Steg 1: valbara tjänstekort */
+.valj-grid{display:grid;gap:20px;grid-template-columns:1fr;max-width:960px;margin:0 auto;}
+@media(min-width:768px){.valj-grid{grid-template-columns:repeat(3,1fr);}}
+.valj-kort{
+  background:var(--vit);border:2px solid var(--kant);border-radius:var(--radie);
+  padding:26px 22px;text-align:left;width:100%;
+  box-shadow:var(--skugga);position:relative;
+  transition:transform var(--overgang),box-shadow var(--overgang),border-color var(--overgang);
+  display:flex;flex-direction:column;
+}
+.valj-kort:hover{transform:translateY(-4px);box-shadow:var(--skugga-hog);border-color:var(--himmel);}
+.valj-kort[aria-pressed="true"]{border-color:var(--bla);box-shadow:0 0 0 4px rgba(37,99,235,.14),var(--skugga-hog);}
+.valj-kort h3{font-size:1.15rem;margin-bottom:6px;}
+.valj-kort p{color:var(--text-2);font-size:.9rem;margin:0 0 16px;}
+.valj-kort .pris{margin-top:auto;font-weight:800;color:var(--bla);font-size:1rem;}
+/* Flaggan på steg 1-kortet, samma utseende som på startsidans tjänstekort.
+   Bocken flyttas ned så att den inte hamnar under flaggan. */
+.valj-kort .flagga{
+  position:absolute;top:0;right:0;z-index:2;
+  display:flex;align-items:center;gap:6px;
+  background:linear-gradient(120deg,#F97316,#FB923C);color:var(--vit);
+  font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+  padding:7px 14px;border-radius:0 var(--radie) 0 var(--radie);
+  box-shadow:0 4px 12px rgba(249,115,22,.35);
+}
+.valj-kort .flagga svg{width:14px;height:14px;fill:var(--vit);stroke:none;flex:none;}
+@keyframes flamma{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.18);opacity:.82;}}
+.flagga svg{animation:flamma 1.9s ease-in-out infinite;transform-origin:center bottom;}
+@media(prefers-reduced-motion:reduce){.flagga svg{animation:none;}}
+.valj-kort.har-flagga .valj-bock{top:46px;}
+.valj-kort.har-flagga{padding-top:34px;}
+
+/* Steg 1 har bara en knapp kvar – den ska inte sträckas ut */
+#steg1 .bok-nav{justify-content:center;}
+#steg1 .bok-nav .knapp{flex:0 0 auto;min-width:180px;}
+
+.valj-bock{
+  position:absolute;top:16px;right:16px;width:26px;height:26px;border-radius:50%;
+  background:var(--bla);display:none;align-items:center;justify-content:center;
+}
+.valj-kort[aria-pressed="true"] .valj-bock{display:flex;}
+.valj-bock svg{width:14px;height:14px;stroke:var(--vit);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Steg 2: formulär + offertpanel */
+.steg2-layout{display:grid;gap:26px;grid-template-columns:1fr;align-items:start;}
+@media(min-width:1024px){.steg2-layout{grid-template-columns:1.35fr .95fr;gap:34px;}}
+@media(max-width:1023px){.steg2-layout{padding-bottom:100px;}} /* plats för mobilens summeringsrad */
+
+.form-block{background:var(--vit);border-radius:var(--radie);box-shadow:var(--skugga);padding:24px;margin-bottom:20px;}
+@media(min-width:640px){.form-block{padding:28px;}}
+.form-block h3{font-size:1.08rem;margin-bottom:4px;}
+.form-block .hjalptext{color:var(--text-2);font-size:.88rem;margin:0 0 20px;}
+
+.falt{margin-bottom:24px;}
+.falt:last-child{margin-bottom:0;}
+.falt > label,.falt-rubrik{
+  display:block;font-weight:700;font-size:.95rem;color:var(--marin);margin-bottom:10px;
+}
+.falt .under{font-size:.82rem;color:var(--text-2);font-weight:500;margin-top:6px;display:block;}
+
+/* Stepper (−/+) */
+.stepper{display:flex;align-items:center;gap:14px;}
+.stepper button{
+  width:46px;height:46px;flex:none;border-radius:50%;
+  background:var(--isbla);border:2px solid var(--kant);
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--overgang),border-color var(--overgang),transform var(--overgang);
+}
+.stepper button:hover:not(:disabled){background:var(--bla);border-color:var(--bla);}
+.stepper button:hover:not(:disabled) svg{stroke:var(--vit);}
+.stepper button:active:not(:disabled){transform:scale(.92);}
+.stepper button:disabled{opacity:.35;cursor:not-allowed;}
+.stepper button svg{width:18px;height:18px;stroke:var(--bla);fill:none;stroke-width:3;stroke-linecap:round;transition:stroke var(--overgang);}
+.stepper .varde{
+  min-width:70px;text-align:center;font-size:1.3rem;font-weight:800;color:var(--marin);
+  font-variant-numeric:tabular-nums;
+}
+.stepper .enhet{font-size:.9rem;color:var(--text-2);font-weight:600;}
+
+/* Slider */
+.slider-topp{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;gap:12px;}
+.slider-varde{
+  font-size:1.35rem;font-weight:800;color:var(--bla);font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:var(--pill);
+  background:var(--kant);outline:none;margin:12px 0;padding:0;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:28px;height:28px;border-radius:50%;
+  background:var(--bla);border:4px solid var(--vit);cursor:grab;
+  box-shadow:0 3px 10px rgba(37,99,235,.45);transition:transform var(--overgang);
+}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.12);cursor:grabbing;}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--bla);
+  border:4px solid var(--vit);cursor:grab;box-shadow:0 3px 10px rgba(37,99,235,.45);
+}
+input[type=range]::-moz-range-track{height:8px;border-radius:var(--pill);background:var(--kant);}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(56,189,248,.6);}
+.slider-skala{display:flex;justify-content:space-between;font-size:.78rem;color:var(--text-2);font-weight:600;}
+
+/* Radioknappar som kort */
+.radio-grid{display:grid;gap:10px;grid-template-columns:1fr;}
+@media(min-width:520px){.radio-grid.tva{grid-template-columns:repeat(2,1fr);}}
+.radio-kort{
+  position:relative;display:flex;align-items:center;gap:12px;
+  padding:14px 16px;min-height:56px;
+  background:var(--vit);border:2px solid var(--kant);border-radius:var(--radie-s);
+  cursor:pointer;transition:border-color var(--overgang),background var(--overgang),box-shadow var(--overgang);
+}
+.radio-kort:hover{border-color:var(--himmel);background:var(--isbla);}
+.radio-kort input{position:absolute;opacity:0;width:0;height:0;}
+.radio-prick{
+  width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--kant);
+  background:var(--vit);position:relative;transition:border-color var(--overgang);
+}
+.radio-prick::after{
+  content:"";position:absolute;inset:4px;border-radius:50%;background:var(--bla);
+  transform:scale(0);transition:transform var(--overgang);
+}
+.radio-kort input:checked ~ .radio-prick{border-color:var(--bla);}
+.radio-kort input:checked ~ .radio-prick::after{transform:scale(1);}
+.radio-kort.vald{border-color:var(--bla);background:var(--isbla);box-shadow:0 0 0 3px rgba(37,99,235,.10);}
+.radio-kort input:focus-visible ~ .radio-prick{box-shadow:0 0 0 4px rgba(56,189,248,.55);}
+.radio-txt{flex:1;min-width:0;}
+.radio-txt b{display:block;font-size:.95rem;color:var(--marin);font-weight:700;line-height:1.3;}
+.radio-txt small{display:block;font-size:.8rem;color:var(--text-2);}
+.rabatt-chip{
+  flex:none;font-size:.75rem;font-weight:800;color:var(--gron-text);
+  background:rgba(22,163,74,.10);padding:4px 10px;border-radius:var(--pill);white-space:nowrap;
+}
+
+/* Checkboxar som kort */
+/* minmax(0,1fr): rutnätsceller får annars aldrig bli smalare än sitt
+   innehåll, vilket sköt ut korten utanför skärmen på 320 px. */
+.check-lista{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;}
+.check-kort{
+  position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px;min-height:56px;min-width:0;
+  background:var(--vit);border:2px solid var(--kant);border-radius:var(--radie-s);
+  cursor:pointer;transition:border-color var(--overgang),background var(--overgang),box-shadow var(--overgang);
+}
+.check-kort:hover{border-color:var(--himmel);background:var(--isbla);}
+/* Kort som göms helt (spröjstvätt utan spröjsfönster) */
+.check-kort[hidden]{display:none;}
+/* Samma Populärast-flagga som på tjänstekorten, nedskalad för radhöjden */
+.check-kort.har-flagga{padding-top:32px;}
+.check-kort .flagga{
+  position:absolute;top:0;right:0;z-index:2;
+  display:flex;align-items:center;gap:5px;
+  background:linear-gradient(120deg,#F97316,#FB923C);color:var(--vit);
+  font-size:.66rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:5px 11px;border-radius:0 6px 0 var(--radie-s);
+  box-shadow:0 4px 12px rgba(249,115,22,.32);
+}
+.check-kort .flagga svg{width:12px;height:12px;fill:var(--vit);stroke:none;flex:none;}
+.check-kort input{position:absolute;opacity:0;width:0;height:0;}
+.check-ruta{
+  width:24px;height:24px;flex:none;border-radius:7px;border:2px solid var(--kant);
+  background:var(--vit);display:flex;align-items:center;justify-content:center;
+  transition:background var(--overgang),border-color var(--overgang);
+}
+.check-ruta svg{width:14px;height:14px;stroke:var(--vit);fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;
+  opacity:0;transform:scale(.5);transition:opacity var(--overgang),transform var(--overgang);}
+.check-kort input:checked ~ .check-ruta{background:var(--bla);border-color:var(--bla);}
+.check-kort input:checked ~ .check-ruta svg{opacity:1;transform:scale(1);}
+.check-kort.vald{border-color:var(--bla);background:var(--isbla);}
+.check-kort input:focus-visible ~ .check-ruta{box-shadow:0 0 0 4px rgba(56,189,248,.55);}
+.check-txt{flex:1;min-width:0;}
+.check-txt b{display:block;font-size:.95rem;color:var(--marin);font-weight:700;line-height:1.3;overflow-wrap:anywhere;}
+.check-txt small{display:block;font-size:.8rem;color:var(--text-2);}
+.check-pris{flex:none;font-weight:800;color:var(--bla);font-size:.92rem;white-space:nowrap;}
+
+/* Informationsruta om fast pris */
+/* Kompakt förklaring av vad som räknas som ett fönster */
+.fonster-info{
+  display:flex;gap:12px;align-items:center;
+  background:var(--dimma);border:1px solid var(--kant);border-radius:var(--radie-s);
+  padding:10px 12px;margin-top:12px;
+}
+.fonster-info svg{width:100px;height:67px;flex:none;}
+.fonster-info span{font-size:.82rem;line-height:1.5;color:var(--text-2);}
+.fonster-info b{color:var(--marin);}
+/* På riktigt smala skärmar blir textspalten bredvid bilden bara ~90 px och
+   rutan skjuter i höjden – då lägger vi bilden ovanför texten i stället. */
+@media(max-width:400px){
+  .fonster-info{flex-direction:column;align-items:center;gap:8px;text-align:center;}
+  .fonster-info svg{width:104px;height:70px;}
+}
+
+/* Upsell-läget i steg 2 */
+.tillagg-vy h3{margin-bottom:4px;}
+
+.info-ruta{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--isbla);border:1px solid var(--kant);border-left:4px solid var(--bla);
+  border-radius:var(--radie-s);padding:14px 16px;margin-bottom:22px;
+  font-size:.9rem;color:var(--text);line-height:1.6;
+}
+.info-ruta svg{width:20px;height:20px;flex:none;margin-top:3px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.info-ruta b{color:var(--marin);}
+
+/* Offertpanel */
+.offert-wrap{position:relative;}
+@media(min-width:1024px){.offert-wrap{position:sticky;top:96px;}}
+@media(max-width:1023px){.offert-wrap{display:none;}} /* på mobil används summeringsraden i stället */
+.offert{
+  background:var(--vit);border-radius:var(--radie);box-shadow:var(--skugga-hog);
+  border:1px solid var(--kant);overflow:hidden;
+}
+.offert-huvud{background:var(--grad);color:var(--vit);padding:18px 22px;position:relative;overflow:hidden;}
+.offert-huvud h3{color:var(--vit);margin:0;font-size:1.05rem;}
+.offert-huvud p{margin:2px 0 0;font-size:.82rem;color:rgba(255,255,255,.85);}
+.offert-kropp{padding:20px 22px 22px;}
+.offert-rad{
+  display:flex;justify-content:space-between;gap:14px;align-items:baseline;
+  padding:8px 0;font-size:.92rem;border-bottom:1px dashed var(--kant);
+}
+.offert-rad:last-of-type{border-bottom:none;}
+.offert-rad .r-namn{color:var(--text-2);min-width:0;}
+.offert-rad .r-varde{font-weight:700;color:var(--marin);white-space:nowrap;font-variant-numeric:tabular-nums;}
+/* Priset före RUT som en mindre rad under kundens faktiska pris */
+.offert-rad .r-varde{display:flex;flex-direction:column;align-items:flex-end;line-height:1.25;}
+.offert-rad .r-varde small{font-size:.76rem;font-weight:600;color:var(--text-2);}
+
+.offert-rad.rabatt .r-namn,.offert-rad.rabatt .r-varde,
+.offert-rad.rut .r-namn,.offert-rad.rut .r-varde{color:var(--gron-text);font-weight:700;}
+.offert-rad.summa{border-top:1.5px solid var(--kant);border-bottom:none;margin-top:8px;padding-top:12px;}
+.offert-rad.summa .r-namn{color:var(--marin);font-weight:700;}
+
+.offert-tid{
+  display:flex;align-items:center;gap:10px;background:var(--isbla);
+  border-radius:var(--radie-s);padding:12px 14px;margin:16px 0;font-size:.9rem;color:var(--marin);font-weight:600;
+}
+.offert-tid svg{width:20px;height:20px;flex:none;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+.betala-box{
+  background:var(--isbla);border-radius:var(--radie-s);padding:16px 18px;margin-top:8px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.betala-box .etik{font-size:.85rem;font-weight:700;color:var(--marin);line-height:1.3;}
+.betala-box .etik small{display:block;font-weight:500;color:var(--text);font-size:.76rem;}
+.betala-tal{
+  font-size:2.1rem;font-weight:800;color:var(--bla);line-height:1;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.betala-tal.puls{animation:prispuls .45s cubic-bezier(.34,1.56,.64,1);}
+@keyframes prispuls{0%{transform:scale(1);}45%{transform:scale(1.09);}100%{transform:scale(1);}}
+
+.manad-box{
+  margin-top:12px;background:var(--vit);border:1.5px dashed var(--bla);
+  border-radius:var(--radie-s);padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;
+}
+.manad-box .etik{font-size:.85rem;font-weight:700;color:var(--marin);}
+.manad-box .etik small{display:block;font-weight:500;color:var(--text-2);font-size:.76rem;}
+.manad-tal{font-size:1.2rem;font-weight:800;color:var(--marin);white-space:nowrap;font-variant-numeric:tabular-nums;}
+
+.offert-lugn{
+  display:flex;gap:9px;align-items:flex-start;margin-top:16px;
+  font-size:.8rem;color:var(--text-2);line-height:1.55;
+}
+.offert-lugn svg{width:16px;height:16px;flex:none;margin-top:3px;stroke:var(--gron);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Mobil summeringsrad i steg 2 */
+.mob-offert{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--vit);
+  box-shadow:0 -6px 24px rgba(11,46,89,.16);
+  max-height:84vh;display:none;flex-direction:column;
+}
+@media(max-width:1023px){body.bokar.pa-steg2 .mob-offert{display:flex;}}
+.mob-offert-huvud{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+  padding:12px 18px;min-height:62px;text-align:left;
+}
+.mob-offert-huvud .mo-txt{min-width:0;}
+.mob-offert-huvud .mo-etik{font-size:.72rem;color:var(--text-2);font-weight:700;text-transform:uppercase;letter-spacing:.06em;display:block;}
+.mob-offert-huvud .mo-pris{font-size:1.1rem;font-weight:800;color:var(--marin);line-height:1.3;}
+.mob-offert-huvud .mo-pris em{font-style:normal;color:var(--text-2);font-weight:600;font-size:.84rem;}
+.mob-offert-huvud .mo-pil{
+  width:34px;height:34px;flex:none;border-radius:50%;background:var(--isbla);
+  display:flex;align-items:center;justify-content:center;transition:transform var(--overgang);
+}
+.mob-offert-huvud .mo-pil svg{width:16px;height:16px;stroke:var(--bla);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.mob-offert.utfalld .mo-pil{transform:rotate(180deg);}
+.mob-offert-kropp{display:none;padding:4px 18px 16px;overflow-y:auto;border-top:1px solid var(--kant);}
+.mob-offert.utfalld .mob-offert-kropp{display:block;}
+.mob-offert-fot{padding:0 18px calc(14px + env(safe-area-inset-bottom));}
+
+/* Navigationsknappar i bokningen */
+.bok-nav{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-top:28px;flex-wrap:wrap;}
+.bok-nav .knapp{flex:1 1 auto;min-width:150px;}
+@media(max-width:479px){.bok-nav{flex-direction:column-reverse;}.bok-nav .knapp{width:100%;}}
+
+.felruta{
+  display:none;align-items:flex-start;gap:10px;
+  background:#FEF2F2;border:1px solid #FCA5A5;border-left:4px solid #DC2626;
+  color:#991B1B;border-radius:var(--radie-s);padding:12px 16px;margin-top:16px;font-size:.9rem;font-weight:600;
+}
+.felruta.visa{display:flex;}
+.felruta svg{width:18px;height:18px;flex:none;margin-top:3px;stroke:#DC2626;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ==========================================================================
+   19. Kalender (steg 3)
+   ========================================================================== */
+.kal-wrap{max-width:820px;margin:0 auto;}
+.tid-info{
+  display:flex;gap:12px;align-items:flex-start;
+  background:var(--isbla);border-left:4px solid var(--bla);border-radius:var(--radie-s);
+  padding:14px 18px;margin-bottom:22px;font-size:.93rem;color:var(--text);line-height:1.6;
+}
+.tid-info svg{width:20px;height:20px;flex:none;margin-top:3px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.tid-info b{color:var(--marin);}
+
+.dagflikar{
+  display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;margin-bottom:22px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--bla) var(--kant);
+}
+.dagflikar::-webkit-scrollbar{height:6px;}
+.dagflikar::-webkit-scrollbar-track{background:var(--kant);border-radius:3px;}
+.dagflikar::-webkit-scrollbar-thumb{background:var(--bla);border-radius:3px;}
+.dagflik{
+  flex:none;scroll-snap-align:start;width:84px;min-height:80px;padding:12px 6px;
+  background:var(--vit);border:2px solid var(--kant);border-radius:var(--radie-s);
+  text-align:center;transition:border-color var(--overgang),background var(--overgang),transform var(--overgang);
+}
+.dagflik:hover:not(:disabled){border-color:var(--himmel);transform:translateY(-2px);}
+.dagflik .dg{font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-2);}
+.dagflik .dd{font-size:1.28rem;font-weight:800;color:var(--marin);line-height:1.2;}
+.dagflik .dm{font-size:.74rem;color:var(--text-2);font-weight:600;}
+.dagflik[aria-selected="true"]{background:var(--bla);border-color:var(--bla);}
+.dagflik[aria-selected="true"] .dg,.dagflik[aria-selected="true"] .dd,.dagflik[aria-selected="true"] .dm{color:var(--vit);}
+.dagflik:disabled{opacity:.55;cursor:not-allowed;background:var(--dimma);}
+
+.tid-rubrik{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.tid-rubrik h3{margin:0;font-size:1.05rem;}
+.tid-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.78rem;color:var(--text-2);font-weight:600;}
+.tid-legend span{display:flex;align-items:center;gap:6px;}
+.tid-legend i{width:13px;height:13px;border-radius:4px;display:block;flex:none;}
+.tid-legend i.led{background:var(--vit);border:2px solid var(--bla);}
+.tid-legend i.upp{background:#E2E8F0;border:2px solid #CBD5E1;}
+.tid-legend i.val{background:var(--bla);border:2px solid var(--bla);}
+
+.tid-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));}
+.tid-knapp{
+  padding:10px 4px;min-height:58px;border-radius:var(--radie-s);
+  background:var(--vit);border:2px solid var(--bla);color:var(--bla);
+  font-weight:800;font-size:1rem;line-height:1.2;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  transition:background var(--overgang),color var(--overgang),transform var(--overgang),box-shadow var(--overgang);
+}
+.tid-knapp small{font-size:.66rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;opacity:.9;}
+.tid-knapp:hover:not(:disabled){background:var(--bla);color:var(--vit);transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,99,235,.28);}
+.tid-knapp[aria-pressed="true"]{background:var(--bla);color:var(--vit);box-shadow:0 0 0 4px rgba(37,99,235,.20);}
+.tid-knapp:disabled{background:#F1F5F9;border-color:#E2E8F0;color:#475569;cursor:not-allowed;}
+.tid-knapp.upptagen .kl{text-decoration:line-through;}
+.stangt-ruta{
+  text-align:center;padding:36px 20px;background:var(--vit);border:1px dashed var(--kant);
+  border-radius:var(--radie);color:var(--text-2);
+}
+.stangt-ruta svg{width:38px;height:38px;margin:0 auto 12px;stroke:var(--text-2);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.stangt-ruta b{display:block;color:var(--marin);margin-bottom:4px;font-size:1.02rem;}
+
+.vald-tid{
+  display:none;align-items:center;gap:12px;margin-top:22px;
+  background:rgba(22,163,74,.08);border:1.5px solid rgba(22,163,74,.35);
+  border-radius:var(--radie-s);padding:14px 18px;
+}
+.vald-tid.visa{display:flex;}
+.vald-tid svg{width:24px;height:24px;flex:none;stroke:var(--gron);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.vald-tid b{display:block;color:var(--marin);font-size:1.02rem;line-height:1.35;}
+.vald-tid small{color:var(--text-2);font-size:.84rem;}
+.avboka-rad{margin-top:16px;font-size:.84rem;color:var(--text-2);text-align:center;}
+
+/* ==========================================================================
+   20. Steg 4 – uppgifter, validering, bekräftelse
+   ========================================================================== */
+.steg4-wrap{max-width:820px;margin:0 auto;}
+
+.sammanfattning{
+  background:var(--vit);border-radius:var(--radie);box-shadow:var(--skugga);
+  border:1px solid var(--kant);overflow:hidden;margin-bottom:24px;
+}
+.samm-huvud{background:var(--grad);color:var(--vit);padding:16px 22px;}
+.samm-huvud h3{color:var(--vit);margin:0;font-size:1.05rem;}
+.samm-kropp{padding:18px 22px 22px;}
+.samm-grupp{margin-bottom:18px;}
+.samm-grupp:last-child{margin-bottom:0;}
+/* Punkt 6: sammanfattningen ska vara lättare att läsa – större text rakt igenom */
+.samm-etik{font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--bla);margin-bottom:10px;}
+.samm-rad{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:7px 0;font-size:1.05rem;}
+.samm-val span{font-size:.95rem;padding:6px 14px;}
+.samm-kropp{padding:20px 22px 24px;}
+.samm-grupp{margin-bottom:22px;}
+.samm-rad .s-namn{color:var(--text-2);}
+.samm-rad .s-varde{font-weight:700;color:var(--marin);text-align:right;}
+.samm-rad.gron .s-namn,.samm-rad.gron .s-varde{color:var(--gron-text);}
+.samm-rad.stor{font-size:1.05rem;padding-top:10px;margin-top:6px;border-top:1.5px solid var(--kant);}
+.samm-rad.stor .s-namn{color:var(--marin);font-weight:700;}
+.samm-rad.stor .s-varde{color:var(--bla);font-size:1.35rem;font-weight:800;}
+.samm-val{display:flex;flex-wrap:wrap;gap:8px;}
+.samm-val span{
+  background:var(--isbla);color:var(--marin);font-size:.83rem;font-weight:600;
+  padding:5px 12px;border-radius:var(--pill);
+}
+
+/* Formulärfält */
+.falt-grid{display:grid;gap:16px;grid-template-columns:1fr;}
+@media(min-width:640px){.falt-grid.tva{grid-template-columns:repeat(2,1fr);}}
+.ffalt label{display:block;font-weight:700;font-size:.9rem;color:var(--marin);margin-bottom:7px;}
+.ffalt .kravd{color:#DC2626;}
+.ffalt input,.ffalt textarea{
+  width:100%;padding:13px 44px 13px 15px;min-height:50px;
+  border:2px solid var(--kant);border-radius:var(--radie-s);background:var(--vit);
+  transition:border-color var(--overgang),box-shadow var(--overgang);
+}
+.ffalt textarea{padding-right:15px;resize:vertical;min-height:88px;line-height:1.6;}
+.ffalt input:hover,.ffalt textarea:hover{border-color:#BFDBFE;}
+.ffalt input:focus,.ffalt textarea:focus{outline:none;border-color:var(--bla);box-shadow:0 0 0 4px rgba(37,99,235,.14);}
+.ffalt .inmatning{position:relative;}
+.ffalt .status{
+  position:absolute;right:14px;top:25px;transform:translateY(-50%);
+  width:20px;height:20px;opacity:0;transition:opacity var(--overgang);pointer-events:none;
+}
+.ffalt .status svg{width:20px;height:20px;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+.ffalt.ok .status{opacity:1;}
+.ffalt.ok .status svg{stroke:var(--gron);}
+.ffalt.ok input{border-color:var(--gron);}
+.ffalt.fel input,.ffalt.fel textarea{border-color:#DC2626;background:#FEF2F2;}
+.ffalt.fel .status{opacity:1;}
+.ffalt.fel .status svg{stroke:#DC2626;}
+.faltfel{display:none;color:#DC2626;font-size:.83rem;font-weight:600;margin-top:6px;}
+.ffalt.fel .faltfel{display:block;}
+
+.gdpr-kort{
+  position:relative;display:flex;align-items:flex-start;gap:12px;padding:16px;
+  background:var(--isbla);border:2px solid var(--kant);border-radius:var(--radie-s);
+  cursor:pointer;margin-top:20px;transition:border-color var(--overgang),background var(--overgang);
+}
+.gdpr-kort:hover{border-color:var(--himmel);}
+.gdpr-kort.vald{border-color:var(--bla);}
+.gdpr-kort.fel{border-color:#DC2626;background:#FEF2F2;}
+.gdpr-kort input{position:absolute;opacity:0;width:0;height:0;}
+.gdpr-kort .check-ruta{margin-top:1px;}
+.gdpr-kort span{font-size:.9rem;color:var(--text);line-height:1.55;}
+
+/* Laddknapp */
+.knapp .spinner{
+  width:20px;height:20px;border:2.5px solid rgba(255,255,255,.35);
+  border-top-color:var(--vit);border-radius:50%;animation:snurr .7s linear infinite;display:none;
+}
+.knapp.laddar .spinner{display:block;}
+.knapp.laddar{pointer-events:none;opacity:.85;}
+@keyframes snurr{to{transform:rotate(360deg);}}
+
+/* Bekräftelsevy */
+.bekraftelse{max-width:660px;margin:0 auto;text-align:center;}
+.bock-cirkel{
+  width:96px;height:96px;border-radius:50%;background:rgba(22,163,74,.12);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 24px;
+  animation:bockpop .5s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes bockpop{0%{transform:scale(.4);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.bock-cirkel svg{width:52px;height:52px;stroke:var(--gron);fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;}
+.bock-cirkel svg path{stroke-dasharray:44;stroke-dashoffset:44;animation:rita .55s .22s ease forwards;}
+@keyframes rita{to{stroke-dashoffset:0;}}
+@media(prefers-reduced-motion:reduce){
+  .bock-cirkel svg path{stroke-dashoffset:0;animation:none;}
+  .bock-cirkel{animation:none;}
+  .bok-steg.aktiv{animation:none;}
+}
+.boknr{
+  display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  background:var(--isbla);border:1.5px dashed var(--bla);border-radius:var(--radie-s);
+  padding:12px 22px;margin:0 auto 24px;
+}
+.boknr .etik{font-size:.78rem;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.08em;}
+.boknr .nr{font-size:1.28rem;font-weight:800;color:var(--marin);letter-spacing:.04em;}
+.bekraftelse .sammanfattning{text-align:left;}
+.bekr-info{
+  background:var(--isbla);border-radius:var(--radie-s);padding:18px;margin:22px 0;
+  font-size:.94rem;color:var(--text);line-height:1.65;
+}
+.bekr-info a{font-weight:700;white-space:nowrap;}
+.bekr-knappar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+@media(max-width:479px){.bekr-knappar .knapp{width:100%;}}
+
+/* ==========================================================================
+   21. Undersidor (hemstad.html, kontorsstad.html)
+   ========================================================================== */
+.under-hero{
+  min-height:auto;padding:140px 0 64px;
+  background:var(--grad);
+}
+@media(min-width:1024px){.under-hero{min-height:auto;padding:170px 0 80px;}}
+.under-hero .hero-txt{max-width:720px;}
+.under-hero h1{max-width:20ch;margin-bottom:18px;}
+.under-hero .hero-under{color:rgba(255,255,255,.93);font-size:1.06rem;margin-bottom:26px;max-width:560px;}
+/* Brödsmulor ger både orientering och intern länkning */
+.smulor{font-size:.86rem;color:rgba(255,255,255,.75);margin-bottom:16px;}
+.smulor a{color:var(--vit);text-decoration:underline;text-underline-offset:3px;}
+.smulor span{opacity:.8;}
+
+/* ==========================================================================
+   22. Blogg / guider
+   ========================================================================== */
+.blogg-grid{display:grid;gap:22px;grid-template-columns:1fr;}
+@media(min-width:768px){.blogg-grid{grid-template-columns:repeat(3,1fr);}}
+.blogg-kort{display:flex;flex-direction:column;}
+.blogg-kort h2{font-size:1.25rem;margin:8px 0 10px;line-height:1.3;}
+.blogg-kort h2 a{color:var(--marin);text-decoration:none;}
+.blogg-kort h2 a:hover{color:var(--bla);}
+.blogg-kort p{color:var(--text-2);font-size:.94rem;}
+.blogg-kort .las-mer{margin-top:auto;text-align:left;}
+
+.inlagg-meta{font-size:.82rem;color:var(--text-2);font-weight:600;margin:0;}
+.inlagg-topp{background:var(--grad);color:var(--vit);padding:132px 0 44px;}
+@media(min-width:1024px){.inlagg-topp{padding:164px 0 56px;}}
+.inlagg-topp h1{color:var(--vit);max-width:18ch;margin-bottom:14px;}
+.inlagg-topp .inlagg-ingress{color:rgba(255,255,255,.92);font-size:1.08rem;max-width:60ch;margin-bottom:14px;}
+.inlagg-topp .inlagg-meta{color:rgba(255,255,255,.78);}
+
+/* Läsbar radlängd är viktigare än full bredd i löpande text */
+.inlagg-kropp{max-width:720px;padding-top:44px;padding-bottom:64px;}
+.inlagg-kropp h2{font-size:clamp(1.35rem,3.4vw,1.7rem);margin:36px 0 12px;}
+.inlagg-kropp h3{font-size:1.12rem;margin:24px 0 8px;}
+.inlagg-kropp p{font-size:1.02rem;line-height:1.75;color:var(--text);}
+.inlagg-kropp .bocklista{margin:16px 0 20px;}
+.inlagg-kropp .bocklista li{align-items:flex-start;font-size:1rem;line-height:1.65;margin-bottom:12px;}
+.inlagg-kropp a{text-decoration:underline;text-underline-offset:3px;}
+
+.inlagg-cta{
+  background:var(--isbla);border:2px solid var(--bla);border-radius:var(--radie);
+  padding:26px;margin:40px 0 28px;text-align:center;
+  box-shadow:0 10px 30px rgba(37,99,235,.14);
+}
+.inlagg-cta h2{margin:0 0 8px;font-size:1.3rem;}
+.inlagg-cta p{color:var(--text-2);margin-bottom:18px;}
+.tillbaka-blogg{margin:0;}
+.tillbaka-blogg a{font-weight:600;}
+
+/* ==========================================================================
+   23. Desktopjusteringar
+   Sidan är byggd mobil först. Reglerna nedan gäller ENBART från 1024 px och
+   rör därför aldrig mobilvyn. De finns för att samma mobilvärden annars
+   sträcks ut på en bred skärm: heron får ett stort tomrum i mitten, rubriken
+   bryts för tidigt och korten blir avlånga pelare.
+   ========================================================================== */
+@media(min-width:1024px){
+
+  /* 1. Tomrummet i heron. På mobil är heron ungefär lika hög som innehållet,
+     så margin-top:auto ger nästan ingen lucka. På desktop är heron låst till
+     88vh medan innehållet är ~400px, och all överbliven höjd hamnade i EN
+     lucka mitt i bilden. Här hålls blocket ihop och centreras i stället. */
+  .hero-inner{justify-content:center;}
+  .hero-botten{margin-top:64px;gap:18px;}
+
+  /* 2. Rubriken ska fylla spalten i stället för att brytas efter 11 tecken */
+  .hero h1{
+    max-width:16ch;
+    font-size:clamp(2.9rem,3.9vw,3.9rem);
+    margin-bottom:30px;
+  }
+
+  /* 3. Bredare textspalt så innehållet inte klumpar ihop sig till vänster */
+  .hero-txt{max-width:760px;}
+  .hero-knappar{margin-top:40px;}
+
+  /* 5. Betydligt större logotyp. Headern måste växa i takt, annars spränger
+     loggan sin rad. OBS: bokningsvyns header delar klassen .logga-bild men
+     har egen kompakt höjd – den låses därför explicit nedan. */
+  .topp-inner{height:92px;}
+  .topp .logga-bild{height:58px;}
+  /* Navlänkarna får inte brytas – 'Om Linus' hamnade annars på två rader */
+  .nav{gap:20px;}
+  /* Navlänkarna får inte brytas, och en aning mindre grad ger luft mellan
+     den större loggan och Boka-knappen. */
+  .nav a{white-space:nowrap;font-size:.92rem;}
+  .footer .logga-bild{height:58px;}
+  .bok-topp .logga-bild{height:48px;}   /* oförändrad i bokningsflödet */
+
+  /* Ankarlänkar och heron måste kompensera för den högre headern */
+  section[id],footer[id]{scroll-margin-top:116px;}
+  .hero{padding-top:128px;}
+
+  /* Från 1280 px finns plats för full logotypstorlek */
+  @media(min-width:1280px){
+    .topp-inner{height:104px;}
+    .topp .logga-bild{height:68px;}
+    .nav{gap:26px;}
+  }
+
+  /* 4. Två tjänster kvar. Griden hade tre kolumner, vilket lämnade korten
+     vänsterställda med ett tomt fack – därför två kolumner, centrerade och
+     större. Gäller bara desktop; mobilens en-kolumn är orörd. */
+  .tjanster-grid{
+    grid-template-columns:repeat(2,1fr);
+    max-width:900px;margin-left:auto;margin-right:auto;gap:30px;
+  }
+  .tjanst-kort{padding:36px 32px;}
+  .tjanst-kort h3{font-size:2rem;}
+  .tjanst-kort .ingress{font-size:1.02rem;margin-bottom:18px;}
+  .tjanst-kort .bocklista li{font-size:.99rem;margin-bottom:11px;}
+  .tjanst-kort .bocklista{margin-bottom:22px;}
+  .tjanst-kort .fastpris-chip{margin-bottom:18px;font-size:1.12rem;padding:12px 18px;}
+  .tjanst-kort .pris-rad{padding-top:20px;margin-bottom:20px;}
+  .tjanst-kort .pris-tal{font-size:2.3rem;}
+  .tjanst-kort .ikon-cirkel{width:60px;height:60px;margin-bottom:20px;}
+  .tjanst-kort .ikon-cirkel svg{width:30px;height:30px;}
+
+  /* Samma sak för tjänstevalet i bokningens steg 1 */
+  .valj-grid{
+    grid-template-columns:repeat(2,1fr);
+    max-width:840px;gap:28px;
+  }
+  .valj-kort{padding:36px 30px;}
+  .valj-kort h3{font-size:1.55rem;}
+  .valj-kort p{font-size:1rem;}
+  .valj-kort .pris{font-size:1.08rem;}
+  .valj-kort .ikon-cirkel{width:60px;height:60px;}
+  .valj-kort .ikon-cirkel svg{width:30px;height:30px;}
+}
+
+/* ==========================================================================
+   24. JURIDISKA SIDOR – integritetspolicy, köpvillkor, kakor
+   Bygger vidare på blogglayouten (.inlagg-kropp) och lägger bara till det
+   som behövs för villkorstext: faktaruta, tabell, blankett och platshållare.
+   ========================================================================== */
+.juridik h2{margin-top:40px;}
+.juridik h2:first-of-type{margin-top:8px;}
+.juridik p,.juridik li{font-size:1rem;}
+
+/* Sammanfattningsruta överst på varje sida */
+.juridik-ruta{
+  background:var(--isbla);border:1px solid var(--kant);border-left:4px solid var(--bla);
+  border-radius:var(--radie-s);padding:16px 18px;margin:0 0 8px;
+}
+.juridik-ruta p{margin:0;color:var(--text);}
+
+/* Ändamål och rättslig grund */
+.juridik-tabell{
+  width:100%;border-collapse:collapse;margin:18px 0;font-size:.94rem;
+  border:1px solid var(--kant);border-radius:var(--radie-s);overflow:hidden;
+}
+.juridik-tabell th,.juridik-tabell td{
+  text-align:left;padding:11px 14px;border-bottom:1px solid var(--kant);vertical-align:top;
+}
+.juridik-tabell thead th{background:var(--dimma);color:var(--marin);font-weight:700;}
+.juridik-tabell tbody tr:last-child td{border-bottom:0;}
+/* Under 560 px blir tabellen två staplade rader per post i stället för
+   två kolumner – annars pressas texten till en oläslig remsa. */
+@media(max-width:560px){
+  .juridik-tabell,.juridik-tabell tbody,.juridik-tabell tr,.juridik-tabell td{display:block;width:100%;}
+  .juridik-tabell thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+  .juridik-tabell tr{border-bottom:1px solid var(--kant);padding:4px 0;}
+  .juridik-tabell tr:last-child{border-bottom:0;}
+  .juridik-tabell td{border:0;padding:6px 14px;}
+  .juridik-tabell td:last-child{color:var(--text-2);font-size:.88rem;padding-top:0;}
+  .juridik-tabell td:last-child::before{content:'Rättslig grund: ';font-weight:700;color:var(--marin);}
+}
+
+/* Konsumentverkets standardformulär för ångerrätt */
+.angerblankett{
+  border:1px dashed var(--kant);border-radius:var(--radie-s);
+  background:var(--dimma);padding:18px 20px;margin:18px 0;
+}
+.angerblankett p{margin:0 0 10px;font-size:.94rem;}
+.angerblankett p:last-child{margin-bottom:0;}
+
+/* Uppgifter som måste fyllas i innan sidan publiceras – syns tydligt så att
+   ingen platshållare råkar följa med ut i skarp drift. */
+.platshallare{
+  background:#FEF3C7;border-bottom:2px dotted #B45309;color:#78350F;
+  padding:1px 5px;border-radius:3px;font-weight:600;
+}
+
+/* Juridiska länkar i sidfoten */
+.footer-juridik{
+  display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:center;
+  margin:26px 0 0;padding-top:22px;border-top:1px solid rgba(255,255,255,.14);
+}
+.footer-juridik a{font-size:.9rem;}
+
+/* ==========================================================================
+   25. ÅNGERRÄTT OCH VILLKOR I BOKNINGENS SISTA STEG
+   ========================================================================== */
+/* Informationsruta om ångerrätten. Måste synas innan avtalet ingås. */
+.anger-ruta{
+  display:flex;gap:11px;align-items:flex-start;margin-top:22px;
+  background:var(--dimma);border:1px solid var(--kant);border-radius:var(--radie-s);
+  padding:14px 16px;font-size:.88rem;line-height:1.6;color:var(--text-2);
+}
+.anger-ruta svg{
+  width:19px;height:19px;flex:none;margin-top:2px;
+  stroke:var(--bla);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
+}
+.anger-ruta b{color:var(--marin);}
+
+/* Länkarna i kryssrutorna får inte äta klicket på själva rutan – de öppnar
+   villkoren i ny flik, resten av ytan kryssar i som vanligt. */
+.gdpr-kort a{color:var(--bla);font-weight:700;text-decoration:underline;}
+.gdpr-kort a:hover{color:var(--marin);}
+.gdpr-kort + .gdpr-kort{margin-top:12px;}
+.gdpr-kort span:last-child{font-size:.9rem;line-height:1.55;}

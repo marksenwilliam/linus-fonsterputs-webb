@@ -1,0 +1,6 @@
+# Linus Fönsterputs
+User-agent: *
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://linusfonsterputs.se/sitemap.xml

@@ -1,0 +1,15 @@
+# Systemfiler
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Beroenden och byggartefakter (sajten har inget byggsteg, men om något
+# verktyg läggs till senare ska det inte följa med i historiken)
+node_modules/
+dist/
+*.log
