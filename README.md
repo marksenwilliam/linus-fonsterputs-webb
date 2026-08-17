@@ -48,3 +48,17 @@ formuläret måste ändringen speglas i samtliga. Redigera `index.html` och kopi
 sedan de delade blocken därifrån till övriga sidor – header, mobilmeny, sidfot
 och hela bokningsvyn. Alternativet är att låta `app.js` bygga formuläret från en
 enda mall, vilket tar bort problemet permanent.
+
+## Licenser
+
+Koden i det här repot är upphovsrättsskyddad och har ingen öppen licens.
+Utan licensfil gäller "all rights reserved" – ingen annan får återanvända den,
+även om repot är publikt.
+
+Undantag: typsnittet Inter i `typsnitt/` är licensierat under **SIL Open Font
+License 1.1**. Hela licenstexten ligger i `typsnitt/OFL.txt` och måste följa
+med om filerna kopieras vidare.
+
+Bilderna `glasfasad-stort-glasparti.jpg`, `kontor-lokal-stadning.jpg` och
+`kontorsputs-uppsala.jpg` kommer från Unsplash med fri licens. Övriga foton
+tillhör uppdragsgivaren.
