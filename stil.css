@@ -306,6 +306,23 @@ section{padding:64px 0;}
   text-shadow:0 2px 20px rgba(11,46,89,.45);
 }
 @media(min-width:1024px){.hero h1{max-width:15ch;margin-bottom:24px;}}
+/* Linus egna ord, satt mot ljusblatt strec sa det last som ett citat och
+   inte som brodtext. Fotot bakom ar pa honom. */
+.hero-citat{
+  margin:0 0 2px;max-width:24ch;
+  border-left:3px solid var(--himmel);padding-left:14px;
+  text-shadow:0 2px 14px rgba(11,46,89,.45);
+}
+.hero-citat-text{
+  display:block;color:var(--vit);font-weight:600;font-style:italic;
+  font-size:clamp(1rem,3.9vw,1.3rem);line-height:1.5;
+}
+.hero-citat-namn{
+  display:block;margin-top:7px;color:var(--himmel);
+  font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+}
+@media(min-width:1024px){.hero-citat{max-width:32ch;padding-left:18px;margin-bottom:4px;}}
+
 .hero-under{color:rgba(255,255,255,.93);font-size:1.06rem;line-height:1.7;margin-bottom:26px;max-width:560px;}
 @media(min-width:640px){.hero-under{font-size:1.14rem;}}
 
@@ -321,12 +338,12 @@ section{padding:64px 0;}
   padding:10px 16px;border-radius:var(--pill);
   color:var(--vit);font-size:.88rem;font-weight:600;justify-content:center;
 }
-.hero-badge .stjarnor{display:inline-flex;gap:2px;}
+.stjarnor{display:inline-flex;align-items:center;gap:2px;}
 /* Betygschipet bryts till två rader i chip-raden. Separatorpricken skulle då
    hamna ensam i radslutet, så den utgår helt – raderna läses ändå tydligt. */
 .hero-badge .prick{display:none;}
 
-.stjarnor svg{width:16px;height:16px;fill:var(--stjarna);}
+.stjarnor svg{width:16px;height:16px;flex:none;fill:var(--stjarna);}
 .stjarnor.stor svg{width:22px;height:22px;}
 .stjarnor .tom{fill:rgba(251,191,36,.32);}
 
@@ -335,7 +352,14 @@ section{padding:64px 0;}
 .hero-knappar{display:flex;flex-wrap:wrap;gap:14px;margin:38px 0 26px;}
 .hero-knappar .knapp{min-height:62px;padding:18px 34px;font-size:1.06rem;}
 @media(min-width:1024px){.hero-knappar{margin-top:44px;}.hero-knappar .knapp{min-height:66px;font-size:1.12rem;padding:20px 40px;}}
-@media(max-width:1023px){.hero-knappar{max-width:320px;}.hero-knappar .knapp{width:100%;}}
+@media(max-width:1023px){
+  /* Textspalten tar det lediga utrymmet och knappen skjuts ned till dess
+     botten, sa den hamnar tatt ovanfor trygghetspunkterna i stallet for
+     att svava hogt upp i heron. */
+  .hero-txt{flex:1;display:flex;flex-direction:column;}
+  .hero-knappar{max-width:320px;margin-top:auto;margin-bottom:20px;}
+  .hero-knappar .knapp{width:100%;}
+}
 
 /* Prisbadge i heron – sidans starkaste erbjudande */
 .prisbadge{
@@ -361,8 +385,8 @@ section{padding:64px 0;}
 @media(min-width:640px){.tjanster-grid{grid-template-columns:repeat(2,1fr);}}
 @media(min-width:1024px){.tjanster-grid{grid-template-columns:repeat(3,1fr);}}
 
-.tjanst-kort{display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:pointer;}
-.tjanst-kort.framhavd{border:2px solid var(--bla);}
+.tjanst-kort{display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:pointer;
+  border:2px solid var(--bla);}
 .tjanst-kort .flagga{
   position:absolute;top:0;right:0;z-index:2;
   display:flex;align-items:center;gap:6px;
@@ -435,6 +459,7 @@ section{padding:64px 0;}
   border:2px solid var(--bla);
   box-shadow:0 10px 30px rgba(37,99,235,.16);
   border-radius:var(--radie);padding:26px;max-width:760px;margin-left:auto;margin-right:auto;
+  position:relative;overflow:hidden;
 }
 .jamfor h3{font-size:1.05rem;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
 .jamfor h3 svg{width:22px;height:22px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;}
@@ -442,7 +467,7 @@ section{padding:64px 0;}
   display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:space-between;align-items:baseline;
   padding:12px 0;border-bottom:1px dashed rgba(37,99,235,.35);font-size:.93rem;
 }
-.jamfor-rad:last-of-type{border-bottom:none;}
+.jamfor-rad:nth-last-of-type(2){border-bottom:none;}
 .jamfor-rad .namn{font-weight:700;color:var(--marin);}
 .jamfor-rad .marknad{color:var(--text-2);}
 .jamfor-rad .vi{
@@ -450,6 +475,35 @@ section{padding:64px 0;}
   background:var(--bla);padding:3px 12px;border-radius:var(--pill);font-size:.86rem;
 }
 .jamfor .kalla{font-size:.78rem;color:var(--text-2);margin:14px 0 0;}
+
+/* Liten animation nar rutan rullas in i bild: raderna glider in efter
+   varandra, prischipen studsar fram sist, och ett glasstrak sveper over
+   rutan en gang – samma sorts reflex som ligger i heron. Allt hanger pa
+   .syns, som app.js satter nar rutan syns, sa den spelas en gang. */
+.jamfor.syns .jamfor-rad{animation:jamfor-rad-in .55s cubic-bezier(.4,0,.2,1) both;}
+.jamfor.syns .jamfor-rad:nth-of-type(1){animation-delay:.12s;}
+.jamfor.syns .jamfor-rad:nth-of-type(2){animation-delay:.26s;}
+.jamfor.syns .jamfor-rad .vi{animation:jamfor-chip-in .5s cubic-bezier(.34,1.56,.64,1) both;}
+.jamfor.syns .jamfor-rad:nth-of-type(1) .vi{animation-delay:.44s;}
+.jamfor.syns .jamfor-rad:nth-of-type(2) .vi{animation-delay:.58s;}
+@keyframes jamfor-rad-in{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
+@keyframes jamfor-chip-in{from{opacity:0;transform:scale(.72);}to{opacity:1;transform:none;}}
+
+.jamfor::after{
+  content:"";position:absolute;top:-60%;left:-45%;width:38%;height:220%;
+  pointer-events:none;opacity:0;transform:rotate(18deg);
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.62),rgba(255,255,255,0));
+}
+.jamfor.syns::after{animation:jamfor-glans 1.4s ease .5s 1;}
+@keyframes jamfor-glans{0%{opacity:0;left:-45%;}18%{opacity:1;}100%{opacity:0;left:118%;}}
+
+/* Reseten for reducerad rorelse nollar langden men inte fordrojningen –
+   utan detta star raderna osynliga i en halv sekund. */
+@media(prefers-reduced-motion:reduce){
+  .jamfor.syns .jamfor-rad,
+  .jamfor.syns .jamfor-rad .vi{animation-delay:0s!important;}
+  .jamfor.syns::after{animation:none;}
+}
 
 /* ==========================================================================
    9. Så funkar det
@@ -478,15 +532,19 @@ section{padding:64px 0;}
   font-size:1.06rem;line-height:1.75;color:var(--text);
   border-left:4px solid var(--bla);padding-left:20px;margin:0 0 26px;
 }
-.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;grid-auto-rows:1fr;}
 @media(min-width:640px){.badges{grid-template-columns:repeat(4,1fr);}}
 .badge{
   background:var(--vit);border:1px solid var(--kant);border-radius:var(--radie-s);
-  padding:16px 12px;text-align:center;transition:transform var(--overgang),box-shadow var(--overgang);
+  padding:16px 10px;text-align:center;transition:transform var(--overgang),box-shadow var(--overgang);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
 .badge:hover{transform:translateY(-4px);box-shadow:var(--skugga);}
 .badge svg{width:28px;height:28px;margin:0 auto 8px;stroke:var(--bla);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.badge span{display:block;font-size:.82rem;font-weight:700;color:var(--marin);line-height:1.35;}
+/* Rubriken hallas pa en rad; forklaringen ligger under i mindre, dovare stil. */
+.badge-titel{display:block;font-size:.8rem;font-weight:700;color:var(--marin);line-height:1.3;}
+.badge-under{display:block;margin-top:4px;font-size:.71rem;font-weight:600;color:var(--text-2);line-height:1.3;}
+@media(min-width:400px){.badge-titel{font-size:.85rem;}.badge-under{font-size:.74rem;}}
 .omraden{
   display:flex;gap:12px;align-items:flex-start;
   background:var(--isbla);border-radius:var(--radie-s);padding:16px 18px;
@@ -497,7 +555,9 @@ section{padding:64px 0;}
 /* ==========================================================================
    11. Galleri + före/efter-slider
    ========================================================================== */
-.galleri-grid{display:grid;gap:20px;grid-template-columns:repeat(2,1fr);}
+/* Alla gallerikort lika stora: en spalt under 1024 px, sa varje kort far
+   samma fulla bredd som bildspelet (punkt 1) i stallet for en halv spalt. */
+.galleri-grid{display:grid;gap:20px;grid-template-columns:1fr;}
 @media(min-width:1024px){.galleri-grid{grid-template-columns:repeat(3,1fr);}}
 .gal-kort{
   background:var(--vit);border-radius:var(--radie);overflow:hidden;
@@ -517,7 +577,9 @@ section{padding:64px 0;}
 
 /* Före/efter-kortet: dubbel bredd på desktop */
 .fe-kort{grid-column:1/-1;}
-@media(min-width:1024px){.fe-kort{grid-column:span 2;}}
+/* Bildspelet spanner en spalt som ovriga, sa alla fyra kort blir lika
+   stora aven pa datorskarm. */
+@media(min-width:1024px){.fe-kort{grid-column:span 1;}}
 
 .fe{position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y;overflow:hidden;line-height:0;cursor:ew-resize;}
 .fe .lager{position:relative;width:100%;}
@@ -596,10 +658,9 @@ section{padding:64px 0;}
 
 /* --- Gallerikort med riktigt foto ------------------------------------ */
 .gal-foto{
-  aspect-ratio:400/260;width:100%;height:auto;display:block;
+  aspect-ratio:900/540;width:100%;height:auto;display:block;
   object-fit:cover;object-position:center;
 }
-.gal-foto.bred{aspect-ratio:900/540;}
 /* Liten notis om att bilderna är exempelbilder */
 .galleri-notis{
   text-align:center;margin:22px auto 0;max-width:640px;
@@ -625,16 +686,19 @@ section{padding:64px 0;}
 @media(min-width:640px){.omd-grid{grid-template-columns:repeat(2,1fr);}}
 @media(min-width:1024px){.omd-grid{grid-template-columns:repeat(3,1fr);}}
 .omd-kort{position:relative;display:flex;flex-direction:column;}
-.omd-huvud{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.omd-huvud{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
+/* Namn och tidpunkt pa varsin rad, G-loggan som flodesobjekt langst ut till
+   hoger. Tidigare lag loggan absolutpositionerad och lade sig over texten. */
+.omd-person{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .avatar{
   width:46px;height:46px;border-radius:50%;background:var(--grad);color:var(--vit);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;flex:none;
 }
-.omd-namn{font-weight:700;color:var(--marin);font-size:.96rem;line-height:1.3;}
-.omd-meta{font-size:.8rem;color:var(--text-2);}
-.omd-kort .stjarnor{margin-bottom:10px;}
+.omd-namn{font-weight:700;color:var(--marin);font-size:1rem;line-height:1.25;}
+.omd-meta{font-size:.8rem;color:var(--text-2);line-height:1.3;}
+.omd-kort .stjarnor{margin-bottom:12px;align-self:flex-start;}
 .omd-kort p{font-size:.94rem;color:var(--text);margin:0;line-height:1.65;}
-.omd-g{position:absolute;top:22px;right:22px;opacity:.85;}
+.omd-g{margin-left:auto;flex:none;opacity:.85;}
 
 /* ==========================================================================
    13. FAQ
@@ -1294,7 +1358,24 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 @media(min-width:1024px){.under-hero{min-height:auto;padding:170px 0 80px;}}
 .under-hero .hero-txt{max-width:720px;}
 .under-hero h1{max-width:20ch;margin-bottom:18px;}
-.under-hero .hero-under{color:rgba(255,255,255,.93);font-size:1.06rem;margin-bottom:26px;max-width:560px;}
+.under-hero /* Linus egna ord, satt mot ljusblatt strec sa det last som ett citat och
+   inte som brodtext. Fotot bakom ar pa honom. */
+.hero-citat{
+  margin:0 0 2px;max-width:24ch;
+  border-left:3px solid var(--himmel);padding-left:14px;
+  text-shadow:0 2px 14px rgba(11,46,89,.45);
+}
+.hero-citat-text{
+  display:block;color:var(--vit);font-weight:600;font-style:italic;
+  font-size:clamp(1rem,3.9vw,1.3rem);line-height:1.5;
+}
+.hero-citat-namn{
+  display:block;margin-top:7px;color:var(--himmel);
+  font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+}
+@media(min-width:1024px){.hero-citat{max-width:32ch;padding-left:18px;margin-bottom:4px;}}
+
+.hero-under{color:rgba(255,255,255,.93);font-size:1.06rem;margin-bottom:26px;max-width:560px;}
 /* Brödsmulor ger både orientering och intern länkning */
 .smulor{font-size:.86rem;color:rgba(255,255,255,.75);margin-bottom:16px;}
 .smulor a{color:var(--vit);text-decoration:underline;text-underline-offset:3px;}
