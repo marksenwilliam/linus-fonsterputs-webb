@@ -1,4 +1,6 @@
-# FÖRHANDSVISNING – sidan ska inte indexeras medan den granskas.
-# Återställs med: node forhandsvisning.js av
+# Linus Fönsterputs
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /404.html
+
+Sitemap: https://linusfonsterputs.se/sitemap.xml

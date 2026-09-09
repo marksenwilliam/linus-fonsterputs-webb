@@ -10,8 +10,7 @@
   --dimma:#F8FAFC;      /* Alternativ ljusgrå-blå sektionsbakgrund */
   --vit:#FFFFFF;
   --text:#1E293B;       /* Brödtext */
-  --text-2:#64748B;     /* Sekundär text */
-  --stjarna:#FBBF24;    /* ENDAST recensionsstjärnor */
+  --text-2:#5E6B82;     /* Sekundär text */
   --gron:#16A34A;       /* ENDAST bekräftelser och godkänd validering (ikoner, ramar, ytor) */
   /* Mörkare nyans av systemgrönt, används ENDAST när grönt sätts som text eller
      som botten bakom vit text. #16A34A ger bara 3,3:1 mot vitt och klarar därför
@@ -236,8 +235,8 @@ section{padding:64px 0;}
    ========================================================================== */
 /* MOBIL FÖRST. Fotot ligger som bakgrund över hela heron på alla bredder;
    Linus står till höger och textspalten till vänster. Hero-innehållet är en
-   kolumn där rubriken ligger högst upp och betyget trycks ned med
-   margin-top:auto, så det alltid avslutar sektionen. */
+   kolumn där rubriken ligger högst upp och trygghetspunkterna trycks ned
+   med margin-top:auto, så de alltid avslutar sektionen. */
 .hero{
   position:relative;min-height:88vh;display:flex;align-items:stretch;
   padding:96px 0 28px;background:var(--marin);overflow:hidden;
@@ -246,7 +245,6 @@ section{padding:64px 0;}
 .hero-txt{flex:none;}
 .hero-botten{margin-top:auto;display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
 .hero-botten .usp{margin-bottom:0;}
-.hero .hero-badge{margin-bottom:0;align-self:flex-start;}
 @media(min-width:1024px){.hero{min-height:100vh;padding:130px 0 90px;}}
 .hero-bild{
   position:absolute;inset:0;z-index:0;
@@ -330,22 +328,6 @@ section{padding:64px 0;}
    heron luftigare, så rubriken får lite mer plats och chipsen bär budskapet. */
 .hero-txt > .prisbadge{margin:0 0 22px;max-width:min(100%,420px);}
 @media(min-width:1024px){.hero-txt > .prisbadge{max-width:560px;}}
-
-.hero-badge{
-  display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
-  background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.26);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  padding:10px 16px;border-radius:var(--pill);
-  color:var(--vit);font-size:.88rem;font-weight:600;justify-content:center;
-}
-.stjarnor{display:inline-flex;align-items:center;gap:2px;}
-/* Betygschipet bryts till två rader i chip-raden. Separatorpricken skulle då
-   hamna ensam i radslutet, så den utgår helt – raderna läses ändå tydligt. */
-.hero-badge .prick{display:none;}
-
-.stjarnor svg{width:16px;height:16px;flex:none;fill:var(--stjarna);}
-.stjarnor.stor svg{width:22px;height:22px;}
-.stjarnor .tom{fill:rgba(251,191,36,.32);}
 
 /* Större och tydligare huvudknapp, med extra luft ovanför så den hamnar
    längre ned i heron. */
@@ -532,8 +514,11 @@ section{padding:64px 0;}
   font-size:1.06rem;line-height:1.75;color:var(--text);
   border-left:4px solid var(--bla);padding-left:20px;margin:0 0 26px;
 }
+/* Tre märken. På mobil ligger de två och två, så den sista får hela bredden
+   i stället för att lämna en tom ruta bredvid sig. */
 .badges{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:26px;grid-auto-rows:1fr;}
-@media(min-width:640px){.badges{grid-template-columns:repeat(4,1fr);}}
+.badges .badge:last-child{grid-column:1/-1;}
+@media(min-width:640px){.badges{grid-template-columns:repeat(3,1fr);}.badges .badge:last-child{grid-column:auto;}}
 .badge{
   background:var(--vit);border:1px solid var(--kant);border-radius:var(--radie-s);
   padding:16px 10px;text-align:center;transition:transform var(--overgang),box-shadow var(--overgang);
@@ -669,39 +654,7 @@ section{padding:64px 0;}
 .fe-slider:focus-visible+.fe-handtag{box-shadow:0 0 0 3px var(--himmel),0 0 18px rgba(11,46,89,.35);}
 
 /* ==========================================================================
-   12. Omdömen
-   ========================================================================== */
-.betyg-topp{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 24px;
-  background:var(--vit);border-radius:var(--radie);box-shadow:var(--skugga);
-  padding:24px 28px;max-width:560px;margin:0 auto 40px;text-align:center;
-}
-.betyg-siffra{font-size:3.2rem;font-weight:800;color:var(--marin);line-height:1;letter-spacing:-.04em;}
-.betyg-info{text-align:left;}
-@media(max-width:479px){.betyg-topp{flex-direction:column;}.betyg-info{text-align:center;}}
-.betyg-info p{margin:6px 0 0;font-size:.9rem;color:var(--text-2);display:flex;align-items:center;gap:7px;justify-content:inherit;}
-.g-logga{width:18px;height:18px;flex:none;}
-
-.omd-grid{display:grid;gap:20px;grid-template-columns:1fr;}
-@media(min-width:640px){.omd-grid{grid-template-columns:repeat(2,1fr);}}
-@media(min-width:1024px){.omd-grid{grid-template-columns:repeat(3,1fr);}}
-.omd-kort{position:relative;display:flex;flex-direction:column;}
-.omd-huvud{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;}
-/* Namn och tidpunkt pa varsin rad, G-loggan som flodesobjekt langst ut till
-   hoger. Tidigare lag loggan absolutpositionerad och lade sig over texten. */
-.omd-person{display:flex;flex-direction:column;gap:2px;min-width:0;}
-.avatar{
-  width:46px;height:46px;border-radius:50%;background:var(--grad);color:var(--vit);
-  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;flex:none;
-}
-.omd-namn{font-weight:700;color:var(--marin);font-size:1rem;line-height:1.25;}
-.omd-meta{font-size:.8rem;color:var(--text-2);line-height:1.3;}
-.omd-kort .stjarnor{margin-bottom:12px;align-self:flex-start;}
-.omd-kort p{font-size:.94rem;color:var(--text);margin:0;line-height:1.65;}
-.omd-g{margin-left:auto;flex:none;opacity:.85;}
-
-/* ==========================================================================
-   13. FAQ
+   12. FAQ
    ========================================================================== */
 .faq{max-width:800px;margin:0 auto;}
 .faq-post{
@@ -726,7 +679,7 @@ section{padding:64px 0;}
 .faq-svar-inner{padding:0 20px 20px;color:var(--text-2);font-size:.96rem;line-height:1.7;}
 
 /* ==========================================================================
-   14. Avslutande CTA
+   13. Avslutande CTA
    ========================================================================== */
 /* CTA-sektionen får samma foto som heron, men beskuret mot tvålfönstret och
    under en tät blå gradient – knyter ihop sidan utan extra bildvikt. */
@@ -748,7 +701,7 @@ section{padding:64px 0;}
 .cta .tel-rad a{color:var(--vit);font-weight:800;text-decoration:underline;text-underline-offset:4px;white-space:nowrap;}
 
 /* ==========================================================================
-   15. Footer
+   14. Footer
    ========================================================================== */
 .footer{background:var(--marin);color:rgba(255,255,255,.78);padding:56px 0 0;}
 .footer h4{color:var(--vit);font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
@@ -769,7 +722,7 @@ section{padding:64px 0;}
 @media(max-width:1023px){.footer{padding-bottom:84px;}} /* plats för sticky mobil-CTA */
 
 /* ==========================================================================
-   16. Sticky mobil-CTA
+   15. Sticky mobil-CTA
    ========================================================================== */
 .mob-cta{
   position:fixed;left:0;right:0;bottom:0;z-index:80;
@@ -782,7 +735,7 @@ section{padding:64px 0;}
 @media(min-width:1024px){.mob-cta{display:none;}}
 
 /* ==========================================================================
-   17. Scroll-in-animation
+   16. Scroll-in-animation
    ========================================================================== */
 .in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s cubic-bezier(.4,0,.2,1);}
 .in.syns{opacity:1;transform:none;}
@@ -793,7 +746,7 @@ section{padding:64px 0;}
 }
 
 /* ==========================================================================
-   18. BOKNINGSVYN – helskärmsvy
+   17. BOKNINGSVYN – helskärmsvy
    ========================================================================== */
 #bokning{display:none;background:var(--dimma);min-height:100vh;}
 body.bokar #hemsida{display:none;}
@@ -1163,7 +1116,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .felruta svg{width:18px;height:18px;flex:none;margin-top:3px;stroke:#DC2626;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ==========================================================================
-   19. Kalender (steg 3)
+   18. Kalender (steg 3)
    ========================================================================== */
 .kal-wrap{max-width:820px;margin:0 auto;}
 .tid-info{
@@ -1236,7 +1189,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .avboka-rad{margin-top:16px;font-size:.84rem;color:var(--text-2);text-align:center;}
 
 /* ==========================================================================
-   20. Steg 4 – uppgifter, validering, bekräftelse
+   19. Steg 4 – uppgifter, validering, bekräftelse
    ========================================================================== */
 .steg4-wrap{max-width:820px;margin:0 auto;}
 
@@ -1349,7 +1302,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 @media(max-width:479px){.bekr-knappar .knapp{width:100%;}}
 
 /* ==========================================================================
-   21. Undersidor (hemstad.html, kontorsstad.html)
+   20. Undersidor (hemstad.html, kontorsstad.html)
    ========================================================================== */
 .under-hero{
   min-height:auto;padding:140px 0 64px;
@@ -1382,7 +1335,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .smulor span{opacity:.8;}
 
 /* ==========================================================================
-   22. Blogg / guider
+   21. Blogg / guider
    ========================================================================== */
 .blogg-grid{display:grid;gap:22px;grid-template-columns:1fr;}
 @media(min-width:768px){.blogg-grid{grid-template-columns:repeat(3,1fr);}}
@@ -1420,7 +1373,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .tillbaka-blogg a{font-weight:600;}
 
 /* ==========================================================================
-   23. Desktopjusteringar
+   22. Desktopjusteringar
    Sidan är byggd mobil först. Reglerna nedan gäller ENBART från 1024 px och
    rör därför aldrig mobilvyn. De finns för att samma mobilvärden annars
    sträcks ut på en bred skärm: heron får ett stort tomrum i mitten, rubriken
@@ -1502,7 +1455,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 }
 
 /* ==========================================================================
-   24. JURIDISKA SIDOR – integritetspolicy, köpvillkor, kakor
+   23. JURIDISKA SIDOR – integritetspolicy, köpvillkor, kakor
    Bygger vidare på blogglayouten (.inlagg-kropp) och lägger bara till det
    som behövs för villkorstext: faktaruta, tabell, blankett och platshållare.
    ========================================================================== */
@@ -1562,7 +1515,7 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .footer-juridik a{font-size:.9rem;}
 
 /* ==========================================================================
-   25. ÅNGERRÄTT OCH VILLKOR I BOKNINGENS SISTA STEG
+   24. ÅNGERRÄTT OCH VILLKOR I BOKNINGENS SISTA STEG
    ========================================================================== */
 /* Informationsruta om ångerrätten. Måste synas innan avtalet ingås. */
 .anger-ruta{
@@ -1582,30 +1535,3 @@ input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(
 .gdpr-kort a:hover{color:var(--marin);}
 .gdpr-kort + .gdpr-kort{margin-top:12px;}
 .gdpr-kort span:last-child{font-size:.9rem;line-height:1.55;}
-
-/* ==========================================================================
-   26. FÖRHANDSVISNINGSBANNER
-   Ligger i sidflödet, inte fastklistrad – syns vid inläsning på varje sida
-   och rullar sedan undan, så att den inte stör granskningen av designen.
-   ========================================================================== */
-.forhandsvisning{
-  background:#78350F;color:#FEF3C7;
-  font-size:.8rem;line-height:1.5;padding:9px 0;
-  border-bottom:2px solid #B45309;
-}
-.forhandsvisning .wrap{display:block;}
-.forhandsvisning b{color:#FDE68A;}
-@media(min-width:1024px){.forhandsvisning{font-size:.85rem;text-align:center;}}
-
-/* Märkning direkt på omdömesavsnittet, där intrycket annars uppstår */
-.exempelmarke{
-  display:flex;gap:11px;align-items:flex-start;
-  max-width:720px;margin:0 auto 22px;
-  background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radie-s);
-  padding:13px 16px;font-size:.86rem;line-height:1.55;color:#78350F;text-align:left;
-}
-.exempelmarke svg{
-  width:19px;height:19px;flex:none;margin-top:1px;
-  stroke:#B45309;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
-}
-.exempelmarke b{color:#78350F;}

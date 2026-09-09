@@ -5,33 +5,62 @@ och företagsinformation finns på plats. Det som återstår är uppgifter som b
 du kan fylla i, plus två saker som måste vara gjorda innan sidan får gå live.
 
 Sök på `[BYT UT]` i projektet för att hitta varje ställe. Just nu finns
-**53 träffar** fördelade enligt listan längst ned.
+**36 träffar** fördelade enligt listan längst ned.
+
+---
+
+## 0. Juridisk genomgång 9 september 2026
+
+Kontrollerat mot gällande regler och åtgärdat:
+
+| Vad | Resultat |
+|---|---|
+| Kakor – LEK | **Rättat.** Kakpolicyn hänvisade till 6 kap. 18 § i den gamla lagen (2003:389). Bestämmelsen ligger sedan 3 juni 2022 i **9 kap. 28 § lagen (2022:482) om elektronisk kommunikation**. |
+| Kakor – i praktiken | Sidan sätter inga kakor, använder ingen localStorage och gör inga externa anrop. Ingen samtyckesruta behövs därför. Verifierat i koden. |
+| GDPR artikel 13 | Uppfyllt – ändamål, rättslig grund per ändamål, lagringstider, mottagare, rättigheter och klagomål till IMY. Saknar bara personuppgiftsansvarigs identitet (se punkt 2). |
+| Distansavtalslagen | Uppfyllt – information innan avtal, 14 dagars ångerrätt, Konsumentverkets standardformulär, och den uttryckliga begäran om utförande inom ångerfristen som en **egen, omarkerad, obligatorisk kryssruta**. Verifierat att ingen ruta är förifylld. |
+| Konsumenttjänstlagen | Uppfyllt – reklamation inom skälig tid, två månader alltid i rätt tid, tre års reklamationsrätt. |
+| Prisinformationslagen | Uppfyllt – privatpriser inklusive moms och RUT med summan före avdrag bredvid, företagspriser tydligt märkta exklusive moms. |
+| RUT-taket | **Rättat.** Sidan angav 75 000 kr per person och år utan att nämna att taket delas med ROT (högst 50 000 kr får vara ROT). Klargörande inlagt på tre ställen. |
+| Marknadsföringslagen | Åtgärdat – inga påhittade omdömen eller betyg någonstans. Galleriets notis anger nu vilka bilder som är från utförda jobb och vilka som är exempelbilder (se punkt 5). |
+| ODR-plattformen | Inget att göra. EU:s ODR-plattform stängdes 20 juli 2025 och förordning 524/2013 är upphävd – länken får inte längre finnas. Sidan hänvisar rätt, till ARN. |
+| WCAG 2.1 AA – kontrast | **Rättat.** Sekundär text (`--text-2`) låg på 4,37:1 mot den isblå bakgrunden, under kravet 4,5:1. Tonen är mörkad till `#5E6B82`. Samtliga färgpar beräknade och godkända. |
+| WCAG 2.1 AA – struktur | Uppfyllt – `lang="sv"`, en h1 per sida, hoppa-till-innehåll-länk, alt-text på varje bild, label eller aria-label på varje fält, tillgängligt namn på varje knapp. |
+| Delningsbild | **Fixat.** `og-bild.jpg` (1200×630) skapad ur heroifotot. Alla sidor pekar nu på den, med måtten angivna. |
+| Interna länkar | Inga trasiga länkar, ankare, ikoner eller bildreferenser på någon av de nio sidorna. |
+
+**Kvar innan publicering:** punkt 1 och 2 nedan. Båda kräver uppgifter som bara
+Linus kan lämna – sidan kan inte gå live utan dem.
+
+---
+
+## 0.1 Vad som ändrades senast
+
+- **Omdömesavsnittet är borttaget i sin helhet.** De sex exempelomdömena,
+  betyget 4,9, raden ”Baserat på 87 omdömen på Google”, Google-loggan och
+  stjärnbetyget i heron är borta ur `index.html`. Navigationslänkarna till
+  *Omdömen* är borttagna på alla nio sidor, liksom den CSS och de SVG-symboler
+  som bara användes där.
+- **Förhandsvisningsläget är avstängt.** Bannern högst upp, varningsrutan
+  ovanför omdömena, `noindex`-taggarna, robotspärren i `robots.txt` och
+  `vercel.json` med `X-Robots-Tag` är borta. Sidan är alltså i skarpt läge.
+
+> **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1 och 2
+> nedan är avklarade – organisationsnummer och adress är fortfarande
+> platshållartext.
+
+Vill du tillfälligt tillbaka till granskningsläge: `node forhandsvisning.js pa`.
+Skriptets omdömesmärkning har inget att märka ut längre, men bannern och
+noindex fungerar som förut.
 
 ---
 
 ## 1. Måste vara klart innan lansering
 
-### 1.1 Omdömena på startsidan är påhittade
-
-De fyra omdömena i avsnittet *Omdömen* och betyget som visas där är
-exempeltexter. **Att publicera påhittade omdömen är förbjudet.** Det står
-uttryckligen i punkt 23 b i den så kallade svarta listan (bilaga I till
-direktiv 2005/29/EG, som gäller som svensk lag via marknadsföringslagen), och
-Konsumentverket kan ingripa med förbud och sanktionsavgift.
-
-Den maskinläsbara märkningen (`aggregateRating` med 4,9 och 87 omdömen) är
-redan borttagen ur `index.html`, eftersom den var det allvarligaste – ett
-konkret, kontrollerbart påstående om ett antal omdömen som inte finns.
-
-**Kvar att göra:** ersätt de synliga omdömestexterna med riktiga omdömen från
-riktiga kunder, som har lämnat dem och godkänt att de publiceras med namn. Har
-du inga än – ta bort hela avsnittet tills du har det.
-
-### 1.2 Bokningen skickas inte vidare – GoHighLevel ska kopplas på
+### 1.1 Bokningen skickas inte vidare – GoHighLevel ska kopplas på
 
 I `app.js` finns konstanten `BOKNING_URL`, som just nu är tom. Så länge den är
-tom får kunden en bekräftelse på skärmen medan **ingen bokning når fram**. Det
-är ett medvetet läge så länge sidan visas upp som exempel.
+tom får kunden en bekräftelse på skärmen medan **ingen bokning når fram**.
 
 **Planen är GoHighLevel.** Sätt `BOKNING_URL` till webhook-adressen från ett
 inkommande webhook-steg i ett GHL-workflow. `skickaBokning` postar redan JSON
@@ -52,7 +81,7 @@ GHL är inkopplat. Skriv om stycket så att det namnger HighLevel som mottagare,
 anger att uppgifter överförs till USA och vilken skyddsmekanism som gäller.
 Lägg samtidigt in HighLevel i listan över mottagare i samma punkt.
 
-### 1.3 HTTPS
+### 1.2 HTTPS
 
 Sidan måste nås över `https://`. Personuppgifter (namn, adress, telefon)
 skickas genom bokningsformuläret, och det får inte gå okrypterat. Sätt också
@@ -73,11 +102,16 @@ och enligt **GDPR artikel 13**. De ska stå på sidan, lätt att hitta.
 | Riktig e-postadress | Sidfoten och samtliga policysidor (nu `hej@linusfonsterputs.se`) |
 | Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" |
 
+**Även den strukturerade datan.** `LocalBusiness`-blocket högst upp i
+`index.html` innehåller adressen `Gatan 1, 750 00 Uppsala`, som är påhittad.
+Den syns inte på sidan men läses av sökmotorer. Byt till den riktiga adressen,
+eller ta bort `address`-objektet om ingen besöksadress ska publiceras.
+
 ## 3. Domän och delningsbild
 
 | Uppgift | Var |
 |---|---|
-| Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt` |
+| Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt`, `@id` och `url` i `LocalBusiness`-blocket |
 | Delningsbild 1200×630 px | `og:image` – filen `og-bild.jpg` finns inte än |
 
 ## 4. Leverantörer att lista i integritetspolicyn
@@ -90,14 +124,49 @@ personuppgiftsbiträdesavtal med var och en:
 - Redovisningskonsult eller byrå
 - Webbhotell
 - E-postleverantör
-- Eventuell mottagare av bokningarna (se 1.2)
+- Eventuell mottagare av bokningarna (se 1.1)
 
-## 5. Två bilder är fortfarande exempelbilder
+## 5. Tre bilder är inte foton från utförda jobb
 
-`glasfasad-stort-glasparti.jpg`, `kontor-lokal-stadning.jpg` och
-`kontorsputs-uppsala.jpg` är hämtade från Unsplash med fri licens. De är
-lagliga att använda, men byt gärna till egna jobbfoton. Fönsterputsbilderna är
-redan Linus egna.
+`kontor-lokal-stadning.jpg` och `kontorsputs-uppsala.jpg` är hämtade från
+Unsplash med fri licens. De är lagliga att använda, men byt gärna till egna
+jobbfoton.
+
+`villa-fonster-putsade.jpg` i bildspelet är **AI-genererad** (Higgsfield,
+nano_banana_pro, 2 krediter) och ersätter den tidigare glasfasadbilden.
+Motivet är en villafasad med nyputsade fönster, men det är inget foto från
+ett verkligt jobb.
+
+**Värt att tänka på:** avsnittet heter *Bilder på fönsterputsning* och läses
+som en portfölj. Samma regelverk som gäller påhittade omdömen –
+marknadsföringslagens förbud mot vilseledande framställningar – träffar också
+bilder som ger intryck av utfört arbete som inte är utfört. Så länge tre av
+sju galleribilder inte kommer från egna jobb bör de bytas ut, eller
+avsnittet märkas så att det framgår vilka bilder som är illustrationer.
+
+Fönsterputsbilderna med Linus i bild är redan hans egna.
+
+## 6. Ta bort Agentation innan lansering
+
+`agentation-lokal.js` är ett utvecklingsverktyg som hämtar React och
+Agentation från esm.sh och visar ett verktygsfält där du kan klicka på
+element och lämna kommentarer. Det kör bara på `localhost` – första raden
+avbryter på alla andra domäner, så besökare laddar aldrig något.
+
+Radera ändå filen och script-taggen längst ned i de nio HTML-sidorna innan
+sidan går live, så att ingen utvecklingskod följer med i produktionen.
+
+## 7. Om du vill ha tillbaka omdömen
+
+Riktiga omdömen får publiceras, men bara om de kommer från kunder som lämnat
+dem och godkänt att de visas med namn. Påhittade omdömen är förbjudna enligt
+punkt 23 b i svarta listan (bilaga I till direktiv 2005/29/EG, som gäller som
+svensk lag via marknadsföringslagen), och Konsumentverket kan ingripa med
+förbud och sanktionsavgift.
+
+Vill du visa ett Google-betyg måste siffran och antalet stämma med den
+faktiska Google-profilen den dagen sidan publiceras, och den behöver ses över
+när nya omdömen kommer in.
 
 ---
 
@@ -118,6 +187,7 @@ redan Linus egna.
   moms för företag – enligt prisinformationslagen.
 - **robots.txt**, **sitemap.xml** och en **404-sida**.
 - **WCAG 2.1 AA** på kontrast och tangentbordsnavigering.
+- **Inga påhittade omdömen eller betyg** någonstans på sidan.
 
 ## Om tillgänglighetslagen
 
@@ -145,44 +215,15 @@ behöver alltså ingenting byggas om.
 
 | Fil | Antal |
 |---|---|
-| index.html | 8 |
-| integritetspolicy.html | 9 |
-| kopvillkor.html | 9 |
-| cookies.html | 4 |
-| 404.html | 4 |
-| blogg.html | 4 |
-| blogg-hur-ofta-putsa-fonster.html | 4 |
-| blogg-vad-kostar-fonsterputs-uppsala.html | 4 |
-| blogg-rut-avdrag-fonsterputs-stad.html | 4 |
+| index.html | 7 |
+| integritetspolicy.html | 5 |
+| kopvillkor.html | 4 |
+| cookies.html | 3 |
+| 404.html | 3 |
+| blogg.html | 3 |
+| blogg-hur-ofta-putsa-fonster.html | 3 |
+| blogg-vad-kostar-fonsterputs-uppsala.html | 3 |
+| blogg-rut-avdrag-fonsterputs-stad.html | 3 |
 | sitemap.xml | 1 |
 | app.js | 1 |
-| stil.css | 1 |
-| **Totalt** | **53** |
-
----
-
-## Förhandsvisningsläge
-
-Sidan ligger just nu i **förhandsvisningsläge**, för att kunna visas upp för
-granskning utan att framstå som en verksamhet i drift.
-
-Det innebär:
-
-- `noindex, nofollow` i varje HTML-sida
-- `robots.txt` blockerar alla robotar
-- `vercel.json` sätter `X-Robots-Tag: noindex, nofollow, noarchive, nosnippet`
-  som svarshuvud, vilket gäller även för robotar som struntar i robots.txt
-- En banner högst upp på varje sida
-- En märkning direkt ovanför omdömena, före betyget och Google-raden
-
-Slå av det med:
-
-```
-node forhandsvisning.js av
-```
-
-Slå på igen med `node forhandsvisning.js pa`. Kör granskningen efteråt så att
-läget blev det avsedda.
-
-**Innan läget slås av måste omdömena vara utbytta** (se punkt 1.1). Märkningen
-ovanför dem är det som gör exempeltexterna försvarbara medan sidan ligger uppe.
+| **Totalt** | **36** |

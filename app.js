@@ -220,7 +220,7 @@
   /* --- 7.1 State (endast i minnet) ------------------------------------- */
   var STANDARD = {
     fonster: { antal: 15, sida: 'bada', sprojsAntal: 0, sprojstvatt: false,
-               balkong: false, karmar: false, behandling: false, stortHus: false },
+               balkong: false, karmar: false, bleck: false, behandling: false, stortHus: false },
     kontor:  { yta: 120, frekvens: 'engang' }
   };
 
@@ -254,12 +254,13 @@
      vilket annars tippar avrundningen uppåt en hel halvtimme. */
   function halvtimme(min) { return Math.ceil(Math.round(min) / 30) * 30; }
 
-  /* Spröjstvätt betalas per spröjsfönster: 30 kr inkl. RUT styck.
-     Jämnt belopp ex. RUT så att halveringen alltid går jämnt ut. */
-  var PER_SPROJSTVATT = 60;
+  /* Spröjstvätt är en egen tjänst med fast pris: 300 kr inkl. RUT för att
+     tvätta varje spröjs på husets samtliga spröjsfönster. Jämnt belopp
+     ex. RUT så att halveringen alltid går jämnt ut. */
+  var SPROJSTVATT = 600;
 
   /**
-   * FÖNSTERPUTS – alltid fast pris 990 kr inkl. RUT (1 980 kr ex. RUT).
+   * FÖNSTERPUTS – alltid fast pris 950 kr inkl. RUT (1 900 kr ex. RUT).
    * Formulärets fält påverkar ENDAST den beräknade arbetstiden.
    */
   function beraknaFonster() {
@@ -273,6 +274,7 @@
     if (f.stortHus) min += 40;
     if (f.sprojstvatt) min += f.sprojsAntal * 5;
     if (f.karmar) min += 20;
+    if (f.bleck) min += 15;
     if (f.balkong) min += 30;
     if (f.behandling) min += 25;
 
@@ -280,10 +282,11 @@
        läggs på som ett tillägg. */
     /* Grundpris gäller ett standardhus upp till 200 m². Endast utsida är
        billigare eftersom jobbet går betydligt snabbare. */
-    var BADA = 1980, ENDAST_UT = 1300;
+    var BADA = 1900, ENDAST_UT = 1300;
     /* Alla belopp är ex. RUT och hålls JÄMNA – då blir halva summan exakt och
        radernas inkl-RUT-priser stämmer alltid mot totalen. */
-    var BALKONG = 500, PER_SPROJS = 50, KARMAR = 300, BEHANDLING = 750, STORT_HUS = 500;
+    var BALKONG = 400, PER_SPROJS = 70, KARMAR = 600, BLECK = 400,
+        BEHANDLING = 750, STORT_HUS = 500;
 
     var grund = f.sida === 'ut' ? ENDAST_UT : BADA;
     var rader = [{ namn: 'Fönsterputs, standardhus' + (f.sida === 'ut' ? ' (endast utsida)' : ''), varde: kr(grund), belopp: grund }];
@@ -297,11 +300,11 @@
     }
     /* Utan spröjsfönster finns inget att tvätta – tillägget kan inte köpas. */
     if (f.sprojstvatt && f.sprojsAntal > 0) {
-      var stv = f.sprojsAntal * PER_SPROJSTVATT;
-      total += stv;
-      rader.push({ namn: 'Spröjstvätt (' + f.sprojsAntal + ' st × ' + (PER_SPROJSTVATT / 2) + ' kr)', varde: kr(stv), belopp: stv });
+      total += SPROJSTVATT;
+      rader.push({ namn: 'Spröjstvätt', varde: kr(SPROJSTVATT), belopp: SPROJSTVATT });
     }
-    if (f.karmar) { total += KARMAR; rader.push({ namn: 'Karmar och fönsterbleck', varde: kr(KARMAR), belopp: KARMAR }); }
+    if (f.karmar) { total += KARMAR; rader.push({ namn: 'Fönsterkarmar', varde: kr(KARMAR), belopp: KARMAR }); }
+    if (f.bleck)  { total += BLECK;  rader.push({ namn: 'Fönsterbleck',  varde: kr(BLECK),  belopp: BLECK }); }
     if (f.balkong) { total += BALKONG; rader.push({ namn: 'Inglasad balkong eller uterum', varde: kr(BALKONG), belopp: BALKONG }); }
     if (f.behandling) { total += BEHANDLING; rader.push({ namn: 'Vattenavvisande behandling', varde: kr(BEHANDLING), belopp: BEHANDLING }); }
     var attBetala = Math.ceil(total / 2);
@@ -494,8 +497,8 @@
     ritaOffert();
   }
 
-  /* Spröjstvättens pris följer antalet spröjsfönster kunden valt i
-     formuläret. Är de noll göms tillägget helt ur uppsäljningen. */
+  /* Spröjstvätten har fast pris, men gäller husets spröjsfönster. Är de noll
+     finns inget att tvätta och tillägget göms helt ur uppsäljningen. */
   function ritaSprojstvatt() {
     var ruta = $('#f-sprojstvatt');
     var kort = ruta.closest('.check-kort');
@@ -503,11 +506,9 @@
     if (n === 0 && ruta.checked) { ruta.checked = false; S.fonster.sprojstvatt = false; }
     if (kort) kort.hidden = n === 0;
     if (n === 0) return;
-    var ex = n * PER_SPROJSTVATT;
-    $('#f-sprojstvatt-pris').textContent = '+' + tal(ex / 2) + ' kr';
     $('#f-sprojstvatt-txt').textContent =
-      'Spröjsen tvättas rena i sig, inte bara glaset. ' + n + ' spröjsfönster × ' +
-      (PER_SPROJSTVATT / 2) + ' kr · ' + tal(ex) + ' kr ex. RUT';
+      'Varje spröjs tvättas ren, inte bara glaset. Gäller husets ' + n +
+      ' spröjsfönster · ' + tal(SPROJSTVATT) + ' kr ex. RUT';
   }
 
   /* Stepper-knappar */
@@ -537,6 +538,7 @@
   }
   koppla('#f-balkong', function (v) { S.fonster.balkong = v; });
   koppla('#f-karmar',  function (v) { S.fonster.karmar = v; });
+  koppla('#f-bleck',   function (v) { S.fonster.bleck = v; });
   koppla('#f-behandling', function (v) { S.fonster.behandling = v; });
   koppla('#f-sprojstvatt', function (v) { S.fonster.sprojstvatt = v; });
   koppla('#f-storthus', function (v) { S.fonster.stortHus = v; });
@@ -743,7 +745,8 @@
       if (f.stortHus) v.push('Större hus, över 200 m²');
       if (f.sprojsAntal > 0) v.push(f.sprojsAntal + ' med spröjs');
       if (f.sprojstvatt) v.push('Spröjstvätt');
-      if (f.karmar) v.push('Karmar och fönsterbleck');
+      if (f.karmar) v.push('Fönsterkarmar');
+      if (f.bleck) v.push('Fönsterbleck');
       if (f.balkong) v.push('Inglasad balkong/uterum');
       if (f.behandling) v.push('Vattenavvisande behandling');
     } else if (S.tjanst === 'kontor') {
@@ -1179,7 +1182,7 @@
     $('#f-antal-slider').value = 15;
     $('input[name="f-sida"][value="bada"]').checked = true;
     $('input[name="k-frekvens"][value="engang"]').checked = true;
-    ['#f-balkong', '#f-karmar', '#f-behandling', '#f-sprojstvatt', '#f-storthus'].forEach(function (id) { $(id).checked = false; });
+    ['#f-balkong', '#f-karmar', '#f-bleck', '#f-behandling', '#f-sprojstvatt', '#f-storthus'].forEach(function (id) { $(id).checked = false; });
     $('#f-sprojs-slider').value = 0;
     $('#k-yta').value = 120;
 

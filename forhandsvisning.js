@@ -15,19 +15,9 @@ const BANNER = `<!-- FÖRHANDSVISNING – tas bort med: node forhandsvisning.js 
 <div class="forhandsvisning" role="note">
   <div class="wrap">
     <b>Förhandsvisning.</b> Sidan visas upp för granskning och är inte i drift.
-    Omdömen och företagsuppgifter är exempelinnehåll, och bokningar tas inte emot.
+    Företagsuppgifterna är exempelinnehåll, och bokningar tas inte emot.
   </div>
 </div>
-
-`;
-
-/* Omdömena är påhittade OCH tillskrivna Google. Under förhandsvisningen
-   märks avsnittet ut på plats, där det falska intrycket annars uppstår.
-   Layouten lämnas orörd så att designen fortfarande går att bedöma. */
-const OMD_ANKARE = '    <div class="betyg-topp in">';
-const OMD_MARKE = `    <p class="exempelmarke in"><svg aria-hidden="true"><use href="#i-varning"/></svg>
-      <span><b>Exempelomdömen.</b> Texterna, betyget och antalet är påhittade och
-      kommer inte från Google. De ersätts med riktiga kundomdömen innan sidan tas i drift.</span></p>
 
 `;
 
@@ -46,11 +36,7 @@ SIDOR.forEach(f => {
     if (!h.includes('class="forhandsvisning"')) {
       h = h.replace('<div id="hemsida">\n', () => '<div id="hemsida">\n\n' + BANNER);
     }
-    if (h.includes(OMD_ANKARE) && !h.includes('class="exempelmarke in"')) {
-      h = h.replace(OMD_ANKARE, () => OMD_MARKE + OMD_ANKARE);
-    }
   } else {
-    h = h.split(OMD_MARKE).join('');
     h = h.split(META).join('');
     const i = h.indexOf('<!-- FÖRHANDSVISNING');
     if (i >= 0) {
@@ -112,19 +98,6 @@ if (PA && !css.includes(CSS_START)) {
 .forhandsvisning .wrap{display:block;}
 .forhandsvisning b{color:#FDE68A;}
 @media(min-width:1024px){.forhandsvisning{font-size:.85rem;text-align:center;}}
-
-/* Märkning direkt på omdömesavsnittet, där intrycket annars uppstår */
-.exempelmarke{
-  display:flex;gap:11px;align-items:flex-start;
-  max-width:720px;margin:0 auto 22px;
-  background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radie-s);
-  padding:13px 16px;font-size:.86rem;line-height:1.55;color:#78350F;text-align:left;
-}
-.exempelmarke svg{
-  width:19px;height:19px;flex:none;margin-top:1px;
-  stroke:#B45309;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
-}
-.exempelmarke b{color:#78350F;}
 `;
   fs.writeFileSync(ROT + '/stil.css', css);
   console.log('  CSS för bannern tillagd');
