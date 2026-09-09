@@ -285,7 +285,7 @@
     var BADA = 1900, ENDAST_UT = 1300;
     /* Alla belopp är ex. RUT och hålls JÄMNA – då blir halva summan exakt och
        radernas inkl-RUT-priser stämmer alltid mot totalen. */
-    var BALKONG = 400, PER_SPROJS = 70, KARMAR = 600, BLECK = 400,
+    var BALKONG = 400, PER_SPROJS = 140, KARMAR = 600, BLECK = 400,
         BEHANDLING = 750, STORT_HUS = 500;
 
     var grund = f.sida === 'ut' ? ENDAST_UT : BADA;
