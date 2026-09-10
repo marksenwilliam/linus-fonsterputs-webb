@@ -204,11 +204,13 @@
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Skatteverket</strong> – vid ansökan om RUT-avdrag.</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Faktura- och bokföringssystem samt redovisningskonsult</strong> – som personuppgiftsbiträden, med personuppgiftsbiträdesavtal.</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Webbhotell och e-postleverantör</strong> – som personuppgiftsbiträden, i den mån uppgifter passerar deras system.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>HighLevel Inc (CRM-systemet GoHighLevel)</strong> – som personuppgiftsbiträde. Offertförfrågningar och bokningsuppgifter registreras där för att jag ska kunna hantera dem.</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Inkassoombud eller Kronofogden</strong> – bara om en faktura inte betalas.</span></li>
 </ul>
-<!-- [BYT UT] Lista de faktiska leverantörerna här när de är valda, och se till
-     att personuppgiftsbiträdesavtal finns med var och en av dem. -->
-<p><strong>Överföring utanför EU/EES:</strong> uppgifterna behandlas inom EU/EES. Om en leverantör i framtiden innebär överföring till tredje land sker den bara med en giltig skyddsmekanism, till exempel EU-kommissionens standardavtalsklausuler, och den här policyn uppdateras då.</p>
+<!-- [BYT UT] Lista de faktiska leverantörerna här när de är valda (webbhotell,
+     e-postleverantör, bokföring), och se till att personuppgiftsbiträdesavtal
+     finns med var och en av dem. -->
+<p><strong>Överföring utanför EU/EES:</strong> uppgifterna behandlas i huvudsak inom EU/EES. CRM-systemet GoHighLevel drivs av HighLevel Inc, som är baserat i USA – uppgifter som lämnas i offertförfrågningar och bokningar överförs därför dit. Överföringen sker med stöd av EU–U.S. Data Privacy Framework, som HighLevel Inc är anslutet till (kan kontrolleras i det officiella registret på dataprivacyframework.gov). Om ytterligare leverantörer i framtiden innebär överföring till tredje land sker den bara med en giltig skyddsmekanism, till exempel EU-kommissionens standardavtalsklausuler, och den här policyn uppdateras då.</p>
 
 <h2>6. Dina rättigheter</h2>
 <p>Du har enligt GDPR rätt att:</p>
@@ -563,7 +565,11 @@ Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="h
         </div>
         <div class="steg-fraga">
           <h2 id="bekr-rubrik">Tack! Din förfrågan är skickad.</h2>
-          <p>Linus hör av sig inom 24 timmar med en tid och ett bekräftat pris.</p>
+          <p>Linus ringer dig inom 24 timmar för att boka en tid och bekräfta priset.</p>
+        </div>
+        <div class="prisruta" id="tack-sammanfattning">
+          <p class="pris-under" style="margin-top:0">Din förfrågan</p>
+          <div class="pris-rader" id="tack-sam-rader"></div>
         </div>
         <p class="boknr"><span class="etik">Referensnummer</span><span class="nr" id="boknr">–</span></p>
         <p class="steg-not">Något du vill ändra? Ring <a href="tel:+46762171833">076-217 18 33</a>.</p>
@@ -579,10 +585,6 @@ Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="h
 </div><!-- /#bokning --></div><!-- /#bokning -->
 
 <script src="app.js" defer></script>
-
-<!-- Agentation - visuell aterkoppling. Kor bara pa localhost.
-     Tas bort innan lansering. -->
-<script type="module" src="agentation-lokal.js"></script>
 
 </body>
 </html>

@@ -408,6 +408,21 @@
     rader.innerHTML = h;
   }
 
+  /* Sammanfattningen i tack-steget, samma beräkning som prisrutan men utan
+     specifikationsknappen – kunden ska se allt direkt. */
+  function ritaTackSammanfattning() {
+    var b = berakna();
+    var rader = $('#tack-sam-rader');
+    if (!rader || !b) return;
+
+    var h = '';
+    b.rader.forEach(function (r) {
+      h += '<div class="pris-rad"><span>' + r.namn + '</span><span>' + r.varde + '</span></div>';
+    });
+    h += '<div class="pris-rad summa"><span>Uppskattat pris' + (b.harRut ? ', efter RUT' : '') + '</span><span>' + kr(b.attBetala) + '</span></div>';
+    rader.innerHTML = h;
+  }
+
   var prisToggle = $('#pris-toggle');
   if (prisToggle) {
     prisToggle.addEventListener('click', function () {
@@ -842,6 +857,7 @@
 
       $('#bekr-rubrik').textContent = 'Tack ' + $('#k-fornamn').value.trim() + '! Din förfrågan är skickad.';
       $('#boknr').textContent = svar.forfragan || '–';
+      ritaTackSammanfattning();
       visaSteg('tack');
     });
   });
