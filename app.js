@@ -857,7 +857,9 @@
 
       $('#bekr-rubrik').textContent = 'Tack ' + $('#k-fornamn').value.trim() + '! Din förfrågan är skickad.';
       $('#boknr').textContent = svar.forfragan || '–';
-      ritaTackSammanfattning();
+      /* Sammanfattningen får aldrig kunna blockera själva bekräftelsen -
+         går den sönder ska kunden ändå se att förfrågan gick igenom. */
+      try { ritaTackSammanfattning(); } catch (fel) { console.error('Tack-sammanfattning: ' + (fel && fel.message)); }
       visaSteg('tack');
     });
   });
