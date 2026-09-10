@@ -408,21 +408,6 @@
     rader.innerHTML = h;
   }
 
-  /* Sammanfattningen i tack-steget, samma beräkning som prisrutan men utan
-     specifikationsknappen – kunden ska se allt direkt. */
-  function ritaTackSammanfattning() {
-    var b = berakna();
-    var rader = $('#tack-sam-rader');
-    if (!rader || !b) return;
-
-    var h = '';
-    b.rader.forEach(function (r) {
-      h += '<div class="pris-rad"><span>' + r.namn + '</span><span>' + r.varde + '</span></div>';
-    });
-    h += '<div class="pris-rad summa"><span>Uppskattat pris' + (b.harRut ? ', efter RUT' : '') + '</span><span>' + kr(b.attBetala) + '</span></div>';
-    rader.innerHTML = h;
-  }
-
   var prisToggle = $('#pris-toggle');
   if (prisToggle) {
     prisToggle.addEventListener('click', function () {
@@ -681,8 +666,6 @@
 
   $('#stang-bokning').addEventListener('click', stangBokning);
   $$('[data-avbryt]').forEach(function (b) { b.addEventListener('click', stangBokning); });
-  $('#till-start').addEventListener('click', function () { nollstall(); stangBokning(); });
-  $('#boka-till').addEventListener('click', function () { nollstall(); gaTill(0); });
 
 
   /* --- 7.6 Validering av kunduppgifter ---------------------------------- */
@@ -855,37 +838,21 @@
         return;
       }
 
-      $('#bekr-rubrik').textContent = 'Tack ' + $('#k-fornamn').value.trim() + '! Din förfrågan är skickad.';
-      $('#boknr').textContent = svar.forfragan || '–';
-      /* Sammanfattningen får aldrig kunna blockera själva bekräftelsen -
-         går den sönder ska kunden ändå se att förfrågan gick igenom. */
-      try { ritaTackSammanfattning(); } catch (fel) { console.error('Tack-sammanfattning: ' + (fel && fel.message)); }
-      visaSteg('tack');
+      /* Förfrågan är skickad - kunden ska landa på en egen tacksida, inte
+         ett steg kvar i bokningsrutan. Detaljerna följer med som query-
+         parametrar eftersom sidan laddas om helt och minnet (S) tappas. */
+      var b = berakna();
+      var params = new URLSearchParams();
+      params.set('namn', $('#k-fornamn').value.trim());
+      params.set('tjanst', S.tjanst === 'kontor' ? 'Kontorsputs' : 'Fönsterputs');
+      if (svar.forfragan) params.set('ref', svar.forfragan);
+      if (b) {
+        params.set('pris', String(b.attBetala));
+        params.set('rader', b.rader.map(function (r) { return r.namn + '|' + r.varde; }).join(';'));
+      }
+      window.location.href = '/tack?' + params.toString();
     });
   });
-
-
-  /* --- 7.8 Nollställning ------------------------------------------------- */
-
-  function nollstall() {
-    S.tjanst = null;
-    S.fonster = Object.assign({}, STANDARD.fonster);
-    S.kontor  = Object.assign({}, STANDARD.kontor);
-
-    $('#f-antal-slider').value = 15;
-    $('#f-sprojs-slider').value = 0;
-    $('#k-yta').value = 120;
-    $('input[name="k-frekvens"][value="engang"]').checked = true;
-    ['#f-balkong', '#f-karmar', '#f-bleck', '#f-behandling', '#f-sprojstvatt'].forEach(function (id) { $(id).checked = false; });
-
-    $('#kundform').reset();
-    $$('.ffalt').forEach(function (f) { f.classList.remove('ok', 'fel'); });
-    $('#gdpr-kort').classList.remove('fel');
-    $$('.faltfel').forEach(function (p) { p.textContent = ''; });
-
-    ritaFormular();
-    doljAllaFel();
-  }
 
 
   /* --- 7.9 Uppstart ------------------------------------------------------ */

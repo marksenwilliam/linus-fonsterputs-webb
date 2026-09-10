@@ -1046,6 +1046,16 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 .boknr .etik{font-size:.78rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-2);}
 .boknr .nr{font-size:1.5rem;font-weight:800;color:var(--marin);letter-spacing:.02em;}
 
+/* ---- Tacksidan (fristående sida efter skickad förfrågan, tack.html) --- */
+.tack-sida{max-width:560px;padding:64px 20px 80px;text-align:center;}
+.tack-bock{margin:0 auto 24px;}
+.tack-sida h1{font-size:clamp(1.7rem,6vw,2.3rem);line-height:1.2;letter-spacing:-.02em;color:var(--marin);margin:0 0 12px;}
+.tack-text{margin:0 0 28px;color:var(--text-2);font-size:1.05rem;line-height:1.6;}
+.tack-sida .prisruta{margin-bottom:24px;}
+.tack-sida .boknr{margin:0 auto 24px;max-width:280px;}
+.tack-hem{margin-top:8px;}
+.tack-hem .knapp{display:inline-flex;min-width:220px;}
+
 /* Honungsfälla: osynlig för människor men kvar i DOM:en, så att robotar
    som fyller i allt avslöjar sig. display:none hoppas ofta över. */
 .honung{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
