@@ -93,11 +93,16 @@ function telefonE164(rr) {
 
 /* ---- Validering, samma regler som formuläret men på serversidan -------- */
 
+/* Samma mönster som HTML5:s inbyggda e-postvalidering, och samma som
+   används i app.js. Snällare regler släpper igenom adresser som
+   GoHighLevel sedan nekar med 422 "email must be an email". */
+var EPOST_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
 function validera(k) {
   var fel = [];
   if (!k.fornamn) fel.push('fornamn');
   if (!k.efternamn) fel.push('efternamn');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(k.epost)) fel.push('epost');
+  if (!EPOST_REGEX.test(k.epost)) fel.push('epost');
   if (k.telefon.replace(/\D/g, '').length < 8) fel.push('telefon');
   if (k.adress.length < 4) fel.push('adress');
   if (k.tjanst !== 'fonster' && k.tjanst !== 'kontor') fel.push('tjanst');

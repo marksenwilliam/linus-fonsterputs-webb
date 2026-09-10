@@ -670,6 +670,12 @@
 
   /* --- 7.6 Validering av kunduppgifter ---------------------------------- */
 
+  /* Samma mönster som HTML5:s inbyggda e-postvalidering. Snällare regler
+     (typ [^\s@]+@[^\s@]+) släpper igenom adresser som GoHighLevel sedan
+     nekar med 422 "email must be an email" - då hinner kunden aldrig se
+     felet, bara ett generiskt "kunde inte skickas" efteråt. */
+  var EPOST_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+
   var REGLER = {
     fornamn: function (v) {
       if (!v.trim()) return 'Ange ditt förnamn';
@@ -691,7 +697,7 @@
     },
     epost: function (v) {
       if (!v.trim()) return 'Ange din e-postadress';
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())) return 'Ange en giltig e-postadress';
+      if (!EPOST_REGEX.test(v.trim())) return 'Ange en giltig e-postadress';
       return '';
     },
     adress: function (v) {
