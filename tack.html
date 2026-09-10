@@ -18,6 +18,8 @@
 </head>
 <body>
 
+<a class="hoppa" href="#innehall">Hoppa till innehåll</a>
+
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-bock" viewBox="0 0 24 24"><polyline points="4 12.5 9.5 18 20 6.5"/></symbol>
@@ -30,15 +32,15 @@
 
 <div id="hemsida">
 
-<header class="topp" id="topp">
+<header class="topp fast" id="topp">
   <div class="wrap topp-inner">
     <a href="index.html" class="logga" aria-label="Linus Fönsterputs – till startsidan">
       <span class="logga-bild ljus" aria-hidden="true"></span>
       <span class="logga-bild mork" aria-hidden="true"></span>
     </a>
     <nav class="nav" aria-label="Huvudmeny">
-      <a href="index.html#tjanster">Fönsterputs</a>
-      <a href="index.html#tjanster">Kontorsputs</a>
+      <a href="index.html#fonsterputs">Fönsterputs</a>
+      <a href="index.html#kontorsputs">Kontorsputs</a>
       <a href="index.html#galleri">Galleri</a>
       <a href="index.html#om-linus">Om Linus</a>
       <a href="blogg.html">Blogg</a>
@@ -53,8 +55,8 @@
 
 <div class="mobmeny" id="mobmeny" aria-label="Mobilmeny">
   <nav>
-    <a class="mlank" href="index.html#tjanster">Fönsterputs i Uppsala</a>
-    <a class="mlank" href="index.html#tjanster">Kontorsputs i Uppsala</a>
+    <a class="mlank" href="index.html#fonsterputs">Fönsterputs i Uppsala</a>
+    <a class="mlank" href="index.html#kontorsputs">Kontorsputs i Uppsala</a>
     <a class="mlank" href="index.html#sa-funkar-det">Så funkar det</a>
     <a class="mlank" href="index.html#galleri">Galleri</a>
     <a class="mlank" href="index.html#om-linus">Om Linus</a>
@@ -216,6 +218,12 @@
   var burgare = document.getElementById('burgare');
   var mobmeny = document.getElementById('mobmeny');
   var topp = document.getElementById('topp');
+  var menyBakgrund = [];
+
+  function menyFokus() {
+    return [burgare].concat(Array.prototype.slice.call(mobmeny.querySelectorAll('a[href], button:not([disabled])')))
+      .filter(function (el) { return el.getClientRects().length > 0; });
+  }
 
   function stangMeny() {
     mobmeny.classList.remove('oppen');
@@ -223,13 +231,25 @@
     burgare.setAttribute('aria-label', 'Öppna meny');
     topp.classList.remove('meny-oppen');
     document.body.classList.remove('laast');
+    menyBakgrund.forEach(function (post) {
+      if (!post.varInert) post.el.removeAttribute('inert');
+    });
+    menyBakgrund = [];
   }
   function vaxlaMeny() {
-    var oppen = mobmeny.classList.toggle('oppen');
-    burgare.setAttribute('aria-expanded', oppen ? 'true' : 'false');
-    burgare.setAttribute('aria-label', oppen ? 'Stäng meny' : 'Öppna meny');
-    topp.classList.toggle('meny-oppen', oppen);
-    document.body.classList.toggle('laast', oppen);
+    if (mobmeny.classList.contains('oppen')) { stangMeny(); return; }
+    mobmeny.classList.add('oppen');
+    burgare.setAttribute('aria-expanded', 'true');
+    burgare.setAttribute('aria-label', 'Stäng meny');
+    topp.classList.add('meny-oppen');
+    document.body.classList.add('laast');
+    menyBakgrund = Array.prototype.slice.call(document.querySelectorAll('main, .footer, .mob-cta')).map(function (el) {
+      var post = { el: el, varInert: el.hasAttribute('inert') };
+      el.setAttribute('inert', '');
+      return post;
+    });
+    var fokus = menyFokus();
+    (fokus[1] || burgare).focus();
   }
   if (burgare && mobmeny && topp) {
     burgare.addEventListener('click', vaxlaMeny);
@@ -237,7 +257,25 @@
       a.addEventListener('click', stangMeny);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && mobmeny.classList.contains('oppen')) { stangMeny(); burgare.focus(); }
+      if (!mobmeny.classList.contains('oppen')) return;
+      if (e.key === 'Escape') { e.preventDefault(); stangMeny(); burgare.focus(); }
+      if (e.key === 'Tab') {
+        var fokus = menyFokus();
+        var index = fokus.indexOf(document.activeElement);
+        if (index === -1 || (e.shiftKey && index === 0) || (!e.shiftKey && index === fokus.length - 1)) {
+          e.preventDefault();
+          fokus[e.shiftKey ? fokus.length - 1 : 0].focus();
+        }
+      }
+    });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth < 1024 || !mobmeny.classList.contains('oppen')) return;
+      var flyttaFokus = mobmeny.contains(document.activeElement) || document.activeElement === burgare;
+      stangMeny();
+      if (flyttaFokus) {
+        var lank = topp.querySelector('.nav a');
+        if (lank) lank.focus();
+      }
     });
   }
 })();

@@ -53,6 +53,12 @@
      ------------------------------------------------------------------------ */
   var burgare = $('#burgare');
   var mobmeny = $('#mobmeny');
+  var menyBakgrund = [];
+
+  function menyFokus() {
+    return [burgare].concat($$('a[href], button:not([disabled])', mobmeny))
+      .filter(function (el) { return el.getClientRects().length > 0; });
+  }
 
   function stangMeny() {
     mobmeny.classList.remove('oppen');
@@ -60,13 +66,25 @@
     burgare.setAttribute('aria-label', 'Öppna meny');
     topp.classList.remove('meny-oppen');
     document.body.classList.remove('laast');
+    menyBakgrund.forEach(function (post) {
+      if (!post.varInert) post.el.removeAttribute('inert');
+    });
+    menyBakgrund = [];
   }
   function vaxlaMeny() {
-    var oppen = mobmeny.classList.toggle('oppen');
-    burgare.setAttribute('aria-expanded', oppen ? 'true' : 'false');
-    burgare.setAttribute('aria-label', oppen ? 'Stäng meny' : 'Öppna meny');
-    topp.classList.toggle('meny-oppen', oppen);
-    document.body.classList.toggle('laast', oppen);
+    if (mobmeny.classList.contains('oppen')) { stangMeny(); return; }
+    mobmeny.classList.add('oppen');
+    burgare.setAttribute('aria-expanded', 'true');
+    burgare.setAttribute('aria-label', 'Stäng meny');
+    topp.classList.add('meny-oppen');
+    document.body.classList.add('laast');
+    menyBakgrund = $$('main, .footer, .mob-cta').map(function (el) {
+      var post = { el: el, varInert: el.hasAttribute('inert') };
+      el.setAttribute('inert', '');
+      return post;
+    });
+    var fokus = menyFokus();
+    (fokus[1] || burgare).focus();
   }
   burgare.addEventListener('click', vaxlaMeny);
 
@@ -74,9 +92,29 @@
      navlänkarna, utan även genvägen till tjänsterna och telefonnumret. */
   $$('#mobmeny a').forEach(function (a) { a.addEventListener('click', stangMeny); });
 
-  /* Escape stänger menyn */
+  /* Håll fokus i den öppna menyn och återgå till menyknappen med Escape. */
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && mobmeny.classList.contains('oppen')) { stangMeny(); burgare.focus(); }
+    if (!mobmeny.classList.contains('oppen')) return;
+    if (e.key === 'Escape') { e.preventDefault(); stangMeny(); burgare.focus(); }
+    if (e.key === 'Tab') {
+      var fokus = menyFokus();
+      var index = fokus.indexOf(document.activeElement);
+      if (index === -1 || (e.shiftKey && index === 0) || (!e.shiftKey && index === fokus.length - 1)) {
+        e.preventDefault();
+        fokus[e.shiftKey ? fokus.length - 1 : 0].focus();
+      }
+    }
+  });
+
+  /* Desktop döljer mobilmenyn i CSS; ta även bort dess scroll- och fokuslås. */
+  window.addEventListener('resize', function () {
+    if (window.innerWidth < 1024 || !mobmeny.classList.contains('oppen')) return;
+    var flyttaFokus = mobmeny.contains(document.activeElement) || document.activeElement === burgare;
+    stangMeny();
+    if (flyttaFokus) {
+      var lank = $('.nav a', topp);
+      if (lank) lank.focus();
+    }
   });
 
 
@@ -84,6 +122,7 @@
      3. Scroll-in-animationer (IntersectionObserver)
      ------------------------------------------------------------------------ */
   if ('IntersectionObserver' in window && mjuk) {
+    document.documentElement.classList.add('rorelse');
     var obs = new IntersectionObserver(function (poster) {
       poster.forEach(function (p) {
         if (p.isIntersecting) { p.target.classList.add('syns'); obs.unobserve(p.target); }
@@ -132,6 +171,7 @@
      ------------------------------------------------------------------------ */
   var faqKnappar = $$('.faq-fraga');
   faqKnappar.forEach(function (knapp) {
+    document.getElementById(knapp.getAttribute('aria-controls')).hidden = true;
     knapp.addEventListener('click', function () {
       var post = knapp.closest('.faq-post');
       var svar = document.getElementById(knapp.getAttribute('aria-controls'));
@@ -141,14 +181,14 @@
       faqKnappar.forEach(function (k) {
         k.setAttribute('aria-expanded', 'false');
         k.closest('.faq-post').classList.remove('oppen');
-        document.getElementById(k.getAttribute('aria-controls')).style.maxHeight = null;
+        document.getElementById(k.getAttribute('aria-controls')).hidden = true;
       });
 
       /* Öppna den klickade om den var stängd */
       if (!oppen) {
         knapp.setAttribute('aria-expanded', 'true');
         post.classList.add('oppen');
-        svar.style.maxHeight = svar.scrollHeight + 'px';
+        svar.hidden = false;
       }
     });
   });
@@ -188,8 +228,7 @@
       var p = document.createElement('button');
       p.type = 'button';
       p.className = 'fe-punkt';
-      p.setAttribute('role', 'tab');
-      p.setAttribute('aria-label', 'Jämförelse ' + (k + 1) + ': ' + s.getAttribute('data-scen'));
+      p.setAttribute('aria-label', 'Bild ' + (k + 1) + ': ' + s.getAttribute('data-scen'));
       p.addEventListener('click', function () { visa(k); });
       punkter.appendChild(p);
     });
@@ -198,7 +237,7 @@
       i = (k + slides.length) % slides.length;
       slides.forEach(function (s, m) { s.classList.toggle('aktiv', m === i); });
       $$('.fe-punkt', punkter).forEach(function (p, m) {
-        p.setAttribute('aria-selected', m === i ? 'true' : 'false');
+        p.setAttribute('aria-pressed', m === i ? 'true' : 'false');
       });
       scen.textContent = slides[i].getAttribute('data-scen');
     }
