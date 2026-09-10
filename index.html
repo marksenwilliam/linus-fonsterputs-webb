@@ -250,8 +250,8 @@
     </a>
 
     <nav class="nav" aria-label="Huvudmeny">
-      <a href="#tjanster">Fönsterputs</a>
-      <a href="index.html#tjanster">Kontorsputs</a>
+      <a href="#fonsterputs">Fönsterputs</a>
+      <a href="index.html#kontorsputs">Kontorsputs</a>
       <a href="#galleri">Galleri</a>
       <a href="#om-linus">Om Linus</a>
       <a href="blogg.html">Blogg</a>
@@ -270,8 +270,8 @@
 <!-- Mobilmeny -->
 <div class="mobmeny" id="mobmeny" aria-label="Mobilmeny">
   <nav>
-    <a class="mlank" href="#tjanster">Fönsterputs i Uppsala</a>
-    <a class="mlank" href="#tjanster">Kontorsputs i Uppsala</a>
+    <a class="mlank" href="#fonsterputs">Fönsterputs i Uppsala</a>
+    <a class="mlank" href="#kontorsputs">Kontorsputs i Uppsala</a>
     <a class="mlank" href="#sa-funkar-det">Så funkar det</a>
     <a class="mlank" href="#galleri">Galleri</a>
     <a class="mlank" href="#om-linus">Om Linus</a>
@@ -346,7 +346,7 @@
     <div class="tjanster-grid">
 
       <!-- Kort 1: Fönsterputs -->
-      <article class="kort kort-hover tjanst-kort in">
+      <article class="kort kort-hover tjanst-kort in" id="fonsterputs">
         <span class="flagga"><svg aria-hidden="true"><use href="#i-eld"/></svg> Populärast</span>
         <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-fonster"/></svg></div>
         <h3>Fönsterputs</h3>
@@ -370,7 +370,7 @@
       </article>
 
       <!-- Kort 2: Kontorsputs -->
-      <article class="kort kort-hover tjanst-kort in">
+      <article class="kort kort-hover tjanst-kort in" id="kontorsputs">
         <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-kontor"/></svg></div>
         <h3>Kontorsputs</h3>
         <p class="ingress">Allt glas invändigt – fönster, glasväggar, speglar och glasdörrar. Ett fräscht intryck och bättre arbetsmiljö.</p>
@@ -431,8 +431,8 @@
 
     <div class="sekt-topp in">
       <span class="etikett">Så funkar det</span>
-      <h2>Så bokar du fönsterputsning i tre steg</h2>
-      <p>Inga offertmöten, inga hembesök i förväg. Du bokar allt själv på under två minuter – dygnet runt.</p>
+      <h2>Från förfrågan till rena fönster</h2>
+      <p>Se ditt pris och skicka en kostnadsfri förfrågan på cirka två minuter. Jag hör av mig inom 24 timmar för att bekräfta pris och tid.</p>
     </div>
 
     <div class="steg-grid">
@@ -441,21 +441,21 @@
         <div class="steg-nr" aria-hidden="true">1</div>
         <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-kalkyl"/></svg></div>
         <h3>Räkna ut ditt pris</h3>
-        <p>Svara på några snabba frågor om ditt hem eller kontor och se priset direkt på skärmen. Inga dolda avgifter.</p>
+        <p>Svara på några snabba frågor om ditt hem eller kontor och se ditt uppskattade pris direkt på skärmen.</p>
       </article>
 
       <article class="kort kort-hover steg-kort in">
         <div class="steg-nr" aria-hidden="true">2</div>
-        <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-kalender"/></svg></div>
-        <h3>Välj en tid som passar</h3>
-        <p>Kalendern visar lediga tider. Bokningens längd anpassas automatiskt efter jobbets storlek.</p>
+        <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-telefon"/></svg></div>
+        <h3>Vi kommer överens om en tid</h3>
+        <p>Skicka din förfrågan. Jag ringer inom 24 timmar så att vi kan bekräfta priset och hitta en tid som passar dig.</p>
       </article>
 
       <article class="kort kort-hover steg-kort in">
         <div class="steg-nr" aria-hidden="true">3</div>
         <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-person"/></svg></div>
         <h3>Linus kommer och levererar</h3>
-        <p>Alltid samma person, alltid samma kvalitet.</p>
+        <p>När vi har bekräftat bokningen kommer jag på avtalad tid. Alltid samma person, alltid samma kvalitet.</p>
       </article>
 
     </div>
@@ -537,8 +537,8 @@
 
           <button type="button" class="fe-pil bak" aria-label="Föregående bild"><svg aria-hidden="true"><use href="#i-pil-v"/></svg></button>
           <button type="button" class="fe-pil fram" aria-label="Nästa bild"><svg aria-hidden="true"><use href="#i-pil-v"/></svg></button>
-          <span class="fe-scen" id="fe-scen">Fönsterputs på villa</span>
-          <div class="fe-punkter" id="fe-punkter" role="tablist" aria-label="Välj bild"></div>
+          <span class="fe-scen" id="fe-scen" aria-live="polite" aria-atomic="true">Fönsterputs på villa</span>
+          <div class="fe-punkter" id="fe-punkter" role="group" aria-label="Välj bild"></div>
         </div>
 
         <div class="txt">
@@ -709,7 +709,7 @@
   <div class="glasreflex" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="wrap cta-inner">
     <h2>Redo för skinande rena fönster?</h2>
-    <p>Räkna ut ditt pris och boka en tid direkt – det tar två minuter.</p>
+    <p>Se ditt pris och skicka en kostnadsfri förfrågan. Jag hör av mig inom 24 timmar för att bekräfta pris och tid.</p>
     <button class="knapp knapp-vit" data-boka>Boka nu</button>
     <p class="tel-rad">För mer avancerade projekt – ring på mig: <a href="tel:+46762171833">076-217 18 33</a></p>
   </div>

@@ -235,6 +235,8 @@ section{padding:64px 0;}
 .mobmeny .knapp + .knapp{margin-top:12px;}
 .mobmeny .mob-tel{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:18px;font-weight:600;color:var(--text-2);}
 .mobmeny .mob-tel svg{width:18px;height:18px;stroke:var(--bla);fill:none;stroke-width:2;}
+.mobmeny .mob-tel{min-height:44px;}
+#hemsida :focus-visible{outline-color:var(--marin);box-shadow:0 0 0 3px var(--vit);}
 
 /* ==========================================================================
    7. Hero
@@ -244,7 +246,7 @@ section{padding:64px 0;}
    kolumn där rubriken ligger högst upp och trygghetspunkterna trycks ned
    med margin-top:auto, så de alltid avslutar sektionen. */
 .hero{
-  position:relative;min-height:88vh;display:flex;align-items:stretch;
+  position:relative;min-height:88vh;min-height:88svh;display:flex;align-items:stretch;
   padding:96px 0 28px;background:var(--marin);overflow:hidden;
 }
 .hero-inner{display:flex;flex-direction:column;}
@@ -376,6 +378,13 @@ section{padding:64px 0;}
   .hero-knappar{max-width:320px;margin-top:auto;margin-bottom:20px;}
   .hero-knappar .knapp{width:100%;}
 }
+/* På surfplatta hålls rubriken borta från ansiktet och heron blir inte
+   onödigt hög i stående läge. Telefonens och datorns utsnitt behålls. */
+@media(min-width:640px) and (max-width:1023px){
+  .hero{min-height:min(88svh,820px);}
+  .hero-bild{background-position:65% center;}
+  .hero h1{font-size:clamp(2.2rem,5vw,3rem);max-width:13ch;}
+}
 
 /* Prisbadge i heron – sidans starkaste erbjudande */
 .prisbadge{
@@ -398,15 +407,15 @@ section{padding:64px 0;}
    8. Tjänstekort
    ========================================================================== */
 .tjanster-grid{display:grid;gap:24px;grid-template-columns:1fr;}
-@media(min-width:640px){.tjanster-grid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:768px){.tjanster-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(min-width:1024px){.tjanster-grid{grid-template-columns:repeat(3,1fr);}}
 
-.tjanst-kort{display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:pointer;
-  border:2px solid var(--bla);}
+.tjanst-kort{display:flex;flex-direction:column;position:relative;overflow:hidden;min-width:0;
+  border:2px solid var(--bla);cursor:pointer;scroll-margin-top:116px;}
 .tjanst-kort .flagga{
   position:absolute;top:0;right:0;z-index:2;
   display:flex;align-items:center;gap:6px;
-  background:linear-gradient(120deg,#F97316,#FB923C);color:var(--vit);
+  background:#C2410C;color:var(--vit);
   font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
   padding:7px 14px;border-radius:0 var(--radie) 0 var(--radie);
   box-shadow:0 4px 12px rgba(249,115,22,.35);
@@ -438,6 +447,11 @@ section{padding:64px 0;}
 .tjanst-kort .ingar-rubrik{font-size:.76rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--bla);margin-bottom:12px;}
 .tjanst-kort .bocklista{margin-bottom:22px;}
 .tjanst-kort .pris-rad{margin-top:auto;padding-top:18px;border-top:1px solid var(--kant);margin-bottom:18px;}
+/* Kortens prisblock ska staplas. Offertens delade .pris-rad får inte
+   trycka ut förklaringen eller dela beloppet på flera rader här. */
+.tjanst-kort .pris-rad{flex-direction:column;align-items:flex-start;gap:6px;}
+.tjanst-kort .pris-rad .pris-suffix{white-space:normal;font-weight:500;}
+.tjanst-kort .pris-tal{white-space:nowrap;}
 .pris-fran{font-size:.8rem;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;}
 .pris-tal{font-size:2rem;font-weight:800;color:var(--marin);line-height:1.15;letter-spacing:-.03em;}
 .pris-suffix{font-size:.86rem;color:var(--text-2);font-weight:600;}
@@ -450,6 +464,7 @@ section{padding:64px 0;}
   padding:10px 16px;margin-bottom:16px;font-size:1.05rem;
 }
 .fastpris-chip small{font-weight:600;font-size:.8rem;color:var(--bla);}
+.fastpris-chip{flex-wrap:wrap;gap:2px 8px;}
 
 /* Intern länk vidare till tjänstesidan – ger både SEO-värde och en väg
    för besökare som vill läsa mer innan de bokar. */
@@ -574,10 +589,9 @@ section{padding:64px 0;}
 /* ==========================================================================
    11. Galleri + före/efter-slider
    ========================================================================== */
-/* Alla gallerikort lika stora: en spalt under 1024 px, sa varje kort far
-   samma fulla bredd som bildspelet (punkt 1) i stallet for en halv spalt. */
+/* Fyra kort bildar två jämna rader från surfplatta och uppåt. */
 .galleri-grid{display:grid;gap:20px;grid-template-columns:1fr;}
-@media(min-width:1024px){.galleri-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:768px){.galleri-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .gal-kort{
   background:var(--vit);border-radius:var(--radie);overflow:hidden;
   box-shadow:var(--skugga);border:1px solid rgba(37,99,235,.07);
@@ -598,7 +612,7 @@ section{padding:64px 0;}
 .fe-kort{grid-column:1/-1;}
 /* Bildspelet spanner en spalt som ovriga, sa alla fyra kort blir lika
    stora aven pa datorskarm. */
-@media(min-width:1024px){.fe-kort{grid-column:span 1;}}
+@media(min-width:768px){.fe-kort{grid-column:span 1;}}
 
 .fe{position:relative;user-select:none;-webkit-user-select:none;touch-action:pan-y;overflow:hidden;line-height:0;cursor:ew-resize;}
 .fe .lager{position:relative;width:100%;}
@@ -657,21 +671,20 @@ section{padding:64px 0;}
   position:absolute;left:50%;transform:translateX(-50%);bottom:56px;z-index:8;
   background:rgba(11,46,89,.86);color:var(--vit);
   font-size:.78rem;font-weight:700;letter-spacing:.03em;
-  padding:6px 16px;border-radius:var(--pill);white-space:nowrap;
+  padding:6px 16px;border-radius:var(--pill);max-width:calc(100% - 24px);text-align:center;line-height:1.35;
 }
 .fe-punkter{
-  position:absolute;left:50%;transform:translateX(-50%);bottom:16px;z-index:8;
-  display:flex;gap:8px;
+  position:absolute;left:50%;transform:translateX(-50%);bottom:4px;z-index:8;
+  display:flex;gap:0;
 }
 .fe-punkt{
-  width:10px;height:10px;border-radius:50%;padding:0;
-  background:rgba(255,255,255,.55);box-shadow:0 1px 4px rgba(11,46,89,.35);
-  transition:background var(--overgang),width var(--overgang);
+  width:44px;height:44px;border-radius:50%;padding:0;
+  display:flex;align-items:center;justify-content:center;
 }
-.fe-punkt[aria-selected="true"]{background:var(--vit);width:26px;border-radius:var(--pill);}
+.fe-punkt::before{content:"";width:10px;height:10px;border-radius:var(--pill);background:rgba(255,255,255,.65);box-shadow:0 1px 4px rgba(11,46,89,.6);transition:width var(--overgang),background var(--overgang);}
+.fe-punkt[aria-pressed="true"]::before{background:var(--vit);width:26px;}
 @media(max-width:639px){
-  .fe-pil{width:38px;height:38px;}
-  .fe-scen{bottom:48px;font-size:.72rem;padding:5px 12px;}
+  .fe-scen{bottom:48px;font-size:.76rem;padding:5px 12px;}
   .fe-hjalp{display:none;}
 }
 
@@ -709,7 +722,7 @@ section{padding:64px 0;}
 .faq-ikon svg{width:16px;height:16px;stroke:var(--bla);fill:none;stroke-width:2.5;stroke-linecap:round;}
 .faq-post.oppen .faq-ikon{transform:rotate(180deg);background:var(--bla);}
 .faq-post.oppen .faq-ikon svg{stroke:var(--vit);}
-.faq-svar{max-height:0;overflow:hidden;transition:max-height .32s cubic-bezier(.4,0,.2,1);}
+.faq-svar[hidden]{display:none;}
 .faq-svar-inner{padding:0 20px 20px;color:var(--text-2);font-size:.96rem;line-height:1.7;}
 
 /* ==========================================================================
@@ -763,20 +776,21 @@ section{padding:64px 0;}
   padding:10px 16px calc(10px + env(safe-area-inset-bottom));
   background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   box-shadow:0 -4px 20px rgba(11,46,89,.14);
-  transform:translateY(120%);transition:transform var(--overgang);
+  transform:translateY(120%);visibility:hidden;transition:transform var(--overgang),visibility var(--overgang);
 }
-.mob-cta.visa{transform:translateY(0);}
+.mob-cta.visa{transform:translateY(0);visibility:visible;}
 @media(min-width:1024px){.mob-cta{display:none;}}
 
 /* ==========================================================================
    16. Scroll-in-animation
    ========================================================================== */
-.in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s cubic-bezier(.4,0,.2,1);}
+.in{transition:opacity .6s ease,transform .6s cubic-bezier(.4,0,.2,1);}
+.rorelse .in:not(.syns){opacity:0;transform:translateY(24px);}
 .in.syns{opacity:1;transform:none;}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto;}
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
-  .in{opacity:1;transform:none;}
+  .rorelse .in:not(.syns){opacity:1;transform:none;}
 }
 
 /* ==========================================================================
@@ -831,9 +845,12 @@ body.bokar .topp,body.bokar .mobmeny{display:none;}
   overflow-y:auto;overscroll-behavior:contain;
 }
 .steg-inner{
-  flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;
-  padding:20px 0;min-height:0;
+  flex:1 0 auto;display:flex;flex-direction:column;justify-content:center;gap:20px;
+  padding:20px 0;min-height:auto;
 }
+/* På smala/låga skärmar får innehållet sin naturliga höjd, så hela steget
+   går att rulla utan att de första fälten hamnar ovanför scrollområdet. */
+.steg-nav{flex-shrink:0;}
 .steg-inner.mitten{align-items:center;text-align:center;}
 
 .steg-fraga h2{
@@ -1047,12 +1064,17 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 .boknr .nr{font-size:1.5rem;font-weight:800;color:var(--marin);letter-spacing:.02em;}
 
 /* ---- Tacksidan (fristående sida efter skickad förfrågan, tack.html) --- */
-.tack-sida{max-width:560px;padding:64px 20px 80px;text-align:center;}
+.tack-sida{max-width:600px;padding:112px 20px 64px;text-align:center;min-height:70svh;}
+@media(min-width:1024px){.tack-sida{padding-top:156px;}}
 .tack-bock{margin:0 auto 24px;}
 .tack-sida h1{font-size:clamp(1.7rem,6vw,2.3rem);line-height:1.2;letter-spacing:-.02em;color:var(--marin);margin:0 0 12px;}
 .tack-text{margin:0 0 28px;color:var(--text-2);font-size:1.05rem;line-height:1.6;}
 .tack-sida .prisruta{margin-bottom:24px;}
 .tack-sida .boknr{margin:0 auto 24px;max-width:280px;}
+.tack-sida [hidden]{display:none;}
+.tack-sida .pris-rad{flex-wrap:wrap;gap:4px 12px;}
+.tack-sida .pris-rad span{min-width:0;overflow-wrap:anywhere;}
+.tack-sida .pris-rad span:last-child{white-space:normal;}
 .tack-hem{margin-top:8px;}
 .tack-hem .knapp{display:inline-flex;min-width:220px;}
 
