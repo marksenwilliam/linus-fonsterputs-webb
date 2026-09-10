@@ -11,6 +11,10 @@
   var $  = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
+  /** Arbetstiden visas avrundad till närmaste fem minuter – exakt nog för
+      en uppskattning, utan att låtsas vara mer precis än den är. */
+  function visadTid(min) { return tidText(Math.round(min / 5) * 5); }
+
   /** Formaterar ett heltal som "1 025 kr" med svenskt tusentalsavstånd. */
   function kr(n) { return tal(n) + ' kr'; }
   function tal(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
@@ -214,21 +218,19 @@
 
 
   /* ==========================================================================
-     7. BOKNINGSSYSTEMET
+     7. OFFERTFÖRFRÅGAN
      ========================================================================== */
 
   /* --- 7.1 State (endast i minnet) ------------------------------------- */
   var STANDARD = {
-    fonster: { antal: 15, sida: 'bada', sprojsAntal: 0, sprojstvatt: false,
-               balkong: false, karmar: false, bleck: false, behandling: false, stortHus: false },
+    fonster: { antal: 15, sprojsAntal: 0, sprojstvatt: false,
+               balkong: false, karmar: false, bleck: false, behandling: false },
     kontor:  { yta: 120, frekvens: 'engang' }
   };
 
   var S = {
     steg: 1,
     tjanst: null,
-    datum: null,       /* "2026-08-17" */
-    tid: null,         /* minuter från midnatt */
     fonster: Object.assign({}, STANDARD.fonster),
     kontor:  Object.assign({}, STANDARD.kontor)
   };
@@ -265,34 +267,48 @@
    */
   function beraknaFonster() {
     var f = S.fonster;
-    var perFonster = f.sida === 'ut' ? 7 : 12;
-    var min = 20 + f.antal * perFonster;
-    /* Spröjstypen efterfrågas inte längre – 6 min per spröjsfönster är
-       mittemellan fasta (4) och lösa (8) och ger samma bokningslängd i de
-       fall som tidigare räknats igenom. */
-    min += f.sprojsAntal * 6;
-    if (f.stortHus) min += 40;
-    if (f.sprojstvatt) min += f.sprojsAntal * 5;
-    if (f.karmar) min += 20;
-    if (f.bleck) min += 15;
-    if (f.balkong) min += 30;
-    if (f.behandling) min += 25;
 
-    /* Fast pris för själva huset. Inglasad balkong/uterum ingår INTE utan
-       läggs på som ett tillägg. */
-    /* Grundpris gäller ett standardhus upp till 200 m². Endast utsida är
-       billigare eftersom jobbet går betydligt snabbare. */
-    var BADA = 1900, ENDAST_UT = 1300;
+    /* ARBETSTIDER, enligt Linus egna mätningar. Alla uttryckta som antal per
+       timme och räknade om till minuter per enhet, så att en ändrad takt bara
+       behöver skrivas in på ett ställe.
+
+         Fönsterputs   10 fönster på 1 h 40 min  ->  10 min per fönster
+         Spröjsfönster  6 per timme              ->  10 min per fönster
+         Spröjstvätt   15 per timme             ->   4 min per spröjsfönster
+         Fönsterkarmar 15 per timme             ->   4 min per fönster
+         Fönsterbleck  22 per timme             ->  ca 2,7 min per fönster
+         Balkong       1 per timme              ->  60 min
+
+       Spröjsfönster tar samma tid som vanliga fönster och räknas redan in i
+       antalet, därför ligger inget eget tidspåslag på dem. Priset skiljer
+       sig ändå, eftersom arbetet kräver mer noggrannhet.
+
+       Vattenavvisande behandling saknar mätning än och ligger kvar på 25 min. */
+    var PER_FONSTER   = 10;
+    var PER_SPROJSTV  = 60 / 15;
+    var PER_KARM      = 60 / 15;
+    var PER_BLECK     = 60 / 22;
+    var BALKONG_MIN   = 60;
+    var BEHANDLING_MIN = 25;
+
+    var min = f.antal * PER_FONSTER;
+    if (f.sprojstvatt) min += f.sprojsAntal * PER_SPROJSTV;
+    if (f.karmar) min += f.antal * PER_KARM;
+    if (f.bleck) min += f.antal * PER_BLECK;
+    if (f.balkong) min += BALKONG_MIN;
+    if (f.behandling) min += BEHANDLING_MIN;
+
+    /* Fast pris för själva huset, in- och utvändigt. Inglasad balkong och
+       uterum ingår INTE utan läggs på som tillägg. */
+    var GRUND = 1900;
     /* Alla belopp är ex. RUT och hålls JÄMNA – då blir halva summan exakt och
        radernas inkl-RUT-priser stämmer alltid mot totalen. */
     var BALKONG = 400, PER_SPROJS = 140, KARMAR = 600, BLECK = 400,
-        BEHANDLING = 750, STORT_HUS = 500;
+        BEHANDLING = 750;
 
-    var grund = f.sida === 'ut' ? ENDAST_UT : BADA;
-    var rader = [{ namn: 'Fönsterputs, standardhus' + (f.sida === 'ut' ? ' (endast utsida)' : ''), varde: kr(grund), belopp: grund }];
-    var total = grund;
+    var rader = [{ namn: 'Fönsterputs, standardhus', varde: kr(GRUND), belopp: GRUND }];
+    var total = GRUND;
 
-    if (f.stortHus) { total += STORT_HUS; rader.push({ namn: 'Större hus, över 200 m²', varde: kr(STORT_HUS), belopp: STORT_HUS }); }
     if (f.sprojsAntal > 0) {
       var spr = f.sprojsAntal * PER_SPROJS;
       total += spr;
@@ -362,117 +378,85 @@
   }
 
 
-  /* --- 7.3 Offertpanelen ------------------------------------------------ */
+  /* --- 7.3 Prisrutan ---------------------------------------------------- */
 
-  function offertHtml(b) {
+  /* Priset visas bara i sista steget. Under vägen dit ligger fokus på en
+     fråga i taget, så ingen summeringspanel konkurrerar om utrymmet. */
+  function ritaPris() {
+    var b = berakna();
+    var stor = $('#pris-stor'), under = $('#pris-under'), rader = $('#pris-rader');
+    if (!stor || !b) return;
+
+    stor.textContent = kr(b.attBetala);
+    under.textContent = b.harRut
+      ? 'Efter RUT-avdrag · ' + kr(b.total) + ' före avdrag'
+      : 'Per tillfälle, exklusive moms';
+
     var h = '';
-
     b.rader.forEach(function (r) {
-      /* För RUT-tjänster visas kundens faktiska pris stort och priset före
-         avdrag som en mindre rad under. Rabattrader halveras inte. */
-      var varde = r.varde;
-      if (b.harRut && typeof r.belopp === 'number' && !r.klass) {
-        varde = kr(r.belopp / 2) + '<small>' + kr(r.belopp) + ' ex. RUT</small>';
-      }
-      h += '<div class="offert-rad ' + (r.klass || '') + '">' +
-           '<span class="r-namn">' + r.namn + '</span>' +
-           '<span class="r-varde">' + varde + '</span></div>';
+      h += '<div class="pris-rad"><span>' + r.namn + '</span><span>' + r.varde + '</span></div>';
     });
-
-    if (b.visaOrdinarie) {
-      h += '<div class="offert-rad summa"><span class="r-namn">Ordinarie pris</span>' +
-           '<span class="r-varde">' + kr(b.total) + '</span></div>';
-    }
-
-    /* RUT-raden visas bara för fönsterputs – kontorsputs är en företagstjänst */
     if (b.harRut) {
-      h += '<div class="offert-rad rut"><span class="r-namn">Du sparar med RUT-avdraget</span>' +
-           '<span class="r-varde">−' + kr(b.rutBelopp) + '</span></div>';
+      h += '<div class="pris-rad summa"><span>Summa före RUT</span><span>' + kr(b.total) + '</span></div>';
+      h += '<div class="pris-rad gron"><span>RUT-avdrag</span><span>−' + kr(b.rutBelopp) + '</span></div>';
     }
-
-    h += '<div class="offert-tid"><svg aria-hidden="true"><use href="#i-klocka"/></svg>' +
-         '<span>Beräknad arbetstid: ca ' + tidText(b.bokadMin) + '</span></div>';
-
-    h += '<div class="betala-box"><span class="etik">' +
-         (b.exMoms ? 'Pris per tillfälle<small>Exklusive moms</small>'
-                   : 'Att betala<small>Inkl. RUT-avdrag · ' + kr(b.total) + ' ex. RUT</small>') +
-         '</span><span class="betala-tal puls">' + kr(b.attBetala) + '</span></div>';
-
+    h += '<div class="pris-rad summa"><span>Att betala</span><span>' + kr(b.attBetala) + '</span></div>';
     if (b.arskostnad) {
-      h += '<div class="manad-box"><span class="etik">Beräknad årskostnad<small>' +
-           FREKVENSTEXT[b.tjanst][b.frekvens] + ', ex. moms</small></span>' +
-           '<span class="manad-tal">ca ' + kr(b.arskostnad) + '/år</span></div>';
+      h += '<div class="pris-rad"><span>Beräknad årskostnad</span><span>ca ' + kr(b.arskostnad) + '/år</span></div>';
     }
-
-    h += '<p class="offert-lugn"><svg aria-hidden="true"><use href="#i-skold"/></svg>' +
-         '<span>Priset är en uppskattning baserad på dina uppgifter. Linus bekräftar alltid slutpriset innan arbetet påbörjas – inga överraskningar.</span></p>';
-
-    return h;
+    h += '<div class="pris-rad"><span>Beräknad arbetstid</span><span>ca ' + visadTid(b.minuter) + '</span></div>';
+    rader.innerHTML = h;
   }
 
-  var offertKropp = $('#offert-kropp');
-  var moKropp = $('#mo-kropp');
-  var moPris = $('#mo-pris');
-  var offertTjanst = $('#offert-tjanst');
-
-  function ritaOffert() {
-    if (!S.tjanst) return;
-    var b = berakna();
-    var h = offertHtml(b);
-    offertKropp.innerHTML = h;
-    moKropp.innerHTML = h;
-    offertTjanst.textContent = TJANSTNAMN[S.tjanst];
-
-    /* Kort sammanfattning i mobilens fasta rad */
-    if (b.harRut) {
-      /* Kunden ska se sitt faktiska pris först – priset före RUT står bredvid. */
-      moPris.innerHTML = 'Ditt pris: ' + kr(b.attBetala) + ' <em>· ' + kr(b.total) + ' ex. RUT</em>';
-    } else {
-      moPris.innerHTML = 'Ditt pris: ' + kr(b.attBetala) + ' <em>· ex. moms</em>';
-    }
-    return b;
+  var prisToggle = $('#pris-toggle');
+  if (prisToggle) {
+    prisToggle.addEventListener('click', function () {
+      var rader = $('#pris-rader');
+      var oppen = !rader.hidden;
+      rader.hidden = oppen;
+      prisToggle.setAttribute('aria-expanded', String(!oppen));
+      prisToggle.textContent = oppen ? 'Visa specifikation' : 'Dölj specifikation';
+    });
   }
 
 
   /* --- 7.4 Formulärkontroller ------------------------------------------ */
 
-  /* Håller .vald-klassen i synk på radio- och checkbox-korten */
+  /** Markerar valda kort så att CSS kan visa bocken. */
   function synkaVald() {
-    $$('.radio-kort').forEach(function (l) {
-      var i = l.querySelector('input'); l.classList.toggle('vald', i.checked);
+    $$('.val-kort').forEach(function (kort) {
+      var ruta = kort.querySelector('input');
+      if (ruta) kort.classList.toggle('vald', ruta.checked);
     });
-    $$('.check-kort').forEach(function (l) {
-      var i = l.querySelector('input'); l.classList.toggle('vald', i.checked);
+    $$('.val-kort[data-valj]').forEach(function (kort) {
+      kort.classList.toggle('vald', kort.getAttribute('data-valj') === S.tjanst);
+      kort.setAttribute('aria-pressed', kort.getAttribute('data-valj') === S.tjanst ? 'true' : 'false');
     });
-    var g = $('#gdpr-kort'); g.classList.toggle('vald', $('#k-gdpr').checked);
   }
 
-  /* Gränser för stepper-fälten */
   var STEPPER = {
     'f-antal':  { min: 1, max: 60 },
     'f-sprojs': { min: 0, max: function () { return S.fonster.antal; } }
   };
 
   function stepperVarde(namn) {
-    if (namn === 'f-antal')  return S.fonster.antal;
-    if (namn === 'f-sprojs') return S.fonster.sprojsAntal;
-    return 0;
+    return namn === 'f-antal' ? S.fonster.antal : S.fonster.sprojsAntal;
   }
+
   function sattStepper(namn, v) {
     var g = STEPPER[namn];
     var max = typeof g.max === 'function' ? g.max() : g.max;
-    v = Math.max(g.min, Math.min(max, v));
+    v = Math.min(Math.max(v, g.min), max);
     if (namn === 'f-antal') {
       S.fonster.antal = v;
-      $('#f-antal-slider').value = v;
-      /* Spröjsfönster kan aldrig bli fler än totala antalet fönster */
+      /* Spröjsfönster kan aldrig bli fler än det totala antalet */
       if (S.fonster.sprojsAntal > v) S.fonster.sprojsAntal = v;
+    } else {
+      S.fonster.sprojsAntal = v;
     }
-    if (namn === 'f-sprojs') { S.fonster.sprojsAntal = v; $('#f-sprojs-slider').value = v; }
     ritaFormular();
   }
 
-  /* Uppdaterar alla synliga värden i formuläret + offerten */
   function ritaFormular() {
     $('#f-antal-varde').textContent = S.fonster.antal;
     $('#f-antal-slider').value = S.fonster.antal;
@@ -482,7 +466,6 @@
     $('#k-yta-varde').textContent = tal(S.kontor.yta) + ' m²';
     $('#k-yta').value = S.kontor.yta;
 
-    /* Aktivera/inaktivera stepper-knappar vid gränsvärdena */
     $$('[data-stepper]').forEach(function (b) {
       var namn = b.getAttribute('data-stepper');
       var delta = parseInt(b.getAttribute('data-delta'), 10);
@@ -492,26 +475,21 @@
       b.disabled = delta < 0 ? v <= g.min : v >= max;
     });
 
-    ritaSprojstvatt();
+    /* Utan spröjsfönster finns inget att spröjstvätta */
+    var kortSt = $('#kort-sprojstvatt');
+    if (kortSt) {
+      var ruta = $('#f-sprojstvatt');
+      if (S.fonster.sprojsAntal === 0 && ruta.checked) {
+        ruta.checked = false;
+        S.fonster.sprojstvatt = false;
+      }
+      kortSt.hidden = S.fonster.sprojsAntal === 0;
+    }
+
     synkaVald();
-    ritaOffert();
+    ritaPris();
   }
 
-  /* Spröjstvätten har fast pris, men gäller husets spröjsfönster. Är de noll
-     finns inget att tvätta och tillägget göms helt ur uppsäljningen. */
-  function ritaSprojstvatt() {
-    var ruta = $('#f-sprojstvatt');
-    var kort = ruta.closest('.check-kort');
-    var n = S.fonster.sprojsAntal;
-    if (n === 0 && ruta.checked) { ruta.checked = false; S.fonster.sprojstvatt = false; }
-    if (kort) kort.hidden = n === 0;
-    if (n === 0) return;
-    $('#f-sprojstvatt-txt').textContent =
-      'Varje spröjs tvättas ren, inte bara glaset. Gäller husets ' + n +
-      ' spröjsfönster · ' + tal(SPROJSTVATT) + ' kr ex. RUT';
-  }
-
-  /* Stepper-knappar */
   $$('[data-stepper]').forEach(function (b) {
     b.addEventListener('click', function () {
       var namn = b.getAttribute('data-stepper');
@@ -519,20 +497,14 @@
     });
   });
 
-  /* Sliders */
   $('#f-antal-slider').addEventListener('input', function () { sattStepper('f-antal', parseInt(this.value, 10)); });
   $('#f-sprojs-slider').addEventListener('input', function () { sattStepper('f-sprojs', parseInt(this.value, 10)); });
   $('#k-yta').addEventListener('input', function () { S.kontor.yta = parseInt(this.value, 10); ritaFormular(); });
 
-  /* Radioknappar */
-  $$('input[name="f-sida"]').forEach(function (i) {
-    i.addEventListener('change', function () { S.fonster.sida = this.value; ritaFormular(); });
-  });
   $$('input[name="k-frekvens"]').forEach(function (i) {
     i.addEventListener('change', function () { S.kontor.frekvens = this.value; ritaFormular(); });
   });
 
-  /* Checkboxar */
   function koppla(id, satt) {
     $(id).addEventListener('change', function () { satt(this.checked); ritaFormular(); });
   }
@@ -541,361 +513,148 @@
   koppla('#f-bleck',   function (v) { S.fonster.bleck = v; });
   koppla('#f-behandling', function (v) { S.fonster.behandling = v; });
   koppla('#f-sprojstvatt', function (v) { S.fonster.sprojstvatt = v; });
-  koppla('#f-storthus', function (v) { S.fonster.stortHus = v; });
-
-  /* Mobilens offertrad kan fällas ut till full specifikation */
-  var mobOffert = $('#mob-offert'), moToggle = $('#mo-toggle');
-  moToggle.addEventListener('click', function () {
-    var ut = mobOffert.classList.toggle('utfalld');
-    moToggle.setAttribute('aria-expanded', ut ? 'true' : 'false');
-  });
 
 
-  /* --- 7.5 Kalendern ---------------------------------------------------- */
+  /* --- 7.5 Stegnavigering ----------------------------------------------- */
 
-  var DAGNAMN = ['sön', 'mån', 'tis', 'ons', 'tors', 'fre', 'lör'];
-  var MANNAMN = ['jan', 'feb', 'mars', 'apr', 'maj', 'juni', 'juli', 'aug', 'sep', 'okt', 'nov', 'dec'];
-
-  function nyckel(d) {
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-  }
-  function franNyckel(n) {
-    var d = n.split('-');
-    return new Date(parseInt(d[0], 10), parseInt(d[1], 10) - 1, parseInt(d[2], 10));
-  }
-  /** Arbetstider: vardag 07–17, lördag 09–14, söndag stängt. */
-  function oppet(d) {
-    var w = d.getDay();
-    if (w === 0) return null;
-    if (w === 6) return { start: 9 * 60, slut: 14 * 60 };
-    return { start: 7 * 60, slut: 17 * 60 };
-  }
-
-  /* Deterministisk slumpgenerator så schemat är stabilt under hela sessionen */
-  function hash(str) {
-    var h = 2166136261;
-    for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-    return h >>> 0;
-  }
-  function slumpare(fro) {
-    var x = fro || 1;
-    return function () {
-      x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0;
-      return x / 4294967296;
-    };
-  }
-
-  /* Cache med upptagna block per dag. Egna bokningar läggs till här. */
-  var schema = {};
-
-  function upptagnaBlock(n) {
-    if (schema[n]) return schema[n];
-    var d = franNyckel(n), t = oppet(d), block = [];
-    if (t) {
-      var r = slumpare(hash('linus-' + n));
-      var langder = [60, 90, 120, 150, 180];
-      var pos = t.start;
-      while (pos < t.slut - 30) {
-        if (r() < 0.55) {
-          var len = langder[Math.floor(r() * langder.length)];
-          if (pos + len > t.slut) len = t.slut - pos;
-          if (len >= 30) block.push({ start: pos, slut: pos + len });
-          pos += len + 30 + Math.floor(r() * 3) * 30;
-        } else {
-          pos += 30 + Math.floor(r() * 3) * 30;
-        }
-      }
-    }
-    schema[n] = block;
-    return block;
-  }
-
-  /** Genererar de kommande 14 dagarna från och med imorgon. */
-  function kommandeDagar() {
-    var lista = [], idag = new Date();
-    idag.setHours(0, 0, 0, 0);
-    for (var i = 1; i <= 14; i++) {
-      var d = new Date(idag.getTime());
-      d.setDate(d.getDate() + i);
-      lista.push(d);
-    }
-    return lista;
-  }
-
-  var dagflikar = $('#dagflikar'), tidYta = $('#tid-yta');
-
-  function ritaDagar() {
-    var dagar = kommandeDagar();
-    dagflikar.innerHTML = '';
-    dagar.forEach(function (d) {
-      var n = nyckel(d), stangt = !oppet(d);
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'dagflik';
-      b.setAttribute('role', 'tab');
-      b.setAttribute('aria-selected', S.datum === n ? 'true' : 'false');
-      b.disabled = stangt;
-      b.dataset.datum = n;
-      b.innerHTML = '<span class="dg">' + DAGNAMN[d.getDay()] + '</span>' +
-                    '<span class="dd">' + d.getDate() + '</span>' +
-                    '<span class="dm">' + (stangt ? 'Stängt' : MANNAMN[d.getMonth()]) + '</span>';
-      if (!stangt) {
-        b.addEventListener('click', function () {
-          S.datum = n; S.tid = null;
-          ritaDagar(); ritaTider(); doljFel('#fel-steg3');
-        });
-      }
-      dagflikar.appendChild(b);
-    });
-  }
-
-  function langText(d) {
-    return DAGNAMN[d.getDay()] + ' ' + d.getDate() + ' ' + MANNAMN[d.getMonth()];
-  }
-
-  function ritaTider() {
-    var b = berakna();
-    if (!b) return;
-    var dur = b.bokadMin;
-    $('#jobblangd').textContent = 'ca ' + tidText(dur);
-
-    if (!S.datum) { tidYta.innerHTML = ''; uppdateraValdTid(); return; }
-
-    var d = franNyckel(S.datum), t = oppet(d);
-    $('#dag-rubrik').textContent = 'Lediga starttider – ' + langText(d);
-
-    if (!t) {
-      tidYta.innerHTML = '<div class="stangt-ruta"><svg aria-hidden="true"><use href="#i-kalender"/></svg>' +
-                         '<b>Stängt denna dag</b><span>Välj en vardag (07–17) eller lördag (09–14).</span></div>';
-      return;
-    }
-
-    var block = upptagnaBlock(S.datum);
-    var grid = document.createElement('div');
-    grid.className = 'tid-grid';
-    var antalLediga = 0;
-
-    for (var start = t.start; start <= t.slut - 30; start += 30) {
-      var slut = start + dur;
-
-      /* Ligger starttiden inuti ett upptaget block? */
-      var iBlock = block.some(function (bl) { return start >= bl.start && start < bl.slut; });
-      /* Krockar hela jobbet med något block, eller sträcker det sig förbi stängning? */
-      var krock = block.some(function (bl) { return start < bl.slut && slut > bl.start; });
-      var passarInte = slut > t.slut || krock;
-
-      var kn = document.createElement('button');
-      kn.type = 'button';
-      kn.className = 'tid-knapp';
-
-      if (iBlock) {
-        kn.classList.add('upptagen');
-        kn.disabled = true;
-        kn.innerHTML = '<span class="kl">' + klocka(start) + '</span><small>Upptaget</small>';
-      } else if (passarInte) {
-        kn.disabled = true;
-        kn.innerHTML = '<span class="kl">' + klocka(start) + '</span><small>Får ej plats</small>';
-      } else {
-        antalLediga++;
-        kn.setAttribute('aria-pressed', S.tid === start ? 'true' : 'false');
-        kn.innerHTML = '<span class="kl">' + klocka(start) + '</span><small>' + klocka(slut) + '</small>';
-        (function (s) {
-          kn.addEventListener('click', function () {
-            S.tid = s; ritaTider(); doljFel('#fel-steg3');
-          });
-        })(start);
-      }
-      grid.appendChild(kn);
-    }
-
-    tidYta.innerHTML = '';
-    if (antalLediga === 0) {
-      var tom = document.createElement('div');
-      tom.className = 'stangt-ruta';
-      tom.innerHTML = '<svg aria-hidden="true"><use href="#i-klocka"/></svg><b>Inga luckor som rymmer hela jobbet</b>' +
-                      '<span>Ditt jobb tar ca ' + tidText(dur) + '. Prova en annan dag.</span>';
-      tidYta.appendChild(tom);
-    }
-    tidYta.appendChild(grid);
-    uppdateraValdTid();
-  }
-
-  function uppdateraValdTid() {
-    var ruta = $('#vald-tid-ruta');
-    if (S.datum && S.tid !== null) {
-      var b = berakna();
-      var d = franNyckel(S.datum);
-      $('#vald-tid-txt').textContent = langText(d) + ', ' + klocka(S.tid) + '–' + klocka(S.tid + b.bokadMin);
-      ruta.classList.add('visa');
-    } else {
-      ruta.classList.remove('visa');
-    }
-  }
-
-
-  /* --- 7.6 Sammanfattning ----------------------------------------------- */
-
-  /** Returnerar de valda alternativen som en lista med korta texter. */
-  function valdaAlternativ() {
-    var v = [];
-    if (S.tjanst === 'fonster') {
-      var f = S.fonster;
-      v.push(f.antal + ' fönster');
-      v.push(f.sida === 'ut' ? 'Endast utsida' : 'In- och utsida');
-      if (f.stortHus) v.push('Större hus, över 200 m²');
-      if (f.sprojsAntal > 0) v.push(f.sprojsAntal + ' med spröjs');
-      if (f.sprojstvatt) v.push('Spröjstvätt');
-      if (f.karmar) v.push('Fönsterkarmar');
-      if (f.bleck) v.push('Fönsterbleck');
-      if (f.balkong) v.push('Inglasad balkong/uterum');
-      if (f.behandling) v.push('Vattenavvisande behandling');
-    } else if (S.tjanst === 'kontor') {
-      var k = S.kontor;
-      v.push(tal(k.yta) + ' m²');
-      v.push(FREKVENSTEXT.kontor[k.frekvens]);
-    }
-    return v;
-  }
-
-  function sammanfattningHtml(medKund) {
-    var b = berakna();
-    var d = franNyckel(S.datum);
-    var h = '';
-
-    h += '<div class="samm-grupp"><p class="samm-etik">Tjänst</p>' +
-         '<div class="samm-rad"><span class="s-namn">Vald tjänst</span><span class="s-varde">' + TJANSTNAMN[S.tjanst] + '</span></div></div>';
-
-    h += '<div class="samm-grupp"><p class="samm-etik">Dina val</p><div class="samm-val">';
-    valdaAlternativ().forEach(function (t) { h += '<span>' + t + '</span>'; });
-    h += '</div></div>';
-
-    h += '<div class="samm-grupp"><p class="samm-etik">Tid</p>' +
-         '<div class="samm-rad"><span class="s-namn">Datum</span><span class="s-varde">' + langText(d) + '</span></div>' +
-         '<div class="samm-rad"><span class="s-namn">Klockslag</span><span class="s-varde">' + klocka(S.tid) + '–' + klocka(S.tid + b.bokadMin) + '</span></div>' +
-         '<div class="samm-rad"><span class="s-namn">Beräknad arbetstid</span><span class="s-varde">ca ' + tidText(b.bokadMin) + '</span></div></div>';
-
-    if (medKund) {
-      h += '<div class="samm-grupp"><p class="samm-etik">Kontakt</p>' +
-           '<div class="samm-rad"><span class="s-namn">Namn</span><span class="s-varde">' + esc($('#k-namn').value.trim()) + '</span></div>' +
-           '<div class="samm-rad"><span class="s-namn">Telefon</span><span class="s-varde">' + esc($('#k-telefon').value.trim()) + '</span></div>' +
-           '<div class="samm-rad"><span class="s-namn">E-post</span><span class="s-varde">' + esc($('#k-epost').value.trim()) + '</span></div>' +
-           '<div class="samm-rad"><span class="s-namn">Adress</span><span class="s-varde">' + esc($('#k-adress').value.trim()) + ', ' + esc($('#k-ort').value.trim()) + '</span></div></div>';
-    }
-
-    h += '<div class="samm-grupp"><p class="samm-etik">Pris</p>';
-    if (b.harRut) {
-      h += '<div class="samm-rad"><span class="s-namn">Pris ex. RUT</span><span class="s-varde">' + kr(b.total) + '</span></div>';
-      h += '<div class="samm-rad gron"><span class="s-namn">Du sparar med RUT-avdraget</span><span class="s-varde">−' + kr(b.rutBelopp) + '</span></div>';
-    } else {
-      h += '<div class="samm-rad"><span class="s-namn">Pris ex. moms</span><span class="s-varde">' + kr(b.total) + '</span></div>';
-    }
-    h += '<div class="samm-rad stor"><span class="s-namn">' + (b.exMoms ? 'Per tillfälle, ex. moms' : 'Att betala inkl. RUT') + '</span><span class="s-varde">' + kr(b.attBetala) + '</span></div>';
-    if (b.arskostnad) {
-      h += '<div class="samm-rad"><span class="s-namn">Beräknad årskostnad</span><span class="s-varde">ca ' + kr(b.arskostnad) + '/år</span></div>';
-    }
-    h += '</div>';
-
-    return h;
-  }
-
-  /** Enkel HTML-escape så att kunduppgifter aldrig tolkas som markup. */
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-
-
-  /* --- 7.7 Stegnavigering ----------------------------------------------- */
-
+  /* Ett steg åt gången, en fråga per steg. Sektionerna ligger i DOM-ordning
+     och de som är märkta data-bara hör till en enda tjänst – de hoppas över
+     när den andra tjänsten är vald. */
   var bokning = $('#bokning');
-  var stegSektioner = { 1: $('#steg1'), 2: $('#steg2'), 3: $('#steg3'), 4: $('#steg4'), 5: $('#steg5') };
   var sidScroll = 0;
+  var alla = $$('.bok-steg');
+  var nuvarande = 0;
+
+  function aktiva() {
+    return alla.filter(function (sek) {
+      var bara = sek.getAttribute('data-bara');
+      if (!bara) return true;
+      return bara === S.tjanst;
+    });
+  }
 
   function visaFel(sel) { var f = $(sel); if (f) f.classList.add('visa'); }
   function doljFel(sel) { var f = $(sel); if (f) f.classList.remove('visa'); }
   function doljAllaFel() { $$('.felruta').forEach(function (f) { f.classList.remove('visa'); }); }
 
-  function uppdateraStegrad() {
-    $$('#stegrad li').forEach(function (li) {
-      var n = parseInt(li.getAttribute('data-steg'), 10);
-      li.classList.toggle('aktiv', n === S.steg);
-      li.classList.toggle('klar', n < S.steg || S.steg === 5);
-      var boll = li.querySelector('.steg-boll');
-      if (n < S.steg || S.steg === 5) boll.innerHTML = '<svg aria-hidden="true"><use href="#i-bock"/></svg>';
-      else boll.textContent = n;
-    });
+  function ritaSteg() {
+    var lista = aktiva();
+    var sek = lista[nuvarande];
+    alla.forEach(function (s) { s.classList.toggle('aktiv', s === sek); });
+
+    /* Tacksteget ligger utanför räkningen – då är förfrågan redan skickad */
+    var iTack = sek && sek.getAttribute('data-steg') === 'tack';
+    var stegrad = $('#stegrad');
+    if (stegrad) stegrad.hidden = iTack;
+
+    if (!iTack) {
+      var raknade = lista.filter(function (s) { return s.getAttribute('data-steg') !== 'tack'; });
+      var nr = raknade.indexOf(sek) + 1;
+      /* Innan tjänsten är vald räknas fönsterputsens steg med ändå, annars
+         skulle totalen hoppa från 6 till 9 mitt i guiden. */
+      var antagen = S.tjanst || 'fonster';
+      var totalt = alla.filter(function (s) {
+        var bara = s.getAttribute('data-bara');
+        return s.getAttribute('data-steg') !== 'tack' && (!bara || bara === antagen);
+      }).length;
+      $('#stegtext').textContent = 'Steg ' + nr + ' av ' + totalt;
+      $('#stegspar-fyll').style.width = (nr / totalt * 100) + '%';
+    }
+
+    if (sek && sek.getAttribute('data-steg') === 'skicka') ritaPris();
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    var forsta = sek && sek.querySelector('input:not([type="hidden"]):not([tabindex="-1"]), textarea, button[data-valj]');
+    if (forsta && forsta.focus && !iTack) forsta.focus({ preventScroll: true });
   }
 
-  function gaTill(n) {
+  function gaTill(i) {
+    var lista = aktiva();
+    nuvarande = Math.min(Math.max(i, 0), lista.length - 1);
     doljAllaFel();
-    S.steg = n;
-
-    Object.keys(stegSektioner).forEach(function (k) {
-      stegSektioner[k].classList.toggle('aktiv', parseInt(k, 10) === n);
-    });
-
-    /* Mobilens offertrad visas endast i steg 2 */
-    document.body.classList.toggle('pa-steg2', n === 2);
-    mobOffert.classList.remove('utfalld');
-    moToggle.setAttribute('aria-expanded', 'false');
-
-    if (n === 2) { visaTillagg(false); ritaFormular(); }
-    if (n === 3) { ritaDagar(); ritaTider(); }
-    if (n === 4) $('#samm-steg4').innerHTML = sammanfattningHtml(false);
-
-    uppdateraStegrad();
-    window.scrollTo({ top: 0, behavior: mjuk ? 'smooth' : 'auto' });
+    ritaSteg();
   }
 
-  /** Kontrollerar att steget innan är ifyllt innan man går vidare. */
-  function farGaTill(n) {
-    if (n >= 2 && !S.tjanst) { return false; }
-    if (n >= 4 && (!S.datum || S.tid === null)) { visaFel('#fel-steg3'); return false; }
+  function visaSteg(namn) {
+    var lista = aktiva();
+    for (var i = 0; i < lista.length; i++) {
+      if (lista[i].getAttribute('data-steg') === namn) { gaTill(i); return; }
+    }
+  }
+
+  /** Kontrollerar det aktuella steget innan man får gå vidare. */
+  /* Kontaktuppgifterna ligger i ett enda steg. Alla sex fälten valideras
+     innan kunden får gå vidare. */
+  var STEGFALT = {
+    kontakt: ['fornamn', 'efternamn', 'telefon', 'epost', 'adress']
+  };
+
+  function stegetOk() {
+    var sek = aktiva()[nuvarande];
+    var namn = sek.getAttribute('data-steg');
+
+    if (STEGFALT[namn]) {
+      var ok = true, forsta = null;
+      STEGFALT[namn].forEach(function (f) {
+        if (!validera(f, true)) { ok = false; if (!forsta) forsta = $(FALT[f]); }
+      });
+      if (!ok && forsta && forsta.focus) forsta.focus();
+      return ok;
+    }
+    if (namn === 'tjanst' && !S.tjanst) { visaFel('#fel-tjanst'); return false; }
     return true;
   }
+
+  $$('[data-fram]').forEach(function (b) {
+    b.addEventListener('click', function () { if (stegetOk()) gaTill(nuvarande + 1); });
+  });
+  $$('[data-bak]').forEach(function (b) {
+    b.addEventListener('click', function () { gaTill(nuvarande - 1); });
+  });
+
+  /* Enter i ett textfält går vidare i stället för att skicka formuläret */
+  $('#kundform').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || e.target.tagName === 'TEXTAREA') return;
+    var sek = aktiva()[nuvarande];
+    if (sek && sek.getAttribute('data-steg') === 'skicka') return;
+    e.preventDefault();
+    if (stegetOk()) gaTill(nuvarande + 1);
+  });
+
+  /* Tjänstekorten: ett tryck väljer och går vidare */
+  $$('.val-kort[data-valj]').forEach(function (k) {
+    k.addEventListener('click', function () {
+      S.tjanst = k.getAttribute('data-valj');
+      doljFel('#fel-tjanst');
+      ritaFormular();
+      /* Listan över aktiva steg ändras med tjänsten, så positionen räknas om */
+      var lista = aktiva();
+      for (var i = 0; i < lista.length; i++) {
+        if (lista[i].getAttribute('data-steg') === 'tjanst') { gaTill(i + 1); return; }
+      }
+    });
+  });
 
   function oppnaBokning(tjanst) {
     sidScroll = window.scrollY;
     stangMeny();
     document.body.classList.add('bokar');
     bokning.setAttribute('aria-hidden', 'false');
-
-    if (tjanst) {
-      valjTjanst(tjanst);
-      gaTill(2);
-    } else {
-      gaTill(S.tjanst ? S.steg : 1);
-    }
+    if (tjanst) { S.tjanst = tjanst; ritaFormular(); }
+    gaTill(0);
   }
 
   function stangBokning() {
-    document.body.classList.remove('bokar', 'pa-steg2');
+    document.body.classList.remove('bokar');
     bokning.setAttribute('aria-hidden', 'true');
     window.scrollTo({ top: sidScroll, behavior: 'auto' });
   }
 
-  function valjTjanst(t) {
-    S.tjanst = t;
-    /* Byte av tjänst ändrar jobbets längd – tidigare vald tid nollställs */
-    S.datum = null; S.tid = null;
-
-    $$('.valj-kort').forEach(function (k) {
-      k.setAttribute('aria-pressed', k.getAttribute('data-valj') === t ? 'true' : 'false');
-    });
-    $('#form-fonster').hidden = t !== 'fonster';
-    $('#form-kontor').hidden = t !== 'kontor';
-    ritaFormular();
-  }
-
-  /* Alla "Boka"-knappar på sidan */
   $$('[data-boka]').forEach(function (b) {
     b.addEventListener('click', function () { oppnaBokning(b.getAttribute('data-tjanst')); });
   });
 
-  /* Hela tjänstekortet är tryckbart och ger samma resultat som kortets knapp.
-     Knappen är kvar som den riktiga kontrollen för tangentbord och skärmläsare;
-     klick direkt på knappen eller en länk hanteras av dem själva. */
+  /* Hela tjänstekortet på startsidan är tryckbart, knappen är den riktiga
+     kontrollen för tangentbord och skärmläsare. */
   $$('.tjanst-kort').forEach(function (kort) {
     var knapp = kort.querySelector('[data-boka]');
     if (!knapp) return;
@@ -905,83 +664,23 @@
     });
   });
 
-  /* Tjänstekorten i steg 1: ett tryck väljer tjänsten OCH går vidare,
-     så det inte behövs någon extra Fortsätt-knapp. */
-  $$('.valj-kort').forEach(function (k) {
-    k.addEventListener('click', function () {
-      valjTjanst(k.getAttribute('data-valj'));
-      gaTill(2);
-    });
-  });
-
-  /* Nästa / tillbaka.
-     Steg 2 har ett mellanläge: första tryckningen visar tilläggen som en
-     frivillig uppsäljning, andra tryckningen går vidare till kalendern.
-     Kontorsputs har inga tillval och hoppar direkt vidare. */
-  var tillaggVisad = false;
-  var tillaggVy = $('#tillagg-vy');
-
-  function visaTillagg(pa) {
-    tillaggVisad = pa;
-    if (tillaggVy) tillaggVy.hidden = !pa;
-    if (S.tjanst) $('#form-' + S.tjanst).hidden = pa;
-    $$('[data-nasta="3"]').forEach(function (k) {
-      var e = k.querySelector('.etikett-txt') || k;
-      e.textContent = pa ? 'Fortsätt till kalendern' : 'Välj tid i kalendern';
-    });
-    /* Rubriken ska matcha läget, annars står 'Skräddarsy ditt uppdrag'
-       ovanför 'Vill du lägga till något?' */
-    var r = $('#steg2-rubrik');
-    if (r) {
-      r.textContent = pa ? 'Nästan klart' : 'Skräddarsy ditt uppdrag';
-      var p = r.parentNode.querySelector('p');
-      if (p) p.textContent = pa ? 'Lägg till det du vill ha – annars går du bara vidare.' : 'Priset uppdateras direkt medan du fyller i.';
-    }
-    if (pa) window.scrollTo({ top: 0, behavior: mjuk ? 'smooth' : 'auto' });
-  }
-
-  $$('[data-nasta]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var n = parseInt(b.getAttribute('data-nasta'), 10);
-      if (n === 3 && S.tjanst === 'fonster' && !tillaggVisad) { visaTillagg(true); return; }
-      if (farGaTill(n)) gaTill(n);
-    });
-  });
-  $$('[data-tillbaka]').forEach(function (b) {
-    b.addEventListener('click', function () { gaTill(parseInt(b.getAttribute('data-tillbaka'), 10)); });
-  });
-
-  /* Pilen i steg 2 backar ett läge i taget: tillägg → formulär → steg 1 */
-  var steg2Bak = $('#steg2-bak');
-  if (steg2Bak) steg2Bak.addEventListener('click', function () {
-    if (tillaggVisad) {
-      visaTillagg(false);
-      window.scrollTo({ top: 0, behavior: mjuk ? 'smooth' : 'auto' });
-    } else {
-      gaTill(1);
-    }
-  });
-
-  /* Klick i stegindikatorn – går bara bakåt till avklarade steg */
-  $$('#stegrad li').forEach(function (li) {
-    li.querySelector('.steg-knapp').addEventListener('click', function () {
-      var n = parseInt(li.getAttribute('data-steg'), 10);
-      if (n < S.steg && S.steg !== 5) gaTill(n);
-    });
-  });
-
   $('#stang-bokning').addEventListener('click', stangBokning);
-  $('#steg1-avbryt').addEventListener('click', stangBokning);
+  $$('[data-avbryt]').forEach(function (b) { b.addEventListener('click', stangBokning); });
   $('#till-start').addEventListener('click', function () { nollstall(); stangBokning(); });
-  $('#boka-till').addEventListener('click', function () { nollstall(); gaTill(1); });
+  $('#boka-till').addEventListener('click', function () { nollstall(); gaTill(0); });
 
 
-  /* --- 7.8 Validering av kunduppgifter ---------------------------------- */
+  /* --- 7.6 Validering av kunduppgifter ---------------------------------- */
 
   var REGLER = {
-    namn: function (v) {
-      if (!v.trim()) return 'Ange ditt namn';
-      if (v.trim().length < 2) return 'Namnet ser för kort ut';
+    fornamn: function (v) {
+      if (!v.trim()) return 'Ange ditt förnamn';
+      if (v.trim().length < 2) return 'Förnamnet ser för kort ut';
+      return '';
+    },
+    efternamn: function (v) {
+      if (!v.trim()) return 'Ange ditt efternamn';
+      if (v.trim().length < 2) return 'Efternamnet ser för kort ut';
       return '';
     },
     telefon: function (v) {
@@ -998,35 +697,32 @@
       return '';
     },
     adress: function (v) {
-      if (!v.trim()) return 'Ange din gatuadress';
+      if (!v.trim()) return 'Ange adress och ort';
       if (v.trim().length < 4) return 'Adressen ser för kort ut';
-      return '';
-    },
-    ort: function (v) {
-      if (!v.trim()) return 'Ange postort';
-      if (v.trim().length < 2) return 'Postorten ser för kort ut';
       return '';
     }
   };
 
-  var FALT = { namn: '#k-namn', telefon: '#k-telefon', epost: '#k-epost', adress: '#k-adress', ort: '#k-ort' };
+  var FALT = { fornamn: '#k-fornamn', efternamn: '#k-efternamn', telefon: '#k-telefon',
+               epost: '#k-epost', adress: '#k-adress' };
 
+  /** Returnerar true om fältet är giltigt. visaTomt=false tystar tomma fält
+      medan kunden fortfarande skriver. */
   function validera(namn, visaTomt) {
     var input = $(FALT[namn]);
-    var block = input.closest('.ffalt');
+    var ruta = input.closest('.ffalt');
     var fel = REGLER[namn](input.value);
+    var tomt = !input.value.trim();
 
-    if (fel && (visaTomt || input.value.trim() !== '')) {
-      block.classList.add('fel'); block.classList.remove('ok');
+    if (fel && (visaTomt || !tomt)) {
+      ruta.classList.add('fel');
+      ruta.classList.remove('ok');
       $('#fel-' + namn).textContent = fel;
-      input.setAttribute('aria-invalid', 'true');
-    } else if (!fel) {
-      block.classList.remove('fel'); block.classList.add('ok');
-      input.removeAttribute('aria-invalid');
-    } else {
-      block.classList.remove('fel', 'ok');
-      input.removeAttribute('aria-invalid');
+      return false;
     }
+    ruta.classList.remove('fel');
+    ruta.classList.toggle('ok', !fel && !tomt);
+    $('#fel-' + namn).textContent = '';
     return !fel;
   }
 
@@ -1038,172 +734,144 @@
 
   $('#k-gdpr').addEventListener('change', function () {
     $('#gdpr-kort').classList.toggle('fel', !this.checked);
-    synkaVald();
   });
 
 
-  /* --- 7.9 Bekräfta bokning --------------------------------------------- */
+  /* --- 7.7 Skicka förfrågan --------------------------------------------- */
 
   /* ------------------------------------------------------------------
-     LEVERANS AV BOKNINGEN
+     LEVERANS AV FÖRFRÅGAN
 
-     [BYT UT] Sätt BOKNING_URL till webhook-adressen från GoHighLevel –
-     ett inkommande webhook-steg i ett workflow tar emot exakt den JSON
-     som bokningsData() bygger nedan.
+     Formuläret bokar ingenting. Uppgifterna postas till /api/offert, en
+     serverless-funktion i samma projekt, som lägger på GoHighLevel-token
+     på serversidan och skapar kontakten i Linus subaccount. Därifrån
+     skickar ett GHL-workflow mejlet och SMS:et till Linus.
 
-     Innan riktiga kunduppgifter skickas dit krävs personuppgiftsbiträdes-
-     avtal med HighLevel, och en giltig grund för överföring till USA
-     (Data Privacy Framework eller standardavtalsklausuler). Punkt 5 i
-     integritetspolicyn måste då skrivas om – den säger i dag att
-     uppgifterna stannar inom EU/EES.
-
-     Så länge BOKNING_URL är tom går bokningen INTE fram någonstans. Sidan
-     är då en demo: kunden får en bekräftelse på skärmen men Linus får
-     ingenting. Fyll i adressen innan sidan tas i skarp drift.
+     Token ligger i Vercels environment variables och når aldrig
+     webbläsaren. Se api/offert.js.
      ------------------------------------------------------------------ */
-  var BOKNING_URL = '';
+  var OFFERT_URL = '/api/offert';
 
-  function bokningsData(boknr) {
+  function forfraganData() {
     var b = berakna();
-    return {
-      bokningsnummer: boknr,
-      tjanst: S.tjanst === 'fonster' ? 'Fönsterputs' : 'Kontorsputs',
-      datum: S.datum,
-      starttid: klocka(S.tid),
-      berakenadTid: tidText(b.bokadMin),
-      pris: b.attBetala,
+    var f = S.fonster;
+    var k = S.kontor;
+    var d = {
+      tjanst: S.tjanst,
+      fornamn: $('#k-fornamn').value.trim(),
+      efternamn: $('#k-efternamn').value.trim(),
+      telefon: $('#k-telefon').value.trim(),
+      epost: $('#k-epost').value.trim(),
+      adress: $('#k-adress').value.trim(),
+      meddelande: '',
+      foretag: $('#k-foretag') ? $('#k-foretag').value : '',
+      godkant: $('#k-gdpr').checked,
+      prisKund: b.attBetala,
       prisForeRut: b.total,
-      valutakod: 'SEK',
-      detaljer: b.rader.map(function (r) { return r.namn + ': ' + r.varde; }),
-      kund: {
-        namn: $('#k-namn').value.trim(),
-        telefon: $('#k-telefon').value.trim(),
-        epost: $('#k-epost').value.trim(),
-        adress: $('#k-adress').value.trim(),
-        ort: $('#k-ort').value.trim(),
-        meddelande: $('#k-meddelande').value.trim()
-      },
-      /* Dokumenteras för att kunna visa att kraven i distansavtalslagen
-         och GDPR uppfyllts vid bokningstillfället. */
-      godkannanden: {
-        villkorOchIntegritetspolicy: true,
-        begartUtforandeInomAngerfrist: true,
-        tidpunkt: new Date().toISOString()
-      }
+      arbetstid: 'ca ' + visadTid(b.minuter),
+      specifikation: b.rader.map(function (r) { return r.namn + ': ' + r.varde; }).join('\n')
     };
+    if (S.tjanst === 'fonster') {
+      d.antalFonster = f.antal;
+      d.antalSprojs = f.sprojsAntal;
+      d.karmar = f.karmar;
+      d.bleck = f.bleck;
+      d.sprojstvatt = f.sprojstvatt;
+      d.balkong = f.balkong;
+      d.behandling = f.behandling;
+    } else {
+      d.lokalyta = k.yta;
+      d.frekvens = FREKVENSTEXT.kontor[k.frekvens];
+    }
+    return d;
   }
 
-  function skickaBokning(boknr) {
-    if (!BOKNING_URL) {
-      /* Demo-läge: ingen mottagare konfigurerad. */
-      if (window.console && console.warn) {
-        console.warn('Linus Fönsterputs: BOKNING_URL är inte satt i app.js – ' +
-                     'bokningen skickas inte vidare. Se kommentaren i koden.');
-      }
-      return new Promise(function (ok) { setTimeout(function () { ok(true); }, 900); });
-    }
-    return fetch(BOKNING_URL, {
+  function skickaForfragan() {
+    return fetch(OFFERT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bokningsData(boknr))
-    }).then(function (svar) { return svar.ok; })
-      .catch(function () { return false; });
+      body: JSON.stringify(forfraganData())
+    }).then(function (svar) {
+      return svar.json().then(function (j) { return svar.ok && j && j.ok ? j : null; });
+    }).catch(function () { return null; });
   }
 
   var bekraftaKnapp = $('#bekrafta-knapp');
 
   $('#kundform').addEventListener('submit', function (e) {
     e.preventDefault();
-    doljFel('#fel-steg4');
+    doljFel('#fel-skicka');
 
     var allaOk = true, forstaFel = null;
     Object.keys(FALT).forEach(function (namn) {
-      if (!validera(namn, true)) { allaOk = false; if (!forstaFel) forstaFel = $(FALT[namn]); }
+      if (!validera(namn, true)) { allaOk = false; if (!forstaFel) forstaFel = namn; }
     });
 
-    /* Två separata godkännanden krävs: köpvillkor/integritetspolicy, och
-       den uttryckliga begäran som distansavtalslagen kräver för att arbetet
-       ska få påbörjas inom ångerfristen. De får inte slås ihop till en ruta. */
     var gdprOk = $('#k-gdpr').checked;
-    var angerOk = $('#k-anger').checked;
     $('#gdpr-kort').classList.toggle('fel', !gdprOk);
-    $('#anger-kort').classList.toggle('fel', !angerOk);
 
-    if (!allaOk || !gdprOk || !angerOk) {
-      $('#fel-steg4-txt').textContent =
-        !allaOk ? 'Kontrollera de rödmarkerade fälten innan du bekräftar.'
-        : !gdprOk ? 'Du behöver godkänna köpvillkoren och integritetspolicyn.'
-        : 'Kryssa i att arbetet får påbörjas på den tid du valt.';
-      visaFel('#fel-steg4');
-      var mal = forstaFel || (!gdprOk ? $('#k-gdpr') : $('#k-anger'));
-      if (mal.focus) mal.focus();
+    if (!allaOk || !gdprOk) {
+      $('#fel-skicka-txt').textContent = !allaOk
+        ? 'Något saknas i dina uppgifter. Gå tillbaka och komplettera.'
+        : 'Du behöver godkänna köpvillkoren och integritetspolicyn.';
+      visaFel('#fel-skicka');
+      if (!allaOk) {
+        /* Hoppa tillbaka till steget där fältet ligger */
+        Object.keys(STEGFALT).forEach(function (steg) {
+          if (STEGFALT[steg].indexOf(forstaFel) >= 0) visaSteg(steg);
+        });
+      } else {
+        $('#k-gdpr').focus();
+      }
       return;
     }
 
     bekraftaKnapp.classList.add('laddar');
     bekraftaKnapp.disabled = true;
 
-    var boknr = 'LF-' + String(Math.floor(1000 + Math.random() * 9000));
-
-    skickaBokning(boknr).then(function (levererad) {
+    skickaForfragan().then(function (svar) {
       bekraftaKnapp.classList.remove('laddar');
       bekraftaKnapp.disabled = false;
 
-      if (!levererad) {
-        $('#fel-steg4-txt').textContent =
-          'Bokningen kunde inte skickas just nu. Försök igen om en stund, eller ring 076-217 18 33 så tar Linus den direkt.';
-        visaFel('#fel-steg4');
+      if (!svar) {
+        $('#fel-skicka-txt').textContent =
+          'Förfrågan kunde inte skickas just nu. Försök igen om en stund, eller ring 076-217 18 33 så tar Linus den direkt.';
+        visaFel('#fel-skicka');
         return;
       }
 
-      var b = berakna();
-
-      /* Den bokade tiden blir upptagen i kalendern under resten av sessionen */
-      upptagnaBlock(S.datum).push({ start: S.tid, slut: S.tid + b.bokadMin });
-
-      var fornamn = $('#k-namn').value.trim().split(/\s+/)[0];
-      $('#bekr-rubrik').textContent = 'Tack ' + fornamn + '! Din bokning är mottagen.';
-      $('#boknr').textContent = boknr;
-      $('#samm-bekr').innerHTML = sammanfattningHtml(true);
-
-      gaTill(5);
+      $('#bekr-rubrik').textContent = 'Tack ' + $('#k-fornamn').value.trim() + '! Din förfrågan är skickad.';
+      $('#boknr').textContent = svar.forfragan || '–';
+      visaSteg('tack');
     });
   });
 
 
-  /* --- 7.10 Nollställning ------------------------------------------------ */
+  /* --- 7.8 Nollställning ------------------------------------------------- */
 
   function nollstall() {
-    S.tjanst = null; S.datum = null; S.tid = null;
+    S.tjanst = null;
     S.fonster = Object.assign({}, STANDARD.fonster);
     S.kontor  = Object.assign({}, STANDARD.kontor);
 
-    /* Återställ formulärkontroller */
     $('#f-antal-slider').value = 15;
-    $('input[name="f-sida"][value="bada"]').checked = true;
-    $('input[name="k-frekvens"][value="engang"]').checked = true;
-    ['#f-balkong', '#f-karmar', '#f-bleck', '#f-behandling', '#f-sprojstvatt', '#f-storthus'].forEach(function (id) { $(id).checked = false; });
     $('#f-sprojs-slider').value = 0;
     $('#k-yta').value = 120;
+    $('input[name="k-frekvens"][value="engang"]').checked = true;
+    ['#f-balkong', '#f-karmar', '#f-bleck', '#f-behandling', '#f-sprojstvatt'].forEach(function (id) { $(id).checked = false; });
 
-    $$('.valj-kort').forEach(function (k) { k.setAttribute('aria-pressed', 'false'); });
-    $('#form-fonster').hidden = true;
-    $('#form-kontor').hidden = true;
-
-    /* Töm kundformuläret */
     $('#kundform').reset();
-    $('#k-ort').value = 'Uppsala';
     $$('.ffalt').forEach(function (f) { f.classList.remove('ok', 'fel'); });
     $('#gdpr-kort').classList.remove('fel');
-    $('#anger-kort').classList.remove('fel');
+    $$('.faltfel').forEach(function (p) { p.textContent = ''; });
 
-    synkaVald();
+    ritaFormular();
     doljAllaFel();
   }
 
 
-  /* --- 7.11 Uppstart ----------------------------------------------------- */
-  synkaVald();
-  uppdateraStegrad();
+  /* --- 7.9 Uppstart ------------------------------------------------------ */
+  ritaFormular();
+  ritaSteg();
 
 })();

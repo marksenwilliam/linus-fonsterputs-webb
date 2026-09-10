@@ -57,29 +57,33 @@ noindex fungerar som förut.
 
 ## 1. Måste vara klart innan lansering
 
-### 1.1 Bokningen skickas inte vidare – GoHighLevel ska kopplas på
+### 1.1 GoHighLevel – två manuella steg kvar
 
-I `app.js` finns konstanten `BOKNING_URL`, som just nu är tom. Så länge den är
-tom får kunden en bekräftelse på skärmen medan **ingen bokning når fram**.
+Sidan skickar inte längre något till en webhook-URL. Formuläret är sedan
+september 2026 en offertförfrågan som postar till `/api/offert` – en egen
+serverless-funktion (`api/offert.js`) som skapar en kontakt direkt i GHL via
+16 färdigskapade custom fields i subaccountet Linus Nyysti.
 
-**Planen är GoHighLevel.** Sätt `BOKNING_URL` till webhook-adressen från ett
-inkommande webhook-steg i ett GHL-workflow. `skickaBokning` postar redan JSON
-med tjänst, tid, pris, kunduppgifter och de två godkännandena, vilket är det
-format GHL tar emot.
+**Det som återstår går inte att göra via API – varken för mig eller för
+någon annan AI-agent.** Både GHL:s Private Integration-tokens och
+workflow-byggaren är UI-låsta av säkerhetsskäl. Fullständig, klicka-färdig
+guide med färdigskriven mejltext: **[GHL-KOPPLING.md](GHL-KOPPLING.md)**.
 
-Två saker måste vara på plats innan riktiga kunduppgifter börjar flöda dit:
+Kort sagt:
+1. Skapa en Private Integration-token i GHL, lägg den som `GHL_PIT_TOKEN` i
+   Vercels miljövariabler.
+2. Bygg ett workflow i GHL (trigger: ny kontakt taggad `offertforfragan` →
+   åtgärd: mejla Linus).
 
-1. **Personuppgiftsbiträdesavtal** med HighLevel, enligt GDPR artikel 28.
-2. **Grund för överföring till USA.** HighLevel Inc. är amerikanskt, så
-   uppgifterna lämnar EU/EES. Kontrollera om de är anslutna till EU–US Data
-   Privacy Framework; är de inte det krävs EU-kommissionens
-   standardavtalsklausuler plus en bedömning av överföringen.
+Kontakterna sparas i GHL redan nu, även innan workflowet är byggt – så inga
+förfrågningar går förlorade medan Linus mejladress väntar på att skapas.
 
 **Då måste också integritetspolicyn ändras.** `integritetspolicy.html` punkt 5
 säger i dag att uppgifterna behandlas inom EU/EES. Det stämmer inte längre när
 GHL är inkopplat. Skriv om stycket så att det namnger HighLevel som mottagare,
 anger att uppgifter överförs till USA och vilken skyddsmekanism som gäller.
-Lägg samtidigt in HighLevel i listan över mottagare i samma punkt.
+Lägg samtidigt in HighLevel i listan över mottagare i samma punkt. Se även
+juridikavsnittet längst ned i GHL-KOPPLING.md.
 
 ### 1.2 HTTPS
 
