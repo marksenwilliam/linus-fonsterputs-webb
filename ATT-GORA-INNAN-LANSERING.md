@@ -106,10 +106,12 @@ och enligt **GDPR artikel 13**. De ska stå på sidan, lätt att hitta.
 | Riktig e-postadress | Sidfoten och samtliga policysidor (nu `hej@linusfonsterputs.se`) |
 | Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" |
 
-**Även den strukturerade datan.** `LocalBusiness`-blocket högst upp i
-`index.html` innehåller adressen `Gatan 1, 750 00 Uppsala`, som är påhittad.
-Den syns inte på sidan men läses av sökmotorer. Byt till den riktiga adressen,
-eller ta bort `address`-objektet om ingen besöksadress ska publiceras.
+**Den strukturerade datan är rättad (2026-09-14).** `LocalBusiness`-blocket i
+`index.html` innehöll adressen `Gatan 1, 750 00 Uppsala`, som var påhittad –
+`address`- och `geo`-fälten är borttagna, eftersom fel uppgift till Google är
+värre än ingen alls. Lägg tillbaka `address` bara om Linus vill publicera en
+riktig, offentlig adress (annars är det en typisk service-area-verksamhet
+utan besöksadress, vilket `areaServed`-listan redan täcker).
 
 ## 3. Domän och delningsbild
 

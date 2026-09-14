@@ -41,7 +41,10 @@
 <link rel="preload" href="typsnitt/inter-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="typsnitt/inter.css">
 
-<!-- Strukturerad data: LocalBusiness -->
+<!-- Strukturerad data: LocalBusiness. Inget address/geo-fält - Linus jobbar
+     hos kunden, inte på en adress kunder besöker, och en påhittad adress i
+     strukturerad data är värre än ingen alls (fel uppgift till Google).
+     Lägg till address här bara om en riktig, publik adress ska anges. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -53,15 +56,6 @@
   "telephone": "+46762171833",
   "email": "hej@linusfonsterputs.se",
   "priceRange": "$$",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Gatan 1",
-    "postalCode": "750 00",
-    "addressLocality": "Uppsala",
-    "addressRegion": "Uppsala län",
-    "addressCountry": "SE"
-  },
-  "geo": { "@type": "GeoCoordinates", "latitude": 59.8586, "longitude": 17.6389 },
   "areaServed": [
     { "@type": "City", "name": "Uppsala" },
     { "@type": "City", "name": "Knivsta" },
