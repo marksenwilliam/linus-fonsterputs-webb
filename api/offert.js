@@ -215,6 +215,12 @@ module.exports = async function handler(req, res) {
     customFields: falt
   };
 
+  /* Utan egen timeout hänger anropet kvar tills Vercel dödar hela
+     funktionen om GHL skulle svara långsamt - kunden får då vänta i onödan
+     innan felmeddelandet med telefonnumret ens visas. 8 s ger GHL gott om
+     tid men ligger säkert under funktionens egen tidsgräns. */
+  var timeout = AbortSignal.timeout(8000);
+
   try {
     var svar = await fetch(GHL_URL, {
       method: 'POST',
@@ -224,7 +230,8 @@ module.exports = async function handler(req, res) {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      body: JSON.stringify(kontakt)
+      body: JSON.stringify(kontakt),
+      signal: timeout
     });
 
     if (!svar.ok) {
@@ -235,7 +242,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(200).json({ ok: true, forfragan: forfragan });
   } catch (e) {
-    console.error('Anropet till GHL misslyckades: ' + (e && e.message));
+    var orsak = e && e.name === 'TimeoutError' ? 'Timeout mot GHL efter 8 s' : ('Anropet till GHL misslyckades: ' + (e && e.message));
+    console.error(orsak);
     return res.status(502).json({ ok: false, fel: 'Förfrågan kunde inte tas emot just nu.' });
   }
 };
