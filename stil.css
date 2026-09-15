@@ -1301,28 +1301,12 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 }
 .footer-juridik a{font-size:.9rem;}
 
-/* Länken syns bara när samtycke.js faktiskt har något att fråga om -
-   se filens egen kommentar. Samma utseende som de andra juridiklänkarna. */
+/* "Kakinställningar" - öppnar Cookiebots panel igen, se onclick i footer-juridik. */
 .samtycke-fotlank{
   background:none;border:0;padding:0;cursor:pointer;font-family:inherit;
   color:rgba(255,255,255,.82);text-decoration:none;font-size:.9rem;
 }
 .samtycke-fotlank:hover{color:var(--himmel);text-decoration:underline;}
-
-/* ---- Samtyckesbanner (cookiebot), se samtycke.js ---------------------- */
-.samtycke-ruta{
-  position:fixed;left:0;right:0;bottom:0;z-index:150;
-  background:var(--vit);border-top:1px solid var(--kant);
-  box-shadow:0 -4px 20px rgba(11,46,89,.14);
-  padding:18px 20px calc(18px + env(safe-area-inset-bottom));
-}
-/* Bokningsrutan är sin egen fullskärmsvy - samtycket ligger i vägen där. */
-body.bokar .samtycke-ruta{display:none;}
-.samtycke-inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;}
-.samtycke-text{flex:1 1 320px;margin:0;font-size:.92rem;line-height:1.55;color:var(--text);}
-.samtycke-text a{font-weight:700;}
-.samtycke-knappar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;flex:none;}
-.samtycke-val{margin-bottom:12px;max-width:640px;}
 
 /* ==========================================================================
    22. ÅNGERRÄTT OCH VILLKOR I BOKNINGENS SISTA STEG

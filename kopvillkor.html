@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="bdfa4981-d4d9-4202-a9ee-197f54f63b16" data-blockingmode="auto" type="text/javascript"></script>
+
+<!-- Google Analytics (GA4). Cookiebots auto-blockering håller detta borta
+     tills besökaren godkänt statistikkakor. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L9W1RTLRWV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-L9W1RTLRWV');
+</script>
 <title>Köpvillkor | Linus Fönsterputs</title>
 <meta name="description" content="Villkor för bokning hos Linus Fönsterputs: priser inklusive moms och RUT, 14 dagars ångerrätt, avbokning, reklamation och tvistlösning.">
 <!-- [BYT UT] Ersätt domänen när den är klar -->
@@ -303,6 +314,7 @@
       <a href="kopvillkor.html">Köpvillkor och ångerrätt</a>
       <a href="integritetspolicy.html">Integritetspolicy</a>
       <a href="cookies.html">Kakor</a>
+      <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Kakinställningar</button>
     </nav>
 
     <p class="footer-slut">© 2026 Linus Fönsterputs · Priser till privatpersoner anges inklusive moms och RUT-avdrag. Företagspriser anges exklusive moms.</p>
@@ -566,7 +578,6 @@
 
 </div><!-- /#bokning -->
 
-<script src="samtycke.js" defer></script>
 <script src="app.js" defer></script>
 
 </body>
