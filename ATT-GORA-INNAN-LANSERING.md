@@ -85,7 +85,20 @@ anger att uppgifter överförs till USA och vilken skyddsmekanism som gäller.
 Lägg samtidigt in HighLevel i listan över mottagare i samma punkt. Se även
 juridikavsnittet längst ned i GHL-KOPPLING.md.
 
-### 1.2 HTTPS
+### 1.2 Cloudflare Turnstile – secret key saknas
+
+Offertformuläret har fått spamskydd (Cloudflare Turnstile, sitekey
+`0x4AAAAAAE1mnkgxauk_GAQp`, verifieras i `api/offert.js`). Secret key kan
+bara hämtas i Cloudflare-dashboarden – inte via API – så:
+
+1. Hämta widgetens secret key i Cloudflare-dashboarden (Turnstile-sidan).
+2. Lägg den som `TURNSTILE_SECRET_KEY` i Vercels miljövariabler.
+
+**Utan den svarar `/api/offert` 400 på varje förfrågan** – funktionen är
+byggd att fail-closed, precis som GHL-token i punkt 1.1. Sätt den innan
+detta går live, annars slutar formuläret ta emot förfrågningar helt.
+
+### 1.3 HTTPS
 
 Sidan måste nås över `https://`. Personuppgifter (namn, adress, telefon)
 skickas genom bokningsformuläret, och det får inte gå okrypterat. Sätt också

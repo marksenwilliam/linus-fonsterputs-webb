@@ -14,6 +14,11 @@
   gtag('js', new Date());
   gtag('config', 'G-L9W1RTLRWV');
 </script>
+
+<!-- Cloudflare Turnstile - spamskydd i offertformuläret. Nödvändig
+     säkerhetsfunktion (inte statistik/marknadsföring), blockeras därför
+     inte av Cookiebot innan samtycke. -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer data-cookieconsent="necessary"></script>
 <title>Blogg – guider om fönsterputs i Uppsala | Linus Fönsterputs</title>
 <meta name="description" content="Praktiska guider om fönsterputsning och RUT-avdrag. Hur ofta du bör putsa, vad det kostar i Uppsala och hur avdraget fungerar.">
 <!-- [BYT UT] Ersätt domänen när den är klar -->
@@ -499,6 +504,17 @@
           <div class="honung" aria-hidden="true">
             <label for="k-foretag">Företag</label>
             <input type="text" id="k-foretag" name="foretag" tabindex="-1" autocomplete="off">
+          </div>
+
+          <!-- Cloudflare Turnstile - spamskydd. Renderas automatiskt av
+               skriptet i head. Token verifieras i api/offert.js. -->
+          <div class="turnstile-ruta">
+            <div class="cf-turnstile" id="turnstile-ruta"
+                 data-sitekey="0x4AAAAAAE1mnkgxauk_GAQp"
+                 data-action="offertformular"
+                 data-callback="turnstileKlar"
+                 data-expired-callback="turnstileForfallen"
+                 data-error-callback="turnstileFel"></div>
           </div>
 
           <label class="gdpr-kort" id="gdpr-kort">

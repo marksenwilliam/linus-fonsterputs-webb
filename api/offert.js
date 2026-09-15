@@ -11,8 +11,12 @@
    sköter ett GHL-workflow mejlet och SMS:et till Linus.
 
    MILJÖVARIABLER
-     GHL_PIT_TOKEN     Private Integration-token, börjar med pit-
-     GHL_LOCATION_ID   Subaccountets id (har ett förinställt värde nedan)
+     GHL_PIT_TOKEN       Private Integration-token, börjar med pit-
+     GHL_LOCATION_ID     Subaccountets id (har ett förinställt värde nedan)
+     TURNSTILE_SECRET_KEY  Secret key för Cloudflare Turnstile-widgeten
+                            (sitekey 0x4AAAAAAE1mnkgxauk_GAQp i formuläret).
+     TURNSTILE_HOSTNAMES   Valfri, kommaseparerad. Standard: linusfonsterputs.se
+                            och www.linusfonsterputs.se.
 
    Funktionen accepterar även några vanliga alternativnamn, så att den
    fungerar oavsett vad variablerna råkade döpas till i Vercel. Saknas de
@@ -32,6 +36,11 @@ var TOKEN_NAMN = [
 var LOCATION_NAMN = [
   'GHL_LOCATION_ID', 'GHL_SUBACCOUNT_ID', 'GOHIGHLEVEL_LOCATION_ID', 'LOCATION_ID'
 ];
+
+var TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+var TURNSTILE_ACTION = 'offertformular';
+var TURNSTILE_SECRET_NAMN = ['TURNSTILE_SECRET_KEY', 'TURNSTILE_SECRET', 'CF_TURNSTILE_SECRET_KEY'];
+var TURNSTILE_STANDARD_VARDNAMN = ['linusfonsterputs.se', 'www.linusfonsterputs.se'];
 
 /* Subaccountet Linus Nyysti. Inget hemligt – bara en rimlig standard om
    variabeln inte råkar finnas. */
@@ -91,6 +100,40 @@ function telefonE164(rr) {
   return rr;
 }
 
+/** Verifierar en Turnstile-token mot Cloudflare. Returnerar true/false -
+    aldrig detaljer om varför, det är bara till för loggen. */
+async function turnstileGiltig(token, ip) {
+  var secret = forsta(TURNSTILE_SECRET_NAMN);
+  if (!secret || typeof token !== 'string' || !token || token.length > 2048) {
+    return false;
+  }
+
+  var vardnamn = forsta(['TURNSTILE_HOSTNAMES']);
+  var tillatnaVardnamn = (vardnamn ? vardnamn.split(',') : TURNSTILE_STANDARD_VARDNAMN)
+    .map(function (v) { return v.trim(); })
+    .filter(Boolean);
+
+  var body = new URLSearchParams({ secret: secret, response: token });
+  if (ip) body.append('remoteip', ip);
+
+  try {
+    var svar = await fetch(TURNSTILE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body,
+      signal: AbortSignal.timeout(8000)
+    });
+    if (!svar.ok) return false;
+    var resultat = await svar.json();
+    return !!resultat.success &&
+      resultat.action === TURNSTILE_ACTION &&
+      tillatnaVardnamn.indexOf(resultat.hostname) !== -1;
+  } catch (e) {
+    console.error('Turnstile-verifiering misslyckades: ' + (e && e.message));
+    return false;
+  }
+}
+
 /* ---- Validering, samma regler som formuläret men på serversidan -------- */
 
 /* Samma mönster som HTML5:s inbyggda e-postvalidering, och samma som
@@ -143,6 +186,11 @@ module.exports = async function handler(req, res) {
      Svaret ser lyckat ut så att spammaren inte lär sig något. */
   if (text(kropp.foretag, 100)) {
     return res.status(200).json({ ok: true });
+  }
+
+  var klientIp = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  if (!(await turnstileGiltig(kropp.turnstileToken, klientIp))) {
+    return res.status(400).json({ ok: false, fel: 'Säkerhetskontrollen kunde inte verifieras. Ladda om sidan och försök igen.' });
   }
 
   var k = {

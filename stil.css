@@ -1337,3 +1337,8 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
    många robotar hoppa över, därför flyttas det ur bild i stället.
    ========================================================================== */
 .honung{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+
+/* ---- Cloudflare Turnstile ---------------------------------------------
+   Widgeten har en fast bredd (~300px) - centreras så den inte hamnar
+   klistrad mot vänsterkanten i den smalare bokningsrutan. */
+.turnstile-ruta{display:flex;justify-content:center;}

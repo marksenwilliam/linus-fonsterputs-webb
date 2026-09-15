@@ -780,6 +780,17 @@
   });
 
 
+  /* --- 7.6b Cloudflare Turnstile ------------------------------------------
+     Skyddar offertformuläret mot spam. Widgeten renderas automatiskt av
+     Turnstiles eget skript (se head) utifrån data-sitekey på #turnstile-
+     ruta - dessa tre callbacks är de globala krokarna dit den. Token
+     verifieras sedan på serversidan i api/offert.js. */
+  var turnstileToken = null;
+  window.turnstileKlar = function (token) { turnstileToken = token; };
+  window.turnstileForfallen = function () { turnstileToken = null; };
+  window.turnstileFel = function () { turnstileToken = null; };
+
+
   /* --- 7.7 Skicka förfrågan --------------------------------------------- */
 
   /* ------------------------------------------------------------------
@@ -808,6 +819,7 @@
       adress: $('#k-adress').value.trim(),
       meddelande: '',
       foretag: $('#k-foretag') ? $('#k-foretag').value : '',
+      turnstileToken: turnstileToken,
       godkant: $('#k-gdpr').checked,
       prisKund: b.attBetala,
       prisForeRut: b.total,
@@ -869,6 +881,16 @@
       return;
     }
 
+    /* Säkerhetskontrollen (Turnstile) hinner nästan alltid klart under de
+       minuter kunden fyller i formuläret - men race:en finns, så vänta
+       inte tyst om token saknas. */
+    if (!turnstileToken) {
+      $('#fel-skicka-txt').textContent =
+        'Säkerhetskontrollen är inte klar än. Vänta någon sekund och försök igen.';
+      visaFel('#fel-skicka');
+      return;
+    }
+
     bekraftaKnapp.classList.add('laddar');
     bekraftaKnapp.disabled = true;
 
@@ -877,6 +899,10 @@
       bekraftaKnapp.disabled = false;
 
       if (!svar) {
+        /* Token är förbrukad (ett svar från Cloudflare gäller bara en gång) -
+           nollställ widgeten så nästa försök får en giltig. */
+        turnstileToken = null;
+        if (window.turnstile) window.turnstile.reset('#turnstile-ruta');
         $('#fel-skicka-txt').textContent =
           'Förfrågan kunde inte skickas just nu. Försök igen om en stund, eller ring 076-217 18 33 så tar Linus den direkt.';
         visaFel('#fel-skicka');
