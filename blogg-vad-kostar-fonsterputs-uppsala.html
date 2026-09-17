@@ -34,7 +34,17 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2.5C16 2.5 6 14 6 20a10 10 0 0 0 20 0c0-6-10-17.5-10-17.5Z' fill='%232563EB'/%3E%3Cpath d='M11.5 19.5a4.5 4.5 0 0 0 4.5 4.5' stroke='%23fff' stroke-width='2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<!-- Ikoner. favicon.ico och apple-touch-icon.png ligger i roten - många
+     klienter hämtar just de sökvägarna utan att läsa sidans HTML. -->
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/ikoner/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="16x16" href="/ikoner/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/ikoner/favicon-32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/ikoner/favicon-96.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="msapplication-TileColor" content="#2563EB">
+<meta name="msapplication-TileImage" content="/ikoner/icon-144.png">
 <!-- Inter serveras från egen domän. Inga anrop till Google, alltså inga
      personuppgifter (IP-adresser) som lämnar sidan och inga tredjepartskakor. -->
 <link rel="preload" href="typsnitt/inter-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
