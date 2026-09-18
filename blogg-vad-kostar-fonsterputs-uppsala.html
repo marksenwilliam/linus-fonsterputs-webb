@@ -346,6 +346,35 @@
 
     </div>
 
+    <!-- Google-karta kopplad till företagsprofilen.
+         [BYT UT] Länken nedan är en sökning på företagsnamnet i Uppsala. Byt
+         den mot den exakta inbäddningslänken från Google Företagsprofil
+         (Dela → Bädda in en karta → kopiera src-adressen ur iframe-koden), så
+         pekar nålen garanterat på rätt profil. Samma adress ska bytas på alla
+         tio sidor, och på båda ställena här: data-cookieblock-src och href.
+         Kartan laddas först när besökaren godkänt marknadsföringskakor –
+         Cookiebot byter då data-cookieblock-src mot src. Fram till dess visas
+         rutan under, och inget anrop går till Google. -->
+    <div class="footer-karta">
+      <h4>Linus Fönsterputs på kartan</h4>
+      <div class="karta-ram">
+        <iframe
+          title="Karta över Linus Fönsterputs verksamhetsområde i Uppsala"
+          data-cookieblock-src="https://maps.google.com/maps?q=Linus+F%C3%B6nsterputs,+Uppsala&z=10&hl=sv&output=embed"
+          data-cookieconsent="marketing"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <p class="karta-av">
+          <svg aria-hidden="true"><use href="#i-plats"/></svg>
+          <span>Kartan kommer från Google och laddas först när du godkänt marknadsföringskakor.</span>
+          <span class="karta-knappar">
+            <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Ändra kakinställningar</button>
+            <a href="https://maps.google.com/maps?q=Linus+F%C3%B6nsterputs,+Uppsala" target="_blank" rel="noopener">Öppna i Google Maps</a>
+          </span>
+        </p>
+      </div>
+    </div>
+
     <nav class="footer-juridik" aria-label="Villkor och integritet">
       <a href="kopvillkor.html">Köpvillkor och ångerrätt</a>
       <a href="integritetspolicy.html">Integritetspolicy</a>

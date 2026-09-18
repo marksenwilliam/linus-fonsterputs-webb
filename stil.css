@@ -893,6 +893,29 @@ a.omd-bricka:hover{text-decoration:none;transform:translateY(-2px);box-shadow:va
 .footer .kontakt li{display:flex;gap:10px;align-items:flex-start;}
 .footer .kontakt svg{width:17px;height:17px;flex:none;margin-top:4px;stroke:var(--himmel);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .footer .fskatt{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:14px;}
+
+/* --- Google-kartan i sidfoten ----------------------------------------- */
+/* Kartan laddas först när besökaren godkänt marknadsföringskakor. Fram till
+   dess saknar iframen src, och då visas rutan .karta-av i stället – utan att
+   ett enda anrop går till Google. Växlingen sköts helt i CSS på om src finns
+   eller inte, så den fungerar även på sidor som inte laddar app.js. */
+.footer-karta{margin-top:40px;}
+.karta-ram{
+  position:relative;overflow:hidden;border-radius:var(--radie);
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+}
+.karta-ram iframe{display:block;width:100%;height:260px;border:0;}
+.karta-ram iframe:not([src]){display:none;}
+.karta-ram iframe[src] ~ .karta-av{display:none;}
+.karta-av{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  margin:0;padding:30px 20px;text-align:center;
+  font-size:.86rem;color:rgba(255,255,255,.7);
+}
+.karta-av svg{width:26px;height:26px;stroke:var(--himmel);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.karta-knappar{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;}
+@media(min-width:640px){.karta-ram iframe{height:300px;}}
+
 .footer-slut{
   border-top:1px solid rgba(255,255,255,.14);margin-top:44px;padding:20px 0 24px;
   text-align:center;font-size:.82rem;color:rgba(255,255,255,.6);
@@ -1379,6 +1402,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
    ========================================================================== */
 .juridik h2{margin-top:40px;}
 .juridik h2:first-of-type{margin-top:8px;}
+.juridik h3{margin-top:26px;}
 .juridik p,.juridik li{font-size:1rem;}
 
 /* Sammanfattningsruta överst på varje sida */

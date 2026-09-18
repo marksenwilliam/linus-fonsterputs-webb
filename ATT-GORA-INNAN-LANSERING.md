@@ -5,7 +5,7 @@ och företagsinformation finns på plats. Det som återstår är uppgifter som b
 du kan fylla i, plus två saker som måste vara gjorda innan sidan får gå live.
 
 Sök på `[BYT UT]` i projektet för att hitta varje ställe. Just nu finns
-**27 träffar** fördelade enligt listan längst ned.
+**37 träffar** fördelade enligt listan längst ned.
 
 ---
 
@@ -16,7 +16,7 @@ Kontrollerat mot gällande regler och åtgärdat:
 | Vad | Resultat |
 |---|---|
 | Kakor – LEK | **Rättat.** Kakpolicyn hänvisade till 6 kap. 18 § i den gamla lagen (2003:389). Bestämmelsen ligger sedan 3 juni 2022 i **9 kap. 28 § lagen (2022:482) om elektronisk kommunikation**. |
-| Kakor – i praktiken | Sidan sätter inga kakor, använder ingen localStorage och gör inga externa anrop. Ingen samtyckesruta behövs därför. Verifierat i koden. |
+| Kakor – i praktiken | **Inaktuell rad, rättad 18 september 2026.** Stämde när den skrevs, men sedan dess har Cookiebot, Google Analytics 4, Cloudflare Turnstile och en Google-karta tillkommit. Kakpolicyn och integritetspolicyn påstod fortfarande att sidan inte sätter några kakor och uppmanade besökaren att kontrollera i utvecklarverktygen att det var tomt. Båda sidorna är omskrivna efter hur sidan faktiskt fungerar: nödvändiga kakor (Cookiebot, Turnstile), statistik efter samtycke (GA4) och marknadsföring efter samtycke (kartan). |
 | GDPR artikel 13 | Uppfyllt – ändamål, rättslig grund per ändamål, lagringstider, mottagare, rättigheter och klagomål till IMY. Saknar bara personuppgiftsansvarigs identitet (se punkt 2). |
 | Distansavtalslagen | Uppfyllt – information innan avtal, 14 dagars ångerrätt, Konsumentverkets standardformulär, och den uttryckliga begäran om utförande inom ångerfristen som en **egen, omarkerad, obligatorisk kryssruta**. Verifierat att ingen ruta är förifylld. |
 | Konsumenttjänstlagen | Uppfyllt – reklamation inom skälig tid, två månader alltid i rätt tid, tre års reklamationsrätt. |
@@ -80,11 +80,10 @@ Kort sagt:
 Kontakterna sparas i GHL redan nu, även innan workflowet är byggt – så inga
 förfrågningar går förlorade medan Linus mejladress väntar på att skapas.
 
-**Då måste också integritetspolicyn ändras.** `integritetspolicy.html` punkt 5
-säger i dag att uppgifterna behandlas inom EU/EES. Det stämmer inte längre när
-GHL är inkopplat. Skriv om stycket så att det namnger HighLevel som mottagare,
-anger att uppgifter överförs till USA och vilken skyddsmekanism som gäller.
-Lägg samtidigt in HighLevel i listan över mottagare i samma punkt. Se även
+**Integritetspolicyn är redan uppdaterad för det här.** Punkt 5 i
+`integritetspolicy.html` namnger HighLevel Inc som mottagare, anger att
+uppgifter överförs till USA och att överföringen vilar på EU–U.S. Data Privacy
+Framework. Inget mer behöver göras där för GHL:s skull. Se även
 juridikavsnittet längst ned i GHL-KOPPLING.md.
 
 ### 1.2 Cloudflare Turnstile – secret key saknas
@@ -148,6 +147,30 @@ för sidfoten och bokningsvyn.
 |---|---|
 | Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt`, `@id` och `url` i `LocalBusiness`-blocket |
 | Delningsbild 1200×630 px | `og:image` – filen `og-bild.jpg` finns inte än |
+
+## 3.1 Google-kartan i sidfoten – kontrollera nålen
+
+Sidfoten har en Google-karta på alla tio sidor. **Adressen är en sökning på
+företagsnamnet**, inte en länk till den riktiga företagsprofilen: `share.google`
+och alla Google-domäner är blockerade från utvecklingsmiljön, så länken till
+profilen gick inte att slå upp därifrån.
+
+Gör så här:
+
+1. Öppna Google Företagsprofil → **Dela** → **Bädda in en karta**.
+2. Kopiera `src`-adressen ur iframe-koden.
+3. Byt ut den på **båda** ställena i sidfotsblocket (`data-cookieblock-src` på
+   `<iframe>` och `href` på länken *Öppna i Google Maps*), på alla tio sidor.
+   Sök på `[BYT UT] Länken nedan är en sökning` för att hitta dem.
+
+Kartan är samtyckesspärrad: iframen har `data-cookieblock-src` i stället för
+`src`, och Cookiebot byter först när besökaren godkänt marknadsföringskakor.
+Utan samtycke visas en ruta med en vanlig länk, och inget anrop går till
+Google. Växlingen sker i CSS (`iframe:not([src])`), så den fungerar även på
+`tack.html` som inte laddar `app.js`.
+
+`vercel.json` har fått `https://www.google.com` och `https://maps.google.com`
+i `frame-src` – utan det blockerar sidans egen CSP kartan.
 
 ## 4. Leverantörer att lista i integritetspolicyn
 
@@ -248,10 +271,13 @@ Google-profilen; sektionen på sidan länkar dit i stället.
 - **Ångerrätt** enligt distansavtalslagen: information innan avtalet ingås,
   uttrycklig begäran om utförande inom ångerfristen som egen kryssruta, och
   Konsumentverkets standardformulär.
-- **Kakpolicy** – sidan sätter inga kakor, använder ingen besöksstatistik och
-  gör inga externa anrop. Därför behövs ingen samtyckesruta.
+- **Kakpolicy** – redovisar kaka för kaka vad som sätts och när: nödvändiga
+  (Cookiebot, Cloudflare Turnstile), statistik efter samtycke (Google
+  Analytics 4) och marknadsföring efter samtycke (Google-kartan i sidfoten).
+  Samtycket hanteras av Cookiebot och kan ändras via *Kakinställningar* i
+  sidfoten på varje sida.
 - **Typsnittet Inter hostas lokalt** i stället för från Google. Inga
-  besökar-IP-adresser lämnar sidan.
+  besökar-IP-adresser lämnar sidan för typsnittens skull.
 - **Priser** anges inklusive moms och RUT för privatpersoner, och exklusive
   moms för företag – enligt prisinformationslagen.
 - **robots.txt**, **sitemap.xml** och en **404-sida**.
@@ -289,21 +315,22 @@ behöver alltså ingenting byggas om.
 
 | Fil | Antal |
 |---|---|
-| index.html | 5 |
-| integritetspolicy.html | 4 |
-| kopvillkor.html | 3 |
-| cookies.html | 2 |
-| 404.html | 2 |
-| tack.html | 2 |
-| blogg.html | 2 |
-| blogg-hur-ofta-putsa-fonster.html | 2 |
-| blogg-vad-kostar-fonsterputs-uppsala.html | 2 |
-| blogg-rut-avdrag-fonsterputs-stad.html | 2 |
+| index.html | 6 |
+| integritetspolicy.html | 5 |
+| kopvillkor.html | 4 |
+| cookies.html | 3 |
+| 404.html | 3 |
+| tack.html | 3 |
+| blogg.html | 3 |
+| blogg-hur-ofta-putsa-fonster.html | 3 |
+| blogg-vad-kostar-fonsterputs-uppsala.html | 3 |
+| blogg-rut-avdrag-fonsterputs-stad.html | 3 |
 | sitemap.xml | 1 |
-| **Totalt** | **27** |
+| **Totalt** | **37** |
 
-Kvar är bara två saker: domänen (som ska bytas överallt när den är klar) och
-den geografiska adressen. Org.nr, momsnummer och e-postadress är ifyllda.
+Kvar är tre saker: domänen (som ska bytas överallt när den är klar), den
+geografiska adressen och kartlänken i sidfoten (punkt 3.1). Org.nr, momsnummer
+och e-postadress är ifyllda.
 
 Omdömena räknas inte in här – de är märkta med `platshallare: true` i `app.js`
 i stället för `[BYT UT]`, eftersom flaggan också styr varningsrutan på sidan.
