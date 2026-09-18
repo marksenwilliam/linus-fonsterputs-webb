@@ -148,20 +148,37 @@ för sidfoten och bokningsvyn.
 | Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt`, `@id` och `url` i `LocalBusiness`-blocket |
 | Delningsbild 1200×630 px | `og:image` – filen `og-bild.jpg` finns inte än |
 
-## 3.1 Google-kartan i sidfoten – kontrollera nålen
+## 3.1 Google-kartan i sidfoten – inbäddningen saknas
 
-Sidfoten har en Google-karta på alla tio sidor. **Adressen är en sökning på
-företagsnamnet**, inte en länk till den riktiga företagsprofilen: `share.google`
-och alla Google-domäner är blockerade från utvecklingsmiljön, så länken till
-profilen gick inte att slå upp därifrån.
+Sidfoten har en Google-karta på alla tio sidor, men **den visar bara området,
+inte företagsprofilen**. Länken *Öppna i Google Maps* pekar däremot rätt.
 
-Gör så här:
+### Varför det inte går att lösa härifrån
+
+En inbäddning av formen `?q=<text>&output=embed` gör en vanlig Google-sökning
+och bygger ett eget kort av träffen. Det kortet är **inte** kopplat till
+företagsprofilen, och skrev därför ut *"Inga recensioner"* bredvid namnet –
+trots att profilen har 30. Det gick inte att laga genom att byta söktext:
+bara en riktig profilinbäddning bär betyg och antal.
+
+Adressen är därför bytt mot en ren områdeskarta över Uppsala, som åtminstone
+inte påstår något felaktigt, tills den riktiga inbäddningen finns.
+
+Den riktiga inbäddningskoden går inte att hämta från utvecklingsmiljön:
+`share.google`, `google.com` och `maps.google.com` är alla blockerade av
+nätverkspolicyn.
+
+### Gör så här
 
 1. Öppna Google Företagsprofil → **Dela** → **Bädda in en karta**.
-2. Kopiera `src`-adressen ur iframe-koden.
-3. Byt ut den på **båda** ställena i sidfotsblocket (`data-cookieblock-src` på
-   `<iframe>` och `href` på länken *Öppna i Google Maps*), på alla tio sidor.
-   Sök på `[BYT UT] Länken nedan är en sökning` för att hitta dem.
+2. Kopiera `src`-adressen ur iframe-koden. Den ska börja med
+   `https://www.google.com/maps/embed?pb=` – börjar den med `maps.google.com/maps?q=`
+   är det en sökning igen, och då kommer "Inga recensioner" tillbaka.
+3. Byt ut `data-cookieblock-src` på `<iframe>` i sidfotsblocket, på alla tio
+   sidor. `href` på länken *Öppna i Google Maps* ska stå kvar som den är.
+   Sök på `[BYT UT] Adressen nedan visar bara området` för att hitta dem.
+4. Byt gärna rubriken `<h4>Var jag jobbar</h4>` mot något som passar ett
+   profilkort, t.ex. *Linus Fönsterputs på Google*.
 
 Kartan är samtyckesspärrad: iframen har `data-cookieblock-src` i stället för
 `src`, och Cookiebot byter först när besökaren godkänt marknadsföringskakor.

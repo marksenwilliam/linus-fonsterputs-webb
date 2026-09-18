@@ -330,21 +330,28 @@
 
     </div>
 
-    <!-- Google-karta kopplad till företagsprofilen.
-         [BYT UT] Länken nedan är en sökning på företagsnamnet i Uppsala. Byt
-         den mot den exakta inbäddningslänken från Google Företagsprofil
-         (Dela → Bädda in en karta → kopiera src-adressen ur iframe-koden), så
-         pekar nålen garanterat på rätt profil. Samma adress ska bytas på alla
-         tio sidor, och på båda ställena här: data-cookieblock-src och href.
-         Kartan laddas först när besökaren godkänt marknadsföringskakor –
+    <!-- Google-karta över verksamhetsområdet.
+         [BYT UT] Adressen nedan visar bara området, inte företagsprofilen.
+         En inbäddning av formen ?q=<text>&output=embed gör en vanlig sökning
+         och bygger ett eget kort av träffen. Det kortet är inte kopplat till
+         företagsprofilen och skriver därför ut "Inga recensioner", hur många
+         omdömen profilen än har. Därför står här en ren områdeskarta i
+         stället, tills den riktiga inbäddningen finns på plats.
+         Så byter du: Google Företagsprofil -> Dela -> Bädda in en karta ->
+         kopiera src-adressen ur iframe-koden. Den börjar med
+         https://www.google.com/maps/embed?pb= och är låst till profilen, så
+         kortet visar namn, betyg och antal omdömen. Byt bara
+         data-cookieblock-src nedan - href-länken pekar redan rätt - och gör
+         det på alla tio sidor.
+         Kartan laddas först när besökaren godkänt marknadsföringskakor:
          Cookiebot byter då data-cookieblock-src mot src. Fram till dess visas
          rutan under, och inget anrop går till Google. -->
     <div class="footer-karta">
-      <h4>Linus Fönsterputs på kartan</h4>
+      <h4>Var jag jobbar</h4>
       <div class="karta-ram">
         <iframe
-          title="Karta över Linus Fönsterputs verksamhetsområde i Uppsala"
-          data-cookieblock-src="https://maps.google.com/maps?q=Linus+F%C3%B6nsterputs,+Uppsala&z=10&hl=sv&output=embed"
+          title="Karta över verksamhetsområdet: Uppsala med omnejd"
+          data-cookieblock-src="https://maps.google.com/maps?q=Uppsala,+Sverige&z=9&hl=sv&output=embed"
           data-cookieconsent="marketing"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"></iframe>
