@@ -66,22 +66,37 @@
 <link rel="preload" href="typsnitt/inter-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="typsnitt/inter.css">
 
-<!-- Strukturerad data: LocalBusiness. Inget address/geo-fält - Linus jobbar
-     hos kunden, inte på en adress kunder besöker, och en påhittad adress i
-     strukturerad data är värre än ingen alls (fel uppgift till Google).
-     Lägg till address här bara om en riktig, publik adress ska anges. -->
+<!-- Strukturerad data: LocalBusiness. Samma block ligger på alla indexerbara
+     sidor med samma @id, så att Google ser en enda verksamhet och inte en per
+     sida. Adressen anges bara på ort- och länsnivå: Linus jobbar hos kunden,
+     inte på en besöksadress som kunder söker upp, och en påhittad gatuadress i
+     strukturerad data är värre än ingen alls (fel uppgift till Google). Lägg
+     till streetAddress, postalCode och geo här bara om en riktig, publik
+     besöksadress ska anges. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "@id": "https://linusfonsterputs.se/#business",
   "name": "Linus Fönsterputs",
+  "legalName": "Linus Fönsterputs",
   "description": "Fönsterputs och kontorsputs i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.",
   "url": "https://linusfonsterputs.se/",
+  "logo": "https://linusfonsterputs.se/bilder/logga-mork.png",
+  "image": "https://linusfonsterputs.se/og-bild.jpg",
   "telephone": "+46762171833",
-  "email": "hej@linusfonsterputs.se",
+  "email": "kontakt@linusfonsterputs.se",
   "priceRange": "$$",
+  "currenciesAccepted": "SEK",
+  "paymentAccepted": "Faktura",
   "taxID": "031221-5551",
+  "vatID": "SE031221555101",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Uppsala",
+    "addressRegion": "Uppsala län",
+    "addressCountry": "SE"
+  },
   "areaServed": [
     { "@type": "City", "name": "Uppsala" },
     { "@type": "City", "name": "Knivsta" },
@@ -750,11 +765,11 @@
           <span class="logga-bild ljus" aria-hidden="true"></span>
         </a>
         <p>Fönsterputsning för villa och kontorsputs för företag i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.</p>
-        <!-- [BYT UT] Fyll i momsnummer och geografisk adress. Uppgifterna är
-             obligatoriska enligt 8 § lagen om elektronisk handel och
-             ska finnas lätt tillgängliga på sidan. -->
+        <!-- [BYT UT] Fyll i den geografiska adressen. Uppgiften är
+             obligatorisk enligt 8 § lagen om elektronisk handel och
+             ska finnas lätt tillgänglig på sidan. -->
         <p class="fskatt">Innehar F-skattsedel och ansvarsförsäkring<br>
-          Org.nr 031221-5551 · Momsreg.nr SEXXXXXXXXXX01<br>
+          Org.nr&nbsp;031221-5551 · Momsreg.nr&nbsp;SE031221555101<br>
           Gatuadress, postnummer och ort</p>
       </div>
 
@@ -774,8 +789,7 @@
         <h4>Kontakt</h4>
         <ul class="kontakt">
           <li><svg aria-hidden="true"><use href="#i-telefon"/></svg><a href="tel:+46762171833">076-217 18 33</a></li>
-          <!-- [BYT UT] Ersätt e-postadressen med Linus riktiga adress -->
-          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:hej@linusfonsterputs.se">hej@linusfonsterputs.se</a></li>
+          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></li>
           <li><svg aria-hidden="true"><use href="#i-klocka"/></svg><span>Mån–fre 07–17<br>Lör 09–14</span></li>
           <li><svg aria-hidden="true"><use href="#i-plats"/></svg><span>Utgångspunkt: Uppsala</span></li>
         </ul>

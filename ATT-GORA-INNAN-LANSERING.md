@@ -5,7 +5,7 @@ och företagsinformation finns på plats. Det som återstår är uppgifter som b
 du kan fylla i, plus två saker som måste vara gjorda innan sidan får gå live.
 
 Sök på `[BYT UT]` i projektet för att hitta varje ställe. Just nu finns
-**36 träffar** fördelade enligt listan längst ned.
+**27 träffar** fördelade enligt listan längst ned.
 
 ---
 
@@ -46,7 +46,7 @@ Linus kan lämna – sidan kan inte gå live utan dem.
   `vercel.json` med `X-Robots-Tag` är borta. Sidan är alltså i skarpt läge.
 
 > **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1 och 2
-> nedan är avklarade – organisationsnummer och adress är fortfarande
+> nedan är avklarade – den geografiska adressen är fortfarande
 > platshållartext.
 
 Vill du tillfälligt tillbaka till granskningsläge: `node forhandsvisning.js pa`.
@@ -111,20 +111,34 @@ upp automatisk omdirigering från `http://` till `https://`.
 Dessa är obligatoriska enligt **8 § lagen om elektronisk handel (2002:562)**
 och enligt **GDPR artikel 13**. De ska stå på sidan, lätt att hitta.
 
-| Uppgift | Var den ska in |
-|---|---|
-| Organisationsnummer | Sidfoten på alla sidor, `kopvillkor.html`, `integritetspolicy.html` |
-| Momsregistreringsnummer | Sidfoten, `kopvillkor.html` |
-| Geografisk adress | Sidfoten, `kopvillkor.html`, `integritetspolicy.html` |
-| Riktig e-postadress | Sidfoten och samtliga policysidor (nu `hej@linusfonsterputs.se`) |
-| Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" |
+| Uppgift | Var den ska in | Status |
+|---|---|---|
+| Organisationsnummer | Sidfoten på alla sidor, `kopvillkor.html`, `integritetspolicy.html`, strukturerad data | **Klart** – `031221-5551` |
+| Momsregistreringsnummer | Sidfoten, `kopvillkor.html`, strukturerad data | **Klart** – `SE031221555101`. Numret är härlett ur org.nr enligt standardregeln (`SE` + tio siffror + `01`). Stäm av mot registerutdraget från Skatteverket. |
+| Geografisk adress | Sidfoten, `kopvillkor.html`, `integritetspolicy.html` | Kvarstår – platshållartext |
+| Riktig e-postadress | Sidfoten och samtliga policysidor | **Klart** – `kontakt@linusfonsterputs.se`. Brevlådan måste finnas innan sidan går live. |
+| Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" | Kontrollera |
 
-**Den strukturerade datan är rättad (2026-09-14).** `LocalBusiness`-blocket i
-`index.html` innehöll adressen `Gatan 1, 750 00 Uppsala`, som var påhittad –
-`address`- och `geo`-fälten är borttagna, eftersom fel uppgift till Google är
-värre än ingen alls. Lägg tillbaka `address` bara om Linus vill publicera en
-riktig, offentlig adress (annars är det en typisk service-area-verksamhet
-utan besöksadress, vilket `areaServed`-listan redan täcker).
+**Den strukturerade datan (uppdaterad 2026-09-18).** `LocalBusiness`-blocket
+ligger nu på alla sju indexerbara sidor med samma `@id`
+(`https://linusfonsterputs.se/#business`), så att Google ser en enda
+verksamhet i stället för en per sida. Bloggsidornas `publisher` pekar på samma
+`@id`. Blocket innehåller org.nr (`taxID`), momsnummer (`vatID`), e-post,
+telefon, öppettider, tjänstekatalog och `areaServed`.
+
+De två sidor som är `noindex` – `404.html` och `tack.html` – har medvetet
+inget block, eftersom sökmotorer aldrig läser strukturerad data där.
+
+`address` anges bara på ort- och länsnivå (Uppsala, Uppsala län, SE). Den
+tidigare påhittade adressen `Gatan 1, 750 00 Uppsala` är sedan 2026-09-14
+borta, och någon gatuadress läggs inte tillbaka på egen hand – fel uppgift
+till Google är värre än ingen alls. Fyll på med `streetAddress`, `postalCode`
+och `geo` bara om Linus vill publicera en riktig, offentlig besöksadress
+(annars är det en typisk service-area-verksamhet, vilket `areaServed` täcker).
+
+**Blocket är duplicerat i åtta filer.** Ändrar du en uppgift i det – e-post,
+telefon, priser, öppettider – måste ändringen speglas i samtliga, precis som
+för sidfoten och bokningsvyn.
 
 ## 3. Domän och delningsbild
 
@@ -205,6 +219,9 @@ när nya omdömen kommer in.
 - **Priser** anges inklusive moms och RUT för privatpersoner, och exklusive
   moms för företag – enligt prisinformationslagen.
 - **robots.txt**, **sitemap.xml** och en **404-sida**.
+- **Strukturerad data** – `LocalBusiness` på alla indexerbara sidor med org.nr,
+  momsnummer, kontaktuppgifter, öppettider och tjänstekatalog, plus `FAQPage`
+  på startsidan och `Blog`/`BlogPosting` på bloggen.
 - **WCAG 2.1 AA** på kontrast och tangentbordsnavigering.
 - **Inga påhittade omdömen eller betyg** någonstans på sidan.
 
@@ -234,15 +251,18 @@ behöver alltså ingenting byggas om.
 
 | Fil | Antal |
 |---|---|
-| index.html | 7 |
-| integritetspolicy.html | 5 |
-| kopvillkor.html | 4 |
-| cookies.html | 3 |
-| 404.html | 3 |
-| blogg.html | 3 |
-| blogg-hur-ofta-putsa-fonster.html | 3 |
-| blogg-vad-kostar-fonsterputs-uppsala.html | 3 |
-| blogg-rut-avdrag-fonsterputs-stad.html | 3 |
+| index.html | 5 |
+| integritetspolicy.html | 4 |
+| kopvillkor.html | 3 |
+| cookies.html | 2 |
+| 404.html | 2 |
+| tack.html | 2 |
+| blogg.html | 2 |
+| blogg-hur-ofta-putsa-fonster.html | 2 |
+| blogg-vad-kostar-fonsterputs-uppsala.html | 2 |
+| blogg-rut-avdrag-fonsterputs-stad.html | 2 |
 | sitemap.xml | 1 |
-| app.js | 1 |
-| **Totalt** | **36** |
+| **Totalt** | **27** |
+
+Kvar är bara två saker: domänen (som ska bytas överallt när den är klar) och
+den geografiska adressen. Org.nr, momsnummer och e-postadress är ifyllda.

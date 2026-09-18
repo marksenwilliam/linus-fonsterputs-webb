@@ -45,9 +45,10 @@ inte vidare någonstans förrän `BOKNING_URL` i `app.js` är ifylld.
 
 Bokningsvyn ligger **duplicerad i nio HTML-filer**. Ändrar du något i
 formuläret måste ändringen speglas i samtliga. Redigera `index.html` och kopiera
-sedan de delade blocken därifrån till övriga sidor – header, mobilmeny, sidfot
-och hela bokningsvyn. Alternativet är att låta `app.js` bygga formuläret från en
-enda mall, vilket tar bort problemet permanent.
+sedan de delade blocken därifrån till övriga sidor – header, mobilmeny, sidfot,
+`LocalBusiness`-blocket i `<head>` och hela bokningsvyn. Alternativet är att
+låta `app.js` bygga formuläret från en enda mall, vilket tar bort problemet
+permanent.
 
 ## Licenser
 
