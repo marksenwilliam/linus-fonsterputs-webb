@@ -784,6 +784,9 @@ a.omd-bricka:hover{text-decoration:none;transform:translateY(-2px);box-shadow:va
 .avatar{
   width:46px;height:46px;border-radius:50%;background:var(--grad);color:var(--vit);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;flex:none;
+  /* Vissa skriver sitt namn med liten begynnelsebokstav på Google. Namnet
+     återges ordagrant, men initialen i ringen sätts versal. */
+  text-transform:uppercase;
 }
 .omd-person-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
 .omd-namn{font-weight:700;color:var(--marin);font-size:1rem;line-height:1.25;font-style:normal;}
@@ -796,6 +799,8 @@ a.omd-bricka:hover{text-decoration:none;transform:translateY(-2px);box-shadow:va
    att bedöma som design. Egen klass, inte sidans .platshallare: den gula
    överstrykningen är gjord för enstaka ord, inte för hela stycken. */
 .omd-text.utkast{border-left:3px dotted #D97706;padding-left:13px;}
+/* Kunder som bara satte betyg utan att skriva något. */
+.omd-text.omd-utan-text{color:var(--text-2);font-style:italic;font-size:.9rem;}
 
 /* Citattecknet avslutar kortet och knyter ihop det med sidans gradient. */
 .omd-citat{

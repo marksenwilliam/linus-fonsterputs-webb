@@ -22,7 +22,7 @@ Kontrollerat mot gällande regler och åtgärdat:
 | Konsumenttjänstlagen | Uppfyllt – reklamation inom skälig tid, två månader alltid i rätt tid, tre års reklamationsrätt. |
 | Prisinformationslagen | Uppfyllt – privatpriser inklusive moms och RUT med summan före avdrag bredvid, företagspriser tydligt märkta exklusive moms. |
 | RUT-taket | **Rättat.** Sidan angav 75 000 kr per person och år utan att nämna att taket delas med ROT (högst 50 000 kr får vara ROT). Klargörande inlagt på tre ställen. |
-| Marknadsföringslagen | Åtgärdat – inga påhittade omdömen eller betyg någonstans. Galleriets notis anger nu vilka bilder som är från utförda jobb och vilka som är exempelbilder (se punkt 5). |
+| Marknadsföringslagen | Åtgärdat – inga påhittade omdömen eller betyg någonstans. Omdömena på sidan är 30 riktiga Google-omdömen, avskrivna ordagrant och utan gallring (se punkt 7). Galleriets notis anger nu vilka bilder som är från utförda jobb och vilka som är exempelbilder (se punkt 5). |
 | ODR-plattformen | Inget att göra. EU:s ODR-plattform stängdes 20 juli 2025 och förordning 524/2013 är upphävd – länken får inte längre finnas. Sidan hänvisar rätt, till ARN. |
 | WCAG 2.1 AA – kontrast | **Rättat.** Sekundär text (`--text-2`) låg på 4,37:1 mot den isblå bakgrunden, under kravet 4,5:1. Tonen är mörkad till `#5E6B82`. Samtliga färgpar beräknade och godkända. |
 | WCAG 2.1 AA – struktur | Uppfyllt – `lang="sv"`, en h1 per sida, hoppa-till-innehåll-länk, alt-text på varje bild, label eller aria-label på varje fält, tillgängligt namn på varje knapp. |
@@ -36,20 +36,20 @@ Linus kan lämna – sidan kan inte gå live utan dem.
 
 ## 0.1 Vad som ändrades senast
 
-- **Omdömesavsnittet är tillbaka, men tomt på innehåll.** Sektionen
+- **Omdömesavsnittet är tillbaka med riktigt innehåll.** Sektionen
   `#omdomen` på startsidan är ombyggd som karusell (desktop) och stapel med
   *Ladda fler* (mobil), och navigationslänkarna till *Omdömen* finns igen på
-  alla sidor. Texterna, namnen och betyget är däremot platshållare – se
-  punkt 7. De sex påhittade exempelomdömena, betyget 4,9 och raden ”Baserat på
-  87 omdömen på Google” från den gamla versionen är inte återinlagda någonstans,
-  och stjärnbetyget i heron är fortfarande borta.
+  alla sidor. Innehållet är 30 riktiga Google-omdömen, avskrivna ordagrant –
+  se punkt 7. De sex påhittade exempelomdömena, betyget 4,9 och raden ”Baserat
+  på 87 omdömen på Google” från den gamla versionen är inte återinlagda
+  någonstans, och stjärnbetyget i heron är fortfarande borta.
 - **Förhandsvisningsläget är avstängt.** Bannern högst upp, varningsrutan
   ovanför omdömena, `noindex`-taggarna, robotspärren i `robots.txt` och
   `vercel.json` med `X-Robots-Tag` är borta. Sidan är alltså i skarpt läge.
 
-> **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1, 2 och 7
-> nedan är avklarade – den geografiska adressen och samtliga omdömen är
-> fortfarande platshållartext.
+> **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1 och 2
+> nedan är avklarade – den geografiska adressen är fortfarande
+> platshållartext.
 
 Vill du tillfälligt tillbaka till granskningsläge: `node forhandsvisning.js pa`.
 Skriptets omdömesmärkning har inget att märka ut längre, men bannern och
@@ -214,33 +214,52 @@ avbryter på alla andra domäner, så besökare laddar aldrig något.
 Radera ändå filen och script-taggen längst ned i de nio HTML-sidorna innan
 sidan går live, så att ingen utvecklingskod följer med i produktionen.
 
-## 7. Omdömen – sektionen finns, texterna saknas
+## 7. Omdömen – riktiga, och så här håller du dem aktuella
 
-Omdömesavsnittet är tillbaka på startsidan (`#omdomen`, mellan galleriet och
+Omdömesavsnittet ligger på startsidan (`#omdomen`, mellan galleriet och
 vanliga frågor), byggt som en karusell på desktop och en stapel med
-*Ladda fler* på mobil. **Men innehållet är platshållare.**
+*Ladda fler* på mobil. **Innehållet är 30 riktiga Google-omdömen**, avskrivna
+ordagrant med emojier och egna signaturer i behåll. Brickan överst visar
+5,0 och 30 omdömen och länkar till företagsprofilen.
 
-### Så fyller du i det
+### Var innehållet ligger
 
-Allt ligger på ett ställe: avsnitt 7 i `app.js`.
+Allt på ett ställe: avsnitt 7 i `app.js`.
 
-| Vad | Var | Att göra |
+| Vad | Var | Att veta |
 |---|---|---|
-| Omdömena | `OMDOMEN`-listan | Ett objekt per omdöme: `namn`, `roll`, `betyg` (1–5) och `text`. Ta bort raden `platshallare: true` när texten är ett riktigt omdöme. |
-| Sammanfattningen | `BETYG`-objektet | `snitt` och `antal` ska stämma med Google-profilen, `profil` är länken dit. Brickan visas först när `antal` är större än 0. |
+| Omdömena | `OMDOMEN`-listan | Ett objekt per omdöme: `namn`, `roll`, `betyg` (1–5) och `text`. |
+| Sammanfattningen | `BETYG`-objektet | `snitt` och `antal` måste stämma med Google-profilen, `profil` är länken dit. Brickan visas först när `antal` är större än 0. |
 
-Två saker sköter sig själva:
+Tre saker sköter sig själva:
 
 - **Tom lista döljer hela sektionen.** Ligger inget i `OMDOMEN` renderas
-  ingenting alls – sidan kan alltså gå live utan tomma kort.
-- **Den gula varningsrutan** ovanför korten visas bara så länge något objekt
-  har `platshallare: true`. Den försvinner av sig själv när allt är riktigt.
+  ingenting alls.
+- **Omdömen utan text** (åtta kunder satte bara betyg) får en kort rad i
+  stapeln på mobilen i stället för citat, och hoppas över i karusellen – ett
+  kort som bara säger "betyg utan text" ger inget i ett flöde som rullar
+  förbi. De räknas ändå in i siffran 30 på brickan.
+- **Den gula varningsrutan** ovanför korten visas bara om något objekt har
+  `platshallare: true`. Den är alltså borta nu, och kommer tillbaka om du
+  lägger in ett exempel under tiden du väntar på ett riktigt omdöme.
+
+### När nya omdömen kommer in
+
+1. Lägg till objektet överst i `OMDOMEN` (profilen visar nyast först).
+2. Räkna upp `antal` i `BETYG`, och justera `snitt` om medelbetyget ändrats.
+
+Fältet `roll` är tomt på alla trettio. Det är avsiktligt: vilken tjänst varje
+omdöme gällde framgår inte av profilen, och ska inte gissas. Vill du använda
+fältet framöver ska det stå kort och rymmas på en rad bredvid namnet.
 
 ### Reglerna
 
 Riktiga omdömen får publiceras, men bara om de kommer från kunder som lämnat
-dem och godkänt att de visas med namn. Skriv av texten ordagrant – korta inte,
-skriv inte om och slå inte ihop flera omdömen till ett. Påhittade omdömen är
+dem och godkänt att de visas med namn. Namnen som står på sidan är exakt de
+kunderna själva publicerat på Google, med versaler och gemener som de skrev
+dem. Skriv av texten ordagrant – korta inte, skriv inte om och slå inte ihop
+flera omdömen till ett. Plocka heller inte bort omdömen för att snygga till
+urvalet: ett tillrättalagt urval är i sig vilseledande. Påhittade omdömen är
 förbjudna enligt punkt 23 b i svarta listan (bilaga I till direktiv
 2005/29/EG, som gäller som svensk lag via marknadsföringslagen), och
 Konsumentverket kan ingripa med förbud och sanktionsavgift.
@@ -285,9 +304,9 @@ Google-profilen; sektionen på sidan länkar dit i stället.
   momsnummer, kontaktuppgifter, öppettider och tjänstekatalog, plus `FAQPage`
   på startsidan och `Blog`/`BlogPosting` på bloggen.
 - **WCAG 2.1 AA** på kontrast och tangentbordsnavigering.
-- **Inga påhittade omdömen eller betyg** någonstans på sidan. Omdömessektionen
-  finns, men korten är märkta platshållare och sektionen försvinner helt om
-  listan töms (punkt 7).
+- **Inga påhittade omdömen eller betyg** någonstans på sidan. De 30 omdömena i
+  `#omdomen` är riktiga Google-omdömen, ordagrant avskrivna, och brickan visar
+  profilens faktiska 5,0 av 30 (punkt 7).
 
 ## Om tillgänglighetslagen
 
@@ -332,6 +351,5 @@ Kvar är tre saker: domänen (som ska bytas överallt när den är klar), den
 geografiska adressen och kartlänken i sidfoten (punkt 3.1). Org.nr, momsnummer
 och e-postadress är ifyllda.
 
-Omdömena räknas inte in här – de är märkta med `platshallare: true` i `app.js`
-i stället för `[BYT UT]`, eftersom flaggan också styr varningsrutan på sidan.
-Se punkt 7.
+Omdömena räknas inte in här: de är riktiga och ligger i `OMDOMEN` i `app.js`,
+inte bakom en `[BYT UT]`-markering. Se punkt 7.

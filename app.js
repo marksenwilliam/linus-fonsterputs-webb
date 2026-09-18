@@ -263,66 +263,61 @@
         till karusellen (desktop) och till stapeln (mobil).
 
         VIKTIGT: varje omdöme måste komma från en riktig kund som lämnat det
-        på Google, och texten ska stå ordagrant. Påhittade omdömen är
+        på Google, och texten ska stå ordagrant. Skriv inte om, korta inte och
+        slå inte ihop flera omdömen. Plocka heller inte bort omdömen för att
+        snygga till urvalet – det är i sig vilseledande. Påhittade omdömen är
         förbjudna enligt punkt 23 b i svarta listan (bilaga I till direktiv
         2005/29/EG, som gäller som svensk lag via marknadsföringslagen) och
-        Konsumentverket kan ingripa med förbud och sanktionsavgift. Låt
-        platshallare:true stå kvar så länge texten är ett exempel – då varnar
-        sidan synligt att omdömena inte är riktiga.
+        Konsumentverket kan ingripa med förbud och sanktionsavgift.
+
+        Lägger du in ett exempel under tiden: sätt platshallare:true på det, så
+        varnar sidan synligt att omdömet inte är riktigt.
      ------------------------------------------------------------------------ */
 
   /* Sammanfattningen överst. Siffrorna måste stämma med Google-profilen den
      dag sidan publiceras, och ses över när nya omdömen kommer in. */
   var BETYG = {
     snitt: 5,            /* Snittbetyg på Google, samma siffra som profilen visar */
-    antal: 0,            /* Antal omdömen. 0 döljer hela brickan */
-    profil: '',          /* Länk till omdömena på Google-profilen. Tom -> ingen länk */
-    platshallare: true   /* false när siffrorna är hämtade från den riktiga profilen */
+    antal: 30,           /* Antal omdömen. 0 döljer hela brickan */
+    profil: 'https://share.google/MpFDOSLYDE56x5KpX'
   };
 
+  /* Omdömena i den ordning de ligger på Google-profilen. Texterna är avskrivna
+     ordagrant, inklusive emojier och egna signaturer. Åtta kunder satte bara
+     betyg utan att skriva något – de har text: '' och räknas ändå in i
+     antalet ovan. Fältet roll är avsiktligt tomt: vilken tjänst varje omdöme
+     gällde framgår inte av profilen, och det ska inte gissas. */
   var OMDOMEN = [
-    {
-      namn: 'Kundens namn',
-      roll: 'Fönsterputs villa',
-      betyg: 5,
-      text: 'Klistra in kundens egen text från Google här. Skriv av den ordagrant – ändra inte, korta inte och slå inte ihop flera omdömen.',
-      platshallare: true
-    },
-    {
-      namn: 'Kundens namn',
-      roll: 'Fönsterputs villa',
-      betyg: 5,
-      text: 'Ett kort omdöme fungerar lika bra som ett långt. Korten blir lika höga oavsett, så blanda gärna.',
-      platshallare: true
-    },
-    {
-      namn: 'Kundens namn',
-      roll: 'Kontorsputs',
-      betyg: 5,
-      text: 'Fältet roll visar vilken tjänst omdömet gällde. Håll det kort – det ska rymmas på en rad bredvid namnet.',
-      platshallare: true
-    },
-    {
-      namn: 'Kundens namn',
-      roll: 'Fönsterputs villa',
-      betyg: 5,
-      text: 'Namnet ska vara det kunden själv skrivit under med på Google. Skriv aldrig ut mer än så, och fråga kunden innan ett helt efternamn sätts ut.',
-      platshallare: true
-    },
-    {
-      namn: 'Kundens namn',
-      roll: 'Kontorsputs',
-      betyg: 4,
-      text: 'Betyget sätts per omdöme och ritas som stjärnor. Ta med omdömen som inte är femstjärniga också – en sida med enbart toppbetyg läses som tillrättalagd.',
-      platshallare: true
-    },
-    {
-      namn: 'Kundens namn',
-      roll: 'Fönsterputs villa',
-      betyg: 5,
-      text: 'På mobilen klipps texten efter fyra rader och fälls ut med "Läs mer". På desktop rullar korten av sig själv, och går att dra i eller stega med pilarna.',
-      platshallare: true
-    }
+    { namn: 'Joakim Wiberg', roll: '', betyg: 5, text: '' },
+    { namn: 'Emelie Kellnberger', roll: '', betyg: 5, text: 'Nöjda varje gång! Enkelt att boka och Linus tar alltid våra fönster som man måste stå på stege för att nå 🤩' },
+    { namn: 'elin Johansson', roll: '', betyg: 5, text: '' },
+    { namn: 'Marianne Olsson', roll: '', betyg: 5, text: 'Rekommenderar Linus varmt, han gör ett fantastiskt jobb med skinande resultat! /Marianne' },
+    { namn: 'Therese Skogh', roll: '', betyg: 5, text: 'Proffsigt utfört arbete och trevlig kommunikation. Vi kommer absolut att anlita Linus igen.' },
+    { namn: 'Linnéa Eriksson', roll: '', betyg: 5, text: '' },
+    { namn: 'Torsten Sandberg', roll: '', betyg: 5, text: 'Glasklart bra. Smidigt och bra. Mycket nöjda. //Torsten o Inger S' },
+    { namn: 'Julia Lyckberg', roll: '', betyg: 5, text: '' },
+    { namn: 'Cecilia Schmidt-Karlsson', roll: '', betyg: 5, text: 'Trevlig och noggrann! Rekommenderas!' },
+    { namn: 'Anna Larsson', roll: '', betyg: 5, text: 'Trevlig och duktig 🤗' },
+    { namn: 'Jörgen Anderson', roll: '', betyg: 5, text: '' },
+    { namn: 'Maria Lejskog', roll: '', betyg: 5, text: 'Mycket trevlig och pålitlig men framförallt noggrann och gör ett oerhört bra jobb. Kan varmt rekommendera Linus' },
+    { namn: 'Arne Pettersson', roll: '', betyg: 5, text: 'Över förväntan, även om jag hade höga förväntningar' },
+    { namn: 'Alexander Forslund', roll: '', betyg: 5, text: 'Toppen service, bemötande och slutresultat. Kan starkt rekommendera Linus!' },
+    { namn: 'Sophie Schelin', roll: '', betyg: 5, text: 'Superduktig! Fint resultat och trevligt bemötande!' },
+    { namn: 'Jenny Nilsson', roll: '', betyg: 5, text: '' },
+    { namn: 'Hildegun Weissenberg', roll: '', betyg: 5, text: '' },
+    { namn: 'Monica Magnusson', roll: '', betyg: 5, text: 'Så nöjda med Linus fönsterputs. Vårt uterum fick skinande glasväggar. Vi kommer kontakta Linus när det blir dax för fönsterputs igen.' },
+    { namn: 'Linda Göting', roll: '', betyg: 5, text: 'Så nöjd!' },
+    { namn: 'Kajsa Fagerström', roll: '', betyg: 5, text: 'Vi är jättenöjda med Linus som gjorde ett toppenbra jobb med våra fönster. Snabbt, rent, trevlig och bra pris! Vi kommer anlita honom igen!' },
+    { namn: 'Britta Gesar', roll: '', betyg: 5, text: 'Mycket trygg, trevlig och duktig på sitt jobb. Rekommenderar honom' },
+    { namn: 'Helene Hansen', roll: '', betyg: 5, text: 'Toppen fint resultat. Pålitlig och punktlig. Kan verkligen rekommendera denna firma.' },
+    { namn: 'ylva björkegren', roll: '', betyg: 5, text: 'Smidig kommunikation och väl utfört arbete till ett bra pris!' },
+    { namn: 'Daniel Thollin Hall', roll: '', betyg: 5, text: 'Duktig, snabb och smidig.' },
+    { namn: 'jonas malm', roll: '', betyg: 5, text: 'Linus var väldigt trevlig och gjorde ett fantastiskt bra jobb.' },
+    { namn: 'Annica Gadle', roll: '', betyg: 5, text: 'Jättenöjd med putsningen, snabbt och professionellt utfört. Har redan bokat ny tid.' },
+    { namn: 'Maritza Thulin', roll: '', betyg: 5, text: '' },
+    { namn: 'Kennel Krafts', roll: '', betyg: 5, text: 'Helt underbart att få fönstren putsade' },
+    { namn: 'Martin Kenving', roll: '', betyg: 5, text: 'Kanon! Riktigt bra service o resultat!' },
+    { namn: 'Joakim Eriksson', roll: '', betyg: 5, text: 'Rekommenderas! Linus är duktig och snabb!' }
   ];
 
   (function () {
@@ -348,9 +343,16 @@
       var kort = document.createElement('article');
       kort.className = 'omd-kort';
 
+      /* Kunder som bara satte betyg får en kort rad i stället för citat, så
+         att kortet inte blir en tom ruta. */
       var text = document.createElement('p');
-      text.className = 'omd-text' + (klippt ? ' klippt' : '') + (omd.platshallare ? ' utkast' : '');
-      text.textContent = omd.text;
+      if (omd.text) {
+        text.className = 'omd-text' + (klippt ? ' klippt' : '') + (omd.platshallare ? ' utkast' : '');
+        text.textContent = omd.text;
+      } else {
+        text.className = 'omd-text omd-utan-text';
+        text.textContent = 'Lämnade betyg utan skriven text.';
+      }
 
       var huvud = document.createElement('div');
       huvud.className = 'omd-huvud';
@@ -359,23 +361,26 @@
           '<span class="avatar" aria-hidden="true">' + omd.namn.charAt(0) + '</span>' +
           '<span class="omd-person-text">' +
             '<cite class="omd-namn"></cite>' +
-            '<span class="omd-meta"></span>' +
+            (omd.roll ? '<span class="omd-meta"></span>' : '') +
           '</span>' +
         '</div>' +
         '<span class="stjarnor omd-betyg" role="img" aria-label="' + omd.betyg + ' av 5 stjärnor">' + stjarnor(omd.betyg) + '</span>';
       /* Namn och roll sätts som text, inte som HTML: de kommer från Google och
          ska aldrig kunna bära med sig uppmärkning in på sidan. */
       huvud.querySelector('.omd-namn').textContent = omd.namn;
-      huvud.querySelector('.omd-meta').textContent = omd.roll;
-
-      var citat = document.createElement('span');
-      citat.className = 'omd-citat';
-      citat.setAttribute('aria-hidden', 'true');
-      citat.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-citat"/></svg>';
+      if (omd.roll) huvud.querySelector('.omd-meta').textContent = omd.roll;
 
       kort.appendChild(huvud);
       kort.appendChild(text);
-      kort.appendChild(citat);
+
+      /* Citattecknet hör till ett citat. Kort som bara bär ett betyg får inget. */
+      if (omd.text) {
+        var citat = document.createElement('span');
+        citat.className = 'omd-citat';
+        citat.setAttribute('aria-hidden', 'true');
+        citat.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-citat"/></svg>';
+        kort.appendChild(citat);
+      }
       return kort;
     }
 
@@ -409,18 +414,34 @@
     /* --- Karusellen (desktop) -------------------------------------------- */
     /* Kortuppsättningen läggs två gånger i spåret. När spåret rullat en hel
        uppsättning nollställs positionen, och eftersom nästa uppsättning ser
-       likadan ut syns aldrig något hopp. Kopian döljs för skärmläsare. */
+       likadan ut syns aldrig något hopp. Kopian döljs för skärmläsare.
+
+       Bara omdömen med text hamnar i karusellen: ett kort som bara säger
+       "betyg utan text" ger inget i ett flöde som rullar förbi. De syns i
+       stapeln på mobilen i stället, och räknas med i siffran på brickan. */
     (function () {
       var fonster = $('#omd-fonster');
       var spar = $('#omd-spar');
       if (!fonster || !spar) return;
 
-      OMDOMEN.forEach(function (o) { spar.appendChild(byggKort(o, false)); });
-      OMDOMEN.forEach(function (o) {
-        var kopia = byggKort(o, false);
-        kopia.setAttribute('aria-hidden', 'true');
-        spar.appendChild(kopia);
-      });
+      var medText = OMDOMEN.filter(function (o) { return o.text; });
+      if (!medText.length) return;
+
+      /* Korten är olika breda efter hur lång texten är. Med samma bredd åt
+         alla skulle "Så nöjd!" få lika hög ruta som ett stycke på fyra rader,
+         eftersom raden av kort sträcks till den högsta. */
+      function bredd(text) {
+        return Math.round(275 + Math.min(text.length * 1.25, 205)) + 'px';
+      }
+
+      function laggTill(omd, kopia) {
+        var kort = byggKort(omd, false);
+        kort.style.flex = '0 0 ' + bredd(omd.text);
+        if (kopia) kort.setAttribute('aria-hidden', 'true');
+        spar.appendChild(kort);
+      }
+      medText.forEach(function (o) { laggTill(o, false); });
+      medText.forEach(function (o) { laggTill(o, true); });
 
       var laege = 0;          /* aktuell förskjutning i px, alltid <= 0 */
       var fart = 0.35;        /* px per bildruta – lugn, läsbar hastighet */
@@ -523,7 +544,7 @@
       if (!stapel) return;
 
       var visade = 0;
-      var OMGANG = 4;
+      var FORSTA = 4, FLER = 8;
 
       function ritaKort(omd) {
         var kort = byggKort(omd, true);
@@ -561,8 +582,9 @@
       }
 
       function visaFler() {
-        OMDOMEN.slice(visade, visade + OMGANG).forEach(ritaKort);
-        visade = Math.min(visade + OMGANG, OMDOMEN.length);
+        var omgang = visade === 0 ? FORSTA : FLER;
+        OMDOMEN.slice(visade, visade + omgang).forEach(ritaKort);
+        visade = Math.min(visade + omgang, OMDOMEN.length);
         if (merRuta) merRuta.hidden = visade >= OMDOMEN.length;
       }
 
