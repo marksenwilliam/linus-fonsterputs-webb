@@ -279,7 +279,7 @@
   var BETYG = {
     snitt: 5,            /* Snittbetyg på Google, samma siffra som profilen visar */
     antal: 30,           /* Antal omdömen. 0 döljer hela brickan */
-    profil: 'https://share.google/MpFDOSLYDE56x5KpX'
+    profil: 'https://share.google/U0JNifvViv9w0H4gy'
   };
 
   /* Omdömena i den ordning de ligger på Google-profilen. Texterna är avskrivna
