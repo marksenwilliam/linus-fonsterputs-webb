@@ -36,18 +36,20 @@ Linus kan lämna – sidan kan inte gå live utan dem.
 
 ## 0.1 Vad som ändrades senast
 
-- **Omdömesavsnittet är borttaget i sin helhet.** De sex exempelomdömena,
-  betyget 4,9, raden ”Baserat på 87 omdömen på Google”, Google-loggan och
-  stjärnbetyget i heron är borta ur `index.html`. Navigationslänkarna till
-  *Omdömen* är borttagna på alla nio sidor, liksom den CSS och de SVG-symboler
-  som bara användes där.
+- **Omdömesavsnittet är tillbaka, men tomt på innehåll.** Sektionen
+  `#omdomen` på startsidan är ombyggd som karusell (desktop) och stapel med
+  *Ladda fler* (mobil), och navigationslänkarna till *Omdömen* finns igen på
+  alla sidor. Texterna, namnen och betyget är däremot platshållare – se
+  punkt 7. De sex påhittade exempelomdömena, betyget 4,9 och raden ”Baserat på
+  87 omdömen på Google” från den gamla versionen är inte återinlagda någonstans,
+  och stjärnbetyget i heron är fortfarande borta.
 - **Förhandsvisningsläget är avstängt.** Bannern högst upp, varningsrutan
   ovanför omdömena, `noindex`-taggarna, robotspärren i `robots.txt` och
   `vercel.json` med `X-Robots-Tag` är borta. Sidan är alltså i skarpt läge.
 
-> **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1 och 2
-> nedan är avklarade – den geografiska adressen är fortfarande
-> platshållartext.
+> **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1, 2 och 7
+> nedan är avklarade – den geografiska adressen och samtliga omdömen är
+> fortfarande platshållartext.
 
 Vill du tillfälligt tillbaka till granskningsläge: `node forhandsvisning.js pa`.
 Skriptets omdömesmärkning har inget att märka ut längre, men bannern och
@@ -189,17 +191,51 @@ avbryter på alla andra domäner, så besökare laddar aldrig något.
 Radera ändå filen och script-taggen längst ned i de nio HTML-sidorna innan
 sidan går live, så att ingen utvecklingskod följer med i produktionen.
 
-## 7. Om du vill ha tillbaka omdömen
+## 7. Omdömen – sektionen finns, texterna saknas
+
+Omdömesavsnittet är tillbaka på startsidan (`#omdomen`, mellan galleriet och
+vanliga frågor), byggt som en karusell på desktop och en stapel med
+*Ladda fler* på mobil. **Men innehållet är platshållare.**
+
+### Så fyller du i det
+
+Allt ligger på ett ställe: avsnitt 7 i `app.js`.
+
+| Vad | Var | Att göra |
+|---|---|---|
+| Omdömena | `OMDOMEN`-listan | Ett objekt per omdöme: `namn`, `roll`, `betyg` (1–5) och `text`. Ta bort raden `platshallare: true` när texten är ett riktigt omdöme. |
+| Sammanfattningen | `BETYG`-objektet | `snitt` och `antal` ska stämma med Google-profilen, `profil` är länken dit. Brickan visas först när `antal` är större än 0. |
+
+Två saker sköter sig själva:
+
+- **Tom lista döljer hela sektionen.** Ligger inget i `OMDOMEN` renderas
+  ingenting alls – sidan kan alltså gå live utan tomma kort.
+- **Den gula varningsrutan** ovanför korten visas bara så länge något objekt
+  har `platshallare: true`. Den försvinner av sig själv när allt är riktigt.
+
+### Reglerna
 
 Riktiga omdömen får publiceras, men bara om de kommer från kunder som lämnat
-dem och godkänt att de visas med namn. Påhittade omdömen är förbjudna enligt
-punkt 23 b i svarta listan (bilaga I till direktiv 2005/29/EG, som gäller som
-svensk lag via marknadsföringslagen), och Konsumentverket kan ingripa med
-förbud och sanktionsavgift.
+dem och godkänt att de visas med namn. Skriv av texten ordagrant – korta inte,
+skriv inte om och slå inte ihop flera omdömen till ett. Påhittade omdömen är
+förbjudna enligt punkt 23 b i svarta listan (bilaga I till direktiv
+2005/29/EG, som gäller som svensk lag via marknadsföringslagen), och
+Konsumentverket kan ingripa med förbud och sanktionsavgift.
 
-Vill du visa ett Google-betyg måste siffran och antalet stämma med den
-faktiska Google-profilen den dagen sidan publiceras, och den behöver ses över
-när nya omdömen kommer in.
+Betyget och antalet måste stämma med den faktiska Google-profilen den dagen
+sidan publiceras, och behöver ses över när nya omdömen kommer in.
+
+Ta gärna med omdömen som inte är femstjärniga. En sida med enbart toppbetyg
+läses som tillrättalagd, och plockar man bort de sämre omdömena är urvalet i
+sig vilseledande.
+
+### Strukturerad data: lägg inte in betyget där
+
+`aggregateRating` och `review` är medvetet utelämnade ur `LocalBusiness`-blocket.
+Google räknar omdömen som företaget självt publicerar om sig självt som
+*self-serving reviews*, och de ger inte utökade sökresultat för `LocalBusiness` –
+de kan dessutom leda till en manuell åtgärd. Betyget hör hemma på
+Google-profilen; sektionen på sidan länkar dit i stället.
 
 ---
 
@@ -223,7 +259,9 @@ när nya omdömen kommer in.
   momsnummer, kontaktuppgifter, öppettider och tjänstekatalog, plus `FAQPage`
   på startsidan och `Blog`/`BlogPosting` på bloggen.
 - **WCAG 2.1 AA** på kontrast och tangentbordsnavigering.
-- **Inga påhittade omdömen eller betyg** någonstans på sidan.
+- **Inga påhittade omdömen eller betyg** någonstans på sidan. Omdömessektionen
+  finns, men korten är märkta platshållare och sektionen försvinner helt om
+  listan töms (punkt 7).
 
 ## Om tillgänglighetslagen
 
@@ -266,3 +304,7 @@ behöver alltså ingenting byggas om.
 
 Kvar är bara två saker: domänen (som ska bytas överallt när den är klar) och
 den geografiska adressen. Org.nr, momsnummer och e-postadress är ifyllda.
+
+Omdömena räknas inte in här – de är märkta med `platshallare: true` i `app.js`
+i stället för `[BYT UT]`, eftersom flaggan också styr varningsrutan på sidan.
+Se punkt 7.

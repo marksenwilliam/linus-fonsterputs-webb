@@ -17,6 +17,8 @@
      inte WCAG AA för text – denna nyans ger 5,0:1. Samma roll, tillgänglig kontrast. */
   --gron-text:#15803D;
 
+  --stjarna:#FBBF24;   /* ENDAST recensionsstjärnor */
+
   --kant:#DBEAFE;                                  /* Ljusblå linje */
   --skugga:0 8px 24px rgba(37,99,235,.10);         /* Standardskugga på kort */
   --skugga-hog:0 16px 40px rgba(37,99,235,.18);    /* Hover-skugga */
@@ -701,7 +703,136 @@ section{padding:64px 0;}
 .fe-slider:focus-visible+.fe-handtag{box-shadow:0 0 0 3px var(--himmel),0 0 18px rgba(11,46,89,.35);}
 
 /* ==========================================================================
-   12. FAQ
+   12. Omdömen – Google-recensioner
+   ==========================================================================
+   Sektionen byggs av app.js utifrån listan OMDOMEN. Ligger ingen recension
+   där döljer sig hela sektionen, så sidan kan gå live utan tomma kort.
+
+   Desktop: en löpande karusell (marquee) som går att dra i, med pilar för
+   tangentbord. Mobil: en lodrät stapel som laddar fler i omgångar. Samma
+   kortdesign i båda – bara layouten skiljer. */
+.omd-notis{
+  display:flex;align-items:flex-start;gap:10px;
+  max-width:680px;margin:0 auto 32px;padding:14px 18px;
+  background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radie-s);
+  color:#78350F;font-size:.88rem;line-height:1.6;
+}
+.omd-notis svg{width:18px;height:18px;flex:none;margin-top:3px;stroke:#B45309;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* --- Betygsbricka: Google-logga, snittbetyg, stjärnor och antal -------- */
+.omd-brickrad{display:flex;justify-content:center;margin-bottom:34px;}
+.omd-bricka{
+  display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;
+  background:var(--vit);border:1px solid var(--kant);border-radius:var(--pill);
+  padding:10px 20px;box-shadow:var(--skugga);
+  color:var(--text);font-size:.92rem;text-decoration:none;
+  transition:transform var(--overgang),box-shadow var(--overgang);
+}
+a.omd-bricka:hover{text-decoration:none;transform:translateY(-2px);box-shadow:var(--skugga-hog);}
+.omd-bricka .g-logga{width:20px;height:20px;flex:none;}
+.omd-snitt{font-weight:800;font-size:1.12rem;color:var(--marin);letter-spacing:-.02em;}
+.omd-antal{color:var(--text-2);}
+
+.stjarnor{display:inline-flex;align-items:center;gap:2px;}
+.stjarnor svg{width:16px;height:16px;flex:none;fill:var(--stjarna);stroke:none;}
+.stjarnor.stor svg{width:20px;height:20px;}
+.stjarnor .tom{fill:rgba(251,191,36,.32);}
+
+/* --- Karusellen ------------------------------------------------------- */
+/* overflow:hidden döljer spårets bredd i sidled. Den klipper även i höjdled,
+   så spåret bär egen luft uppe och nere – annars kapas kortens skuggor. */
+.omd-karusell{position:relative;}
+.omd-fonster{overflow:hidden;cursor:grab;-webkit-user-select:none;user-select:none;}
+.omd-fonster.dras{cursor:grabbing;}
+
+/* Mjuk övergång i kanterna så korten tonar ut i sektionsfärgen i stället för
+   att klippas tvärt. Färgen måste följa sektionens bakgrund (--isbla). */
+.omd-karusell::before,
+.omd-karusell::after{
+  content:"";position:absolute;top:0;bottom:0;width:8%;max-width:90px;z-index:2;pointer-events:none;
+}
+.omd-karusell::before{left:0;background:linear-gradient(to right,var(--isbla),rgba(239,246,255,0));}
+.omd-karusell::after{right:0;background:linear-gradient(to left,var(--isbla),rgba(239,246,255,0));}
+
+.omd-spar{display:flex;gap:20px;width:max-content;padding:14px 0 30px;will-change:transform;}
+
+/* Pilarna gör karusellen nåbar med tangentbord – dragning räcker inte. */
+.omd-pil{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:4;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(11,46,89,.28);
+  display:flex;align-items:center;justify-content:center;
+  transition:background var(--overgang),transform var(--overgang);
+}
+.omd-pil:hover{background:var(--vit);transform:translateY(-50%) scale(1.08);}
+.omd-pil svg{width:20px;height:20px;stroke:var(--bla);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+.omd-pil.bak{left:-6px;}
+.omd-pil.fram{right:-6px;}
+.omd-pil.fram svg{transform:rotate(180deg);}
+@media(max-width:1023px){.omd-pil{display:none;}}
+
+/* --- Kortet (samma i karusellen och i mobilstapeln) ------------------- */
+.omd-kort{
+  display:flex;flex-direction:column;gap:16px;
+  background:var(--vit);border:1px solid var(--kant);border-radius:var(--radie);
+  box-shadow:var(--skugga);padding:24px 22px 20px;box-sizing:border-box;text-align:left;
+}
+.omd-spar .omd-kort{flex:0 0 360px;}
+
+.omd-huvud{display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.omd-person{display:flex;align-items:center;gap:12px;min-width:0;}
+.avatar{
+  width:46px;height:46px;border-radius:50%;background:var(--grad);color:var(--vit);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;flex:none;
+}
+.omd-person-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.omd-namn{font-weight:700;color:var(--marin);font-size:1rem;line-height:1.25;font-style:normal;}
+/* Rollen håller sig på en rad – bryts den blir kortets huvud ojämnt högt. */
+.omd-meta{font-size:.8rem;color:var(--text-2);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.omd-betyg{flex:none;}
+
+.omd-text{margin:0;font-size:.94rem;line-height:1.65;color:var(--text);flex:1;}
+/* Exempeltext markeras diskret – notisen överst bär varningen, kortet ska gå
+   att bedöma som design. Egen klass, inte sidans .platshallare: den gula
+   överstrykningen är gjord för enstaka ord, inte för hela stycken. */
+.omd-text.utkast{border-left:3px dotted #D97706;padding-left:13px;}
+
+/* Citattecknet avslutar kortet och knyter ihop det med sidans gradient. */
+.omd-citat{
+  width:36px;height:36px;flex:none;margin-top:auto;border-radius:var(--radie-s);
+  background:var(--grad);display:flex;align-items:center;justify-content:center;
+}
+.omd-citat svg{width:17px;height:17px;fill:var(--vit);stroke:none;}
+
+/* --- Mobilstapeln ----------------------------------------------------- */
+.omd-stapel{display:flex;flex-direction:column;gap:16px;}
+.omd-mer{display:flex;justify-content:center;margin-top:24px;}
+
+/* Fyra rader text, resten fälls ut med knappen under. */
+.omd-text.klippt{
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
+  overflow:hidden;flex:none;
+}
+.omd-las{
+  align-self:flex-start;margin-top:-6px;padding:6px 0;min-height:44px;
+  font-size:.88rem;font-weight:700;color:var(--bla);text-decoration:underline;text-underline-offset:3px;
+}
+.omd-las:hover{color:var(--bla-hover);}
+
+/* Karusellen på desktop, stapeln på mobil – aldrig båda samtidigt. */
+.omd-mobil{display:block;}
+.omd-karusell{display:none;}
+@media(min-width:768px){
+  .omd-mobil{display:none;}
+  .omd-karusell{display:block;}
+}
+
+/* Delarna ligger dolda tills app.js fyllt dem. Egna [hidden]-regler behövs:
+   reglerna ovan sätter display och vinner annars över webbläsarens [hidden]. */
+.omd-notis[hidden],.omd-brickrad[hidden],.omd-mer[hidden],.omd-las[hidden]{display:none;}
+
+/* ==========================================================================
+   13. FAQ
    ========================================================================== */
 .faq{max-width:800px;margin:0 auto;}
 .faq-post{
@@ -726,7 +857,7 @@ section{padding:64px 0;}
 .faq-svar-inner{padding:0 20px 20px;color:var(--text-2);font-size:.96rem;line-height:1.7;}
 
 /* ==========================================================================
-   13. Avslutande CTA
+   14. Avslutande CTA
    ========================================================================== */
 /* CTA-sektionen får samma foto som heron, men beskuret mot tvålfönstret och
    under en tät blå gradient – knyter ihop sidan utan extra bildvikt. */
@@ -748,7 +879,7 @@ section{padding:64px 0;}
 .cta .tel-rad a{color:var(--vit);font-weight:800;text-decoration:underline;text-underline-offset:4px;white-space:nowrap;}
 
 /* ==========================================================================
-   14. Footer
+   15. Footer
    ========================================================================== */
 .footer{background:var(--marin);color:rgba(255,255,255,.78);padding:56px 0 0;}
 .footer h4{color:var(--vit);font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
@@ -769,7 +900,7 @@ section{padding:64px 0;}
 @media(max-width:1023px){.footer{padding-bottom:84px;}} /* plats för sticky mobil-CTA */
 
 /* ==========================================================================
-   15. Sticky mobil-CTA
+   16. Sticky mobil-CTA
    ========================================================================== */
 .mob-cta{
   position:fixed;left:0;right:0;bottom:0;z-index:80;
@@ -782,7 +913,7 @@ section{padding:64px 0;}
 @media(min-width:1024px){.mob-cta{display:none;}}
 
 /* ==========================================================================
-   16. Scroll-in-animation
+   17. Scroll-in-animation
    ========================================================================== */
 .in{transition:opacity .6s ease,transform .6s cubic-bezier(.4,0,.2,1);}
 .rorelse .in:not(.syns){opacity:0;transform:translateY(24px);}
@@ -794,7 +925,7 @@ section{padding:64px 0;}
 }
 
 /* ==========================================================================
-   17. OFFERTGUIDEN – helskärmsvy, ett steg i taget
+   18. OFFERTGUIDEN – helskärmsvy, ett steg i taget
 
    Varje steg är exakt en vyhöjd och aldrig mer, så kunden aldrig behöver
    rulla för att se både frågan och fälten. Höjden sätts i dvh, som räknar
@@ -1089,7 +1220,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 @keyframes snurr{to{transform:rotate(360deg);}}
 
 /* ==========================================================================
-   18. Undersidor (hemstad.html, kontorsstad.html)
+   19. Undersidor (hemstad.html, kontorsstad.html)
    ========================================================================== */
 .under-hero{
   min-height:auto;padding:140px 0 64px;
@@ -1122,7 +1253,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 .smulor span{opacity:.8;}
 
 /* ==========================================================================
-   19. Blogg / guider
+   20. Blogg / guider
    ========================================================================== */
 .blogg-grid{display:grid;gap:22px;grid-template-columns:1fr;}
 @media(min-width:768px){.blogg-grid{grid-template-columns:repeat(3,1fr);}}
@@ -1160,7 +1291,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 .tillbaka-blogg a{font-weight:600;}
 
 /* ==========================================================================
-   20. Desktopjusteringar
+   21. Desktopjusteringar
    Sidan är byggd mobil först. Reglerna nedan gäller ENBART från 1024 px och
    rör därför aldrig mobilvyn. De finns för att samma mobilvärden annars
    sträcks ut på en bred skärm: heron får ett stort tomrum i mitten, rubriken
@@ -1242,7 +1373,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 }
 
 /* ==========================================================================
-   21. JURIDISKA SIDOR – integritetspolicy, köpvillkor, kakor
+   22. JURIDISKA SIDOR – integritetspolicy, köpvillkor, kakor
    Bygger vidare på blogglayouten (.inlagg-kropp) och lägger bara till det
    som behövs för villkorstext: faktaruta, tabell, blankett och platshållare.
    ========================================================================== */
@@ -1309,7 +1440,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 .samtycke-fotlank:hover{color:var(--himmel);text-decoration:underline;}
 
 /* ==========================================================================
-   22. ÅNGERRÄTT OCH VILLKOR I BOKNINGENS SISTA STEG
+   23. ÅNGERRÄTT OCH VILLKOR I BOKNINGENS SISTA STEG
    ========================================================================== */
 /* Informationsruta om ångerrätten. Måste synas innan avtalet ingås. */
 .anger-ruta{
@@ -1331,7 +1462,7 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
 .gdpr-kort span:last-child{font-size:.9rem;line-height:1.55;}
 
 /* ==========================================================================
-   23. HONUNGSFÄLLA
+   24. HONUNGSFÄLLA
    Fältet ska vara omojligt att nå för en människa men fortfarande finnas i
    DOM:en, så att robotar som fyller i allt avslöjar sig. display:none skulle
    många robotar hoppa över, därför flyttas det ur bild i stället.

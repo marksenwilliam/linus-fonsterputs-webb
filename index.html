@@ -72,7 +72,10 @@
      inte på en besöksadress som kunder söker upp, och en påhittad gatuadress i
      strukturerad data är värre än ingen alls (fel uppgift till Google). Lägg
      till streetAddress, postalCode och geo här bara om en riktig, publik
-     besöksadress ska anges. -->
+     besöksadress ska anges.
+     Lägg inte in aggregateRating eller review: omdömen ett företag publicerar
+     om sig självt räknas som self-serving och ger inga utökade sökresultat
+     för LocalBusiness. Se punkt 7 i ATT-GORA-INNAN-LANSERING.md. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -262,6 +265,16 @@
     <!-- Eldflamma (fylld) -->
     <symbol id="i-eld" viewBox="0 0 24 24"><path d="M12 23a7.5 7.5 0 0 1-5.14-12.96C8.2 8.77 11.5 6.5 11 1.5c6 4 9 8 3 14 1 0 2.5 0 5-2.47.27.77.5 1.6.5 2.47A7.5 7.5 0 0 1 12 23Z"/></symbol>
     <!-- Stjärna (fylld) -->
+    <symbol id="i-stjarna" viewBox="0 0 24 24"><path d="m12 2.6 2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.1-5.9 3.1 1.2-6.5L2.5 9.5l6.6-.9 2.9-6Z"/></symbol>
+    <!-- Citattecken (fyllt) -->
+    <symbol id="i-citat" viewBox="0 0 24 24"><path d="M14.02 21v-7.39c0-5.7 3.73-9.57 8.98-10.61l1 2.15c-2.44.92-4 3.64-4 5.85h4v10h-9.98Zm-14.02 0v-7.39c0-5.7 3.75-9.57 9-10.61l1 2.15c-2.43.92-4 3.64-4 5.85h3.98v10H0Z"/></symbol>
+    <!-- Google G (färglagd) -->
+    <symbol id="i-google" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.54 5.54 0 0 1-2.4 3.63v3h3.86c2.26-2.09 3.57-5.17 3.57-8.87Z"/>
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.94-2.91l-3.87-3c-1.07.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96h-4v3.09A12 12 0 0 0 12 24Z"/>
+      <path fill="#FBBC05" d="M5.27 14.28a7.2 7.2 0 0 1 0-4.56V6.63h-4a12 12 0 0 0 0 10.74l4-3.09Z"/>
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.63l4 3.09C6.22 6.87 8.87 4.75 12 4.75Z"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -288,6 +301,7 @@
       <a href="#fonsterputs">Fönsterputs</a>
       <a href="index.html#kontorsputs">Kontorsputs</a>
       <a href="#galleri">Galleri</a>
+      <a href="#omdomen">Omdömen</a>
       <a href="#om-linus">Om Linus</a>
       <a href="blogg.html">Blogg</a>
       <a href="#kontakt">Kontakt</a>
@@ -309,6 +323,7 @@
     <a class="mlank" href="#kontorsputs">Kontorsputs i Uppsala</a>
     <a class="mlank" href="#sa-funkar-det">Så funkar det</a>
     <a class="mlank" href="#galleri">Galleri</a>
+    <a class="mlank" href="#omdomen">Omdömen</a>
     <a class="mlank" href="#om-linus">Om Linus</a>
     <a class="mlank" href="blogg.html">Blogg</a>
     <a class="mlank" href="#kontakt">Kontakt</a>
@@ -620,9 +635,57 @@
   </div>
 </section>
 <!-- ==========================================================================
-     7. FAQ – accordion
+     7. OMDÖMEN – Google-recensioner
+     ==========================================================================
+     Korten byggs av app.js utifrån listan OMDOMEN där. Ligger ingen
+     recension i listan döljer sig hela sektionen, så sidan kan gå live utan
+     tomma kort. Skriv aldrig in ett omdöme som inte kommer från en riktig
+     kund – påhittade omdömen är förbjudna enligt punkt 23 b i svarta listan
+     (bilaga I till direktiv 2005/29/EG, svensk lag via marknadsföringslagen).
      ========================================================================== -->
-<section id="faq" class="bg-is">
+<section id="omdomen" class="bg-is" hidden>
+  <div class="wrap">
+
+    <div class="sekt-topp in">
+      <span class="etikett">Omdömen</span>
+      <h2>Vad kunderna säger</h2>
+      <p>Omdömen från kunder i Uppsala med omnejd, ordagrant som de skrevs på Google.</p>
+    </div>
+
+    <!-- Visas bara så länge listan innehåller platshållare. Försvinner av sig
+         själv när alla omdömen är riktiga. -->
+    <p class="omd-notis" id="omd-notis" hidden>
+      <svg aria-hidden="true"><use href="#i-varning"/></svg>
+      <span><b>Platshållare.</b> Texterna nedan är exempel och kommer inte från Google. Byt ut dem mot riktiga kundomdömen i listan <code>OMDOMEN</code> i <code>app.js</code> innan sidan publiceras.</span>
+    </p>
+
+    <!-- Betygsbrickan byggs av app.js och länkar till Google-profilen. -->
+    <div class="omd-brickrad in" id="omd-brickrad" hidden></div>
+
+    <!-- Desktop: löpande karusell. Pilarna finns för tangentbordet – att dra
+         med musen räcker inte för den som inte använder mus. -->
+    <div class="omd-karusell">
+      <button type="button" class="omd-pil bak" id="omd-bak" aria-label="Visa föregående omdömen"><svg aria-hidden="true"><use href="#i-pil-v"/></svg></button>
+      <div class="omd-fonster" id="omd-fonster">
+        <div class="omd-spar" id="omd-spar"></div>
+      </div>
+      <button type="button" class="omd-pil fram" id="omd-fram" aria-label="Visa fler omdömen"><svg aria-hidden="true"><use href="#i-pil-v"/></svg></button>
+    </div>
+
+    <!-- Mobil: lodrät stapel som laddar fler i omgångar. -->
+    <div class="omd-mobil">
+      <div class="omd-stapel" id="omd-stapel"></div>
+      <div class="omd-mer" id="omd-mer" hidden>
+        <button type="button" class="knapp knapp-sekundar" id="omd-mer-knapp">Ladda fler omdömen</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- ==========================================================================
+     8. FAQ – accordion
+     ========================================================================== -->
+<section id="faq">
   <div class="wrap">
 
     <div class="sekt-topp in">
@@ -738,7 +801,7 @@
 
 
 <!-- ==========================================================================
-     8. AVSLUTANDE CTA
+     9. AVSLUTANDE CTA
      ========================================================================== -->
 <section class="cta">
   <div class="glasreflex" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -754,7 +817,7 @@
 
 
 <!-- ==========================================================================
-     9. FOOTER
+     10. FOOTER
      ========================================================================== -->
 <footer class="footer" id="kontakt">
   <div class="wrap">
@@ -779,6 +842,7 @@
           <li><a href="#tjanster">Tjänster</a></li>
           <li><a href="#sa-funkar-det">Så funkar det</a></li>
           <li><a href="#galleri">Galleri</a></li>
+          <li><a href="#omdomen">Omdömen</a></li>
           <li><a href="#om-linus">Om Linus</a></li>
           <li><a href="blogg.html">Blogg</a></li>
           <li><a href="#faq">Vanliga frågor</a></li>

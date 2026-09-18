@@ -19,7 +19,7 @@ inte vidare någonstans förrän `BOKNING_URL` i `app.js` är ifylld.
 |---|---|
 | `index.html` | Startsida med hela bokningsvyn |
 | `stil.css` | All formgivning, mobilen först |
-| `app.js` | All JavaScript: priser, kalender, bokningsflöde |
+| `app.js` | All JavaScript: priser, kalender, bokningsflöde, omdömen |
 | `blogg.html` + tre inlägg | Blogg för sökordstrafik |
 | `kopvillkor.html` | Köpvillkor och ångerrätt |
 | `integritetspolicy.html` | Personuppgiftsbehandling enligt GDPR |
@@ -40,6 +40,10 @@ inte vidare någonstans förrän `BOKNING_URL` i `app.js` är ifylld.
   summan alltid blir ett helt krontal och radsummorna stämmer mot totalen.
 - **Tillgänglighet.** WCAG 2.1 AA på kontrast, tangentbordsnavigering och
   `prefers-reduced-motion`.
+- **Omdömena bor i `app.js`.** Listan `OMDOMEN` i avsnitt 7 är enda källan –
+  den bygger både karusellen på desktop och stapeln på mobil. Är listan tom
+  döljs hela sektionen. Läs punkt 7 i `ATT-GORA-INNAN-LANSERING.md` innan du
+  lägger in texter: påhittade omdömen är olagliga, inte bara olämpliga.
 
 ## Att känna till vid ändringar
 
