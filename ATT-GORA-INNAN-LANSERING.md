@@ -5,7 +5,7 @@ och företagsinformation finns på plats. Det som återstår är uppgifter som b
 du kan fylla i, plus två saker som måste vara gjorda innan sidan får gå live.
 
 Sök på `[BYT UT]` i projektet för att hitta varje ställe. Just nu finns
-**37 träffar** fördelade enligt listan längst ned.
+**27 träffar** fördelade enligt listan längst ned.
 
 ---
 
@@ -148,37 +148,19 @@ för sidfoten och bokningsvyn.
 | Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt`, `@id` och `url` i `LocalBusiness`-blocket |
 | Delningsbild 1200×630 px | `og:image` – filen `og-bild.jpg` finns inte än |
 
-## 3.1 Google-kartan i sidfoten – inbäddningen saknas
+## 3.1 Google-kartan i sidfoten – klar
 
-Sidfoten har en Google-karta på alla tio sidor, men **den visar bara området,
-inte företagsprofilen**. Länken *Öppna i Google Maps* pekar däremot rätt.
+Sidfoten har en Google-karta på alla tio sidor, låst till företagsprofilen.
+Kortet visar namn, betyg och antal omdömen, och länken *Öppna i Google Maps*
+går till profilen.
 
-### Varför det inte går att lösa härifrån
-
-En inbäddning av formen `?q=<text>&output=embed` gör en vanlig Google-sökning
-och bygger ett eget kort av träffen. Det kortet är **inte** kopplat till
-företagsprofilen, och skrev därför ut *"Inga recensioner"* bredvid namnet –
-trots att profilen har 30. Det gick inte att laga genom att byta söktext:
-bara en riktig profilinbäddning bär betyg och antal.
-
-Adressen är därför bytt mot en ren områdeskarta över Uppsala, som åtminstone
-inte påstår något felaktigt, tills den riktiga inbäddningen finns.
-
-Den riktiga inbäddningskoden går inte att hämta från utvecklingsmiljön:
-`share.google`, `google.com` och `maps.google.com` är alla blockerade av
-nätverkspolicyn.
-
-### Gör så här
-
-1. Öppna Google Företagsprofil → **Dela** → **Bädda in en karta**.
-2. Kopiera `src`-adressen ur iframe-koden. Den ska börja med
-   `https://www.google.com/maps/embed?pb=` – börjar den med `maps.google.com/maps?q=`
-   är det en sökning igen, och då kommer "Inga recensioner" tillbaka.
-3. Byt ut `data-cookieblock-src` på `<iframe>` i sidfotsblocket, på alla tio
-   sidor. `href` på länken *Öppna i Google Maps* ska stå kvar som den är.
-   Sök på `[BYT UT] Adressen nedan visar bara området` för att hitta dem.
-4. Byt gärna rubriken `<h4>Var jag jobbar</h4>` mot något som passar ett
-   profilkort, t.ex. *Linus Fönsterputs på Google*.
+**Byt aldrig inbäddningsadressen mot en av formen
+`maps.google.com/maps?q=<text>&output=embed`.** Den gör en vanlig sökning och
+bygger ett eget kort av träffen, som inte är kopplat till profilen och skriver
+ut *"Inga recensioner"* hur många omdömen profilen än har. Det var precis vad
+som hände i ett tidigare försök. En giltig adress börjar med
+`https://www.google.com/maps/embed?pb=` och hämtas i Google Företagsprofil
+under **Dela → Bädda in en karta**.
 
 Kartan är samtyckesspärrad: iframen har `data-cookieblock-src` i stället för
 `src`, och Cookiebot byter först när besökaren godkänt marknadsföringskakor.
@@ -186,8 +168,14 @@ Utan samtycke visas en ruta med en vanlig länk, och inget anrop går till
 Google. Växlingen sker i CSS (`iframe:not([src])`), så den fungerar även på
 `tack.html` som inte laddar `app.js`.
 
-`vercel.json` har fått `https://www.google.com` och `https://maps.google.com`
-i `frame-src` – utan det blockerar sidans egen CSP kartan.
+`vercel.json` har `https://www.google.com` och `https://maps.google.com` i
+`frame-src` – utan det blockerar sidans egen CSP kartan.
+
+Kartans gränssnittstext (*Kortkommandon*, *Villkor*, *Rapportera ett kartfel*)
+följer språket i inbäddningsadressen. Den som Google gav står på engelska
+(`!1sen!2sse` på två ställen). Vill du ha svenska: byt båda till `!1ssv!2sse`
+och kontrollera att kartan fortfarande laddar.
+
 
 ## 4. Leverantörer att lista i integritetspolicyn
 
@@ -351,22 +339,21 @@ behöver alltså ingenting byggas om.
 
 | Fil | Antal |
 |---|---|
-| index.html | 6 |
-| integritetspolicy.html | 5 |
-| kopvillkor.html | 4 |
-| cookies.html | 3 |
-| 404.html | 3 |
-| tack.html | 3 |
-| blogg.html | 3 |
-| blogg-hur-ofta-putsa-fonster.html | 3 |
-| blogg-vad-kostar-fonsterputs-uppsala.html | 3 |
-| blogg-rut-avdrag-fonsterputs-stad.html | 3 |
+| index.html | 5 |
+| integritetspolicy.html | 4 |
+| kopvillkor.html | 3 |
+| cookies.html | 2 |
+| 404.html | 2 |
+| tack.html | 2 |
+| blogg.html | 2 |
+| blogg-hur-ofta-putsa-fonster.html | 2 |
+| blogg-vad-kostar-fonsterputs-uppsala.html | 2 |
+| blogg-rut-avdrag-fonsterputs-stad.html | 2 |
 | sitemap.xml | 1 |
-| **Totalt** | **37** |
+| **Totalt** | **27** |
 
-Kvar är tre saker: domänen (som ska bytas överallt när den är klar), den
-geografiska adressen och kartlänken i sidfoten (punkt 3.1). Org.nr, momsnummer
-och e-postadress är ifyllda.
+Kvar är två saker: domänen (som ska bytas överallt när den är klar) och den
+geografiska adressen. Org.nr, momsnummer, e-postadress och kartan är klara.
 
 Omdömena räknas inte in här: de är riktiga och ligger i `OMDOMEN` i `app.js`,
 inte bakom en `[BYT UT]`-markering. Se punkt 7.
