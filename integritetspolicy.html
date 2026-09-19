@@ -45,6 +45,62 @@
      personuppgifter (IP-adresser) som lämnar sidan och inga tredjepartskakor. -->
 <link rel="preload" href="typsnitt/inter-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="typsnitt/inter.css">
+<!-- Strukturerad data: LocalBusiness. Samma block ligger på alla indexerbara
+     sidor med samma @id, så att Google ser en enda verksamhet och inte en per
+     sida. Adressen anges bara på ort- och länsnivå: Linus jobbar hos kunden,
+     inte på en besöksadress som kunder söker upp, och en påhittad gatuadress i
+     strukturerad data är värre än ingen alls (fel uppgift till Google). Lägg
+     till streetAddress, postalCode och geo här bara om en riktig, publik
+     besöksadress ska anges.
+     Lägg inte in aggregateRating eller review: omdömen ett företag publicerar
+     om sig självt räknas som self-serving och ger inga utökade sökresultat
+     för LocalBusiness. Se punkt 7 i ATT-GORA-INNAN-LANSERING.md. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://linusfonsterputs.se/#business",
+  "name": "Linus Fönsterputs",
+  "legalName": "Linus Fönsterputs",
+  "description": "Fönsterputs och kontorsputs i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.",
+  "url": "https://linusfonsterputs.se/",
+  "logo": "https://linusfonsterputs.se/bilder/logga-mork.png",
+  "image": "https://linusfonsterputs.se/og-bild.jpg",
+  "telephone": "+46762171833",
+  "email": "kontakt@linusfonsterputs.se",
+  "priceRange": "$$",
+  "currenciesAccepted": "SEK",
+  "paymentAccepted": "Faktura",
+  "taxID": "031221-5551",
+  "vatID": "SE031221555101",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Uppsala",
+    "addressRegion": "Uppsala län",
+    "addressCountry": "SE"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Uppsala" },
+    { "@type": "City", "name": "Knivsta" },
+    { "@type": "City", "name": "Storvreta" },
+    { "@type": "City", "name": "Enköping" },
+    { "@type": "City", "name": "Östhammar" },
+    { "@type": "City", "name": "Heby" }
+  ],
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:00", "closes": "17:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "14:00" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Tjänster",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Fönsterputs" }, "price": "950", "priceCurrency": "SEK", "description": "Fast pris per hus inkl. RUT-avdrag (1 900 kr ex. RUT), oavsett antal fönster." },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Kontorsputs" }, "price": "515", "priceCurrency": "SEK", "description": "Från 515 kr per tillfälle exklusive moms. Priset följer lokalens storlek." }
+    ]
+  }
+}
+</script>
 <link rel="stylesheet" href="stil.css">
 </head>
 <body>
@@ -135,6 +191,7 @@
       <a href="index.html#fonsterputs">Fönsterputs</a>
       <a href="index.html#kontorsputs">Kontorsputs</a>
       <a href="index.html#galleri">Galleri</a>
+      <a href="index.html#omdomen">Omdömen</a>
       <a href="index.html#om-linus">Om Linus</a>
       <a href="blogg.html">Blogg</a>
       <a href="index.html#kontakt">Kontakt</a>
@@ -155,6 +212,7 @@
     <a class="mlank" href="index.html#kontorsputs">Kontorsputs i Uppsala</a>
     <a class="mlank" href="index.html#sa-funkar-det">Så funkar det</a>
     <a class="mlank" href="index.html#galleri">Galleri</a>
+    <a class="mlank" href="index.html#omdomen">Omdömen</a>
     <a class="mlank" href="index.html#om-linus">Om Linus</a>
     <a class="mlank" href="blogg.html">Blogg</a>
     <a class="mlank" href="index.html#kontakt">Kontakt</a>
@@ -173,14 +231,14 @@
       </nav>
       <h1>Integritetspolicy</h1>
       <p class="inlagg-ingress">Vilka uppgifter jag samlar in när du bokar, varför jag gör det och vad du har för rättigheter.</p>
-      <p class="inlagg-meta">Senast uppdaterad <time datetime="2026-08-17">17 augusti 2026</time></p>
+      <p class="inlagg-meta">Senast uppdaterad <time datetime="2026-09-18">18 september 2026</time></p>
     </div>
   </header>
 
   <div class="wrap inlagg-kropp juridik">
 
 <div class="juridik-ruta">
-  <p><strong>Kort sammanfattning.</strong> Jag samlar bara in det jag behöver för att utföra ditt uppdrag, fakturera och sköta RUT-ansökan. Jag säljer aldrig dina uppgifter vidare. Webbplatsen använder inga kakor och inga besöksstatistikverktyg.</p>
+  <p><strong>Kort sammanfattning.</strong> Jag samlar bara in det jag behöver för att utföra ditt uppdrag, fakturera och sköta RUT-ansökan. Jag säljer aldrig dina uppgifter vidare. Webbplatsen mäter besök med Google Analytics 4 och visar en karta från Google – men bara om du säger ja i samtyckesrutan. Säger du nej sätts inga sådana kakor och inga anrop går till Google.</p>
 </div>
 
 <h2>1. Vem ansvarar för dina personuppgifter?</h2>
@@ -191,7 +249,7 @@
 <ul class="bocklista">
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Linus Fönsterputs</strong>, org.nr 031221-5551</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><span class="platshallare">Gatuadress, postnummer och ort</span></span></li>
-  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>E-post: <a href="mailto:hej@linusfonsterputs.se">hej@linusfonsterputs.se</a> <span class="platshallare">(byt till riktig adress)</span></span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>E-post: <a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>Telefon: <a href="tel:+46762171833">076-217 18 33</a></span></li>
 </ul>
 <p>Har du frågor om hur dina uppgifter hanteras, hör av dig så svarar jag. Jag har ingen utsedd dataskyddsombud – verksamheten är för liten för att omfattas av det kravet.</p>
@@ -200,6 +258,7 @@
 <p><strong>När du bokar:</strong> namn, telefonnummer, e-postadress, gatuadress och postort, eventuell portkod eller meddelande, samt uppgifter om själva uppdraget (tjänst, antal fönster, tillval, vald tid och pris).</p>
 <p><strong>När RUT-avdrag ska användas:</strong> personnummer samt fastighetsbeteckning eller lägenhetsnummer och bostadsrättsföreningens organisationsnummer. Dessa uppgifter samlas in i samband med att arbetet utförs eller faktureras – inte i bokningsformuläret – eftersom Skatteverket kräver dem för att bevilja avdraget.</p>
 <p><strong>När du ringer eller mejlar:</strong> de uppgifter du själv väljer att lämna.</p>
+<p><strong>När du besöker webbplatsen och godkänt statistikkakor:</strong> din IP-adress (som Google kortar av innan den lagras), vilka sidor du besöker, hur länge du stannar, ungefärlig ort, samt vilken webbläsare och enhet du använder. Uppgifterna samlas in av Google Analytics 4 och är inte kopplade till ditt namn. Säger du nej samlas ingenting in.</p>
 <p>Jag samlar inte in några känsliga personuppgifter enligt GDPR artikel 9, och gör ingen profilering eller automatiserat beslutsfattande.</p>
 
 <h2>3. Varför, och med vilken rättslig grund?</h2>
@@ -212,6 +271,8 @@
     <tr><td>Ansöka om RUT-avdrag hos Skatteverket å dina vägnar</td><td>Rättslig förpliktelse och fullgörande av avtal (art. 6.1 b och c)</td></tr>
     <tr><td>Svara på offertförfrågningar som ännu inte lett till bokning</td><td>Åtgärder på din begäran före avtal (art. 6.1 b)</td></tr>
     <tr><td>Hantera reklamationer och rättsliga anspråk</td><td>Berättigat intresse att kunna försvara rättsliga krav (art. 6.1 f)</td></tr>
+    <tr><td>Föra besöksstatistik med Google Analytics 4 och visa kartan i sidfoten</td><td>Ditt samtycke (art. 6.1 a), som du lämnar i samtyckesrutan och kan ta tillbaka när som helst</td></tr>
+    <tr><td>Skydda offertformuläret mot spamrobotar (Cloudflare Turnstile)</td><td>Berättigat intresse av att hålla formuläret användbart (art. 6.1 f)</td></tr>
   </tbody>
 </table>
 <p>Att lämna uppgifterna är frivilligt, men utan namn, kontaktuppgift och adress kan jag inte utföra uppdraget.</p>
@@ -231,12 +292,15 @@
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Faktura- och bokföringssystem samt redovisningskonsult</strong> – som personuppgiftsbiträden, med personuppgiftsbiträdesavtal.</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Webbhotell och e-postleverantör</strong> – som personuppgiftsbiträden, i den mån uppgifter passerar deras system.</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>HighLevel Inc (CRM-systemet GoHighLevel)</strong> – som personuppgiftsbiträde. Offertförfrågningar och bokningsuppgifter registreras där för att jag ska kunna hantera dem.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Google Ireland Limited</strong> – som personuppgiftsbiträde för Google Analytics 4 och för kartan i sidfoten, men bara om du godkänt statistik- respektive marknadsföringskakor. Ingenting du fyller i under bokningen delas med Google.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Cybot A/S (Cookiebot)</strong> – som personuppgiftsbiträde. Hanterar samtyckesrutan och sparar ditt val.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Cloudflare</strong> – som personuppgiftsbiträde för spamskyddet Turnstile i offertformuläret.</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Inkassoombud eller Kronofogden</strong> – bara om en faktura inte betalas.</span></li>
 </ul>
 <!-- [BYT UT] Lista de faktiska leverantörerna här när de är valda (webbhotell,
      e-postleverantör, bokföring), och se till att personuppgiftsbiträdesavtal
      finns med var och en av dem. -->
-<p><strong>Överföring utanför EU/EES:</strong> uppgifterna behandlas i huvudsak inom EU/EES. CRM-systemet GoHighLevel drivs av HighLevel Inc, som är baserat i USA – uppgifter som lämnas i offertförfrågningar och bokningar överförs därför dit. Överföringen sker med stöd av EU–U.S. Data Privacy Framework, som HighLevel Inc är anslutet till (kan kontrolleras i det officiella registret på dataprivacyframework.gov). Om ytterligare leverantörer i framtiden innebär överföring till tredje land sker den bara med en giltig skyddsmekanism, till exempel EU-kommissionens standardavtalsklausuler, och den här policyn uppdateras då.</p>
+<p><strong>Överföring utanför EU/EES:</strong> uppgifterna behandlas i huvudsak inom EU/EES. CRM-systemet GoHighLevel drivs av HighLevel Inc, som är baserat i USA – uppgifter som lämnas i offertförfrågningar och bokningar överförs därför dit. Överföringen sker med stöd av EU–U.S. Data Privacy Framework, som HighLevel Inc är anslutet till (kan kontrolleras i det officiella registret på dataprivacyframework.gov). Samma sak gäller besöksstatistiken: avtalsparten är Google Ireland Limited, men uppgifterna kan behandlas av Google LLC i USA, och Google är anslutet till samma ramverk. Om ytterligare leverantörer i framtiden innebär överföring till tredje land sker den bara med en giltig skyddsmekanism, till exempel EU-kommissionens standardavtalsklausuler, och den här policyn uppdateras då.</p>
 
 <h2>6. Dina rättigheter</h2>
 <p>Du har enligt GDPR rätt att:</p>
@@ -248,7 +312,7 @@
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>invända mot behandling som stödjer sig på berättigat intresse,</span></li>
   <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>få ut uppgifter du lämnat i ett maskinläsbart format och flytta dem (dataportabilitet).</span></li>
 </ul>
-<p>Hör av dig på <a href="mailto:hej@linusfonsterputs.se">hej@linusfonsterputs.se</a> så svarar jag utan onödigt dröjsmål och senast inom en månad. Det kostar ingenting.</p>
+<p>Hör av dig på <a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a> så svarar jag utan onödigt dröjsmål och senast inom en månad. Det kostar ingenting.</p>
 
 <h2>7. Om du är missnöjd</h2>
 <p>Säg gärna till mig först. Du har också alltid rätt att klaga till tillsynsmyndigheten:</p>
@@ -257,7 +321,13 @@ Box 8114, 104 20 Stockholm<br>
 Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="https://www.imy.se" rel="noopener">imy.se</a></p>
 
 <h2>8. Kakor och besöksstatistik</h2>
-<p>Webbplatsen använder inga kakor, ingen besöksstatistik och inga tredjepartstjänster. Läs mer på sidan <a href="cookies.html">Kakor</a>.</p>
+<p>Webbplatsen använder kakor, och du väljer själv vilka. Samtyckesrutan visas första gången du besöker sidan, och du kan ändra dig när som helst via <strong>Kakinställningar</strong> längst ned på varje sida.</p>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Nödvändiga</strong> – Cookiebot sparar ditt samtyckesval, och Cloudflare Turnstile skiljer människor från spamrobotar i offertformuläret. De behövs för att sidan ska fungera och kräver därför inget samtycke.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Statistik</strong> – <strong>Google Analytics 4</strong> (mätnings-ID G-L9W1RTLRWV) visar hur många som besöker sidan, vilka sidor som läses och ungefär varifrån besökarna kommer. Det hjälper mig se vad som är värt att förbättra. Kakorna sätts <em>först</em> när du godkänt statistik.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Marknadsföring</strong> – kartan från <strong>Google Maps</strong> i sidfoten. Den laddas först när du godkänt marknadsföring; innan dess går inget anrop till Google och du ser en ruta med en vanlig länk i stället.</span></li>
+</ul>
+<p>Jag använder ingen annonsspårning, ingen Meta-pixel och säljer inga uppgifter vidare. Vilken kaka som gör vad, och hur länge den ligger kvar, står på sidan <a href="cookies.html">Kakor</a>.</p>
 
 <h2>9. Säkerhet</h2>
 <p>Uppgifterna skyddas med lösenordsskyddade enheter och konton, och webbplatsen ska alltid nås över krypterad anslutning (HTTPS). Bara jag har tillgång till kunduppgifterna.</p>
@@ -279,11 +349,11 @@ Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="h
           <span class="logga-bild ljus" aria-hidden="true"></span>
         </a>
         <p>Fönsterputsning för villa och kontorsputs för företag i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.</p>
-        <!-- [BYT UT] Fyll i momsnummer och geografisk adress. Uppgifterna är
-             obligatoriska enligt 8 § lagen om elektronisk handel och
-             ska finnas lätt tillgängliga på sidan. -->
+        <!-- [BYT UT] Fyll i den geografiska adressen. Uppgiften är
+             obligatorisk enligt 8 § lagen om elektronisk handel och
+             ska finnas lätt tillgänglig på sidan. -->
         <p class="fskatt">Innehar F-skattsedel och ansvarsförsäkring<br>
-          Org.nr 031221-5551 · Momsreg.nr SEXXXXXXXXXX01<br>
+          Org.nr&nbsp;031221-5551 · Momsreg.nr&nbsp;SE031221555101<br>
           Gatuadress, postnummer och ort</p>
       </div>
 
@@ -293,6 +363,7 @@ Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="h
           <li><a href="index.html#tjanster">Tjänster</a></li>
           <li><a href="index.html#sa-funkar-det">Så funkar det</a></li>
           <li><a href="index.html#galleri">Galleri</a></li>
+          <li><a href="index.html#omdomen">Omdömen</a></li>
           <li><a href="index.html#om-linus">Om Linus</a></li>
           <li><a href="blogg.html">Blogg</a></li>
           <li><a href="index.html#faq">Vanliga frågor</a></li>
@@ -303,8 +374,7 @@ Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="h
         <h4>Kontakt</h4>
         <ul class="kontakt">
           <li><svg aria-hidden="true"><use href="#i-telefon"/></svg><a href="tel:+46762171833">076-217 18 33</a></li>
-          <!-- [BYT UT] Ersätt e-postadressen med Linus riktiga adress -->
-          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:hej@linusfonsterputs.se">hej@linusfonsterputs.se</a></li>
+          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></li>
           <li><svg aria-hidden="true"><use href="#i-klocka"/></svg><span>Mån–fre 07–17<br>Lör 09–14</span></li>
           <li><svg aria-hidden="true"><use href="#i-plats"/></svg><span>Utgångspunkt: Uppsala</span></li>
         </ul>
@@ -318,6 +388,38 @@ Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="h
         </ul>
       </div>
 
+    </div>
+
+    <!-- Google-karta låst till företagsprofilen. Adressen är kopierad ur
+         Google Företagsprofil (Dela -> Bädda in en karta) och pekar på
+         profilens plats-id, så kortet visar namn, betyg och antal omdömen.
+         Byt den ALDRIG mot en adress av formen maps.google.com/maps?q=<text>.
+         Den formen gör en vanlig sökning och bygger ett eget kort av träffen,
+         som inte är kopplat till profilen och skriver ut "Inga recensioner"
+         hur många omdömen profilen än har. En giltig ersättare börjar med
+         https://www.google.com/maps/embed?pb=. Ny adress ska bytas på alla
+         tio sidor.
+         Kartan laddas först när besökaren godkänt marknadsföringskakor:
+         Cookiebot byter då data-cookieblock-src mot src. Fram till dess visas
+         rutan under, och inget anrop går till Google. -->
+    <div class="footer-karta">
+      <h4>Linus Fönsterputs på kartan</h4>
+      <div class="karta-ram">
+        <iframe
+          title="Karta som visar Linus Fönsterputs på Google Maps"
+          data-cookieblock-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d128316.84966204678!2d17.49364153455702!3d59.83334900943022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1a9c670f3e917a7%3A0xd2cdf096e53caba3!2sLinus%20F%C3%B6nsterputs%20Uppsala!5e0!3m2!1sen!2sse!4v1789751348973!5m2!1sen!2sse"
+          data-cookieconsent="marketing"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <p class="karta-av">
+          <svg aria-hidden="true"><use href="#i-plats"/></svg>
+          <span>Kartan kommer från Google och laddas först när du godkänt marknadsföringskakor.</span>
+          <span class="karta-knappar">
+            <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Ändra kakinställningar</button>
+            <a href="https://share.google/U0JNifvViv9w0H4gy" target="_blank" rel="noopener">Öppna i Google Maps</a>
+          </span>
+        </p>
+      </div>
     </div>
 
     <nav class="footer-juridik" aria-label="Villkor och integritet">

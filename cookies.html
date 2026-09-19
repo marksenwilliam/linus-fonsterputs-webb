@@ -20,7 +20,7 @@
      inte av Cookiebot innan samtycke. -->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer data-cookieconsent="necessary"></script>
 <title>Kakor (cookies) | Linus Fönsterputs</title>
-<meta name="description" content="Linus Fönsterputs webbplats använder inga kakor, ingen besöksstatistik och inga tredjepartstjänster. Här står vad det innebär.">
+<meta name="description" content="Vilka kakor Linus Fönsterputs webbplats använder, vilka som kräver ditt samtycke och hur du ändrar ditt val.">
 <!-- [BYT UT] Ersätt domänen när den är klar -->
 <link rel="canonical" href="https://linusfonsterputs.se/cookies.html">
 <meta name="theme-color" content="#0B2E59">
@@ -28,7 +28,7 @@
 <meta property="og:locale" content="sv_SE">
 <meta property="og:site_name" content="Linus Fönsterputs">
 <meta property="og:title" content="Kakor (cookies) | Linus Fönsterputs">
-<meta property="og:description" content="Linus Fönsterputs webbplats använder inga kakor, ingen besöksstatistik och inga tredjepartstjänster. Här står vad det innebär.">
+<meta property="og:description" content="Vilka kakor Linus Fönsterputs webbplats använder, vilka som kräver ditt samtycke och hur du ändrar ditt val.">
 <meta property="og:url" content="https://linusfonsterputs.se/cookies.html">
 <!-- Ikoner. favicon.ico och apple-touch-icon.png ligger i roten - många
      klienter hämtar just de sökvägarna utan att läsa sidans HTML. -->
@@ -45,6 +45,62 @@
      personuppgifter (IP-adresser) som lämnar sidan och inga tredjepartskakor. -->
 <link rel="preload" href="typsnitt/inter-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="typsnitt/inter.css">
+<!-- Strukturerad data: LocalBusiness. Samma block ligger på alla indexerbara
+     sidor med samma @id, så att Google ser en enda verksamhet och inte en per
+     sida. Adressen anges bara på ort- och länsnivå: Linus jobbar hos kunden,
+     inte på en besöksadress som kunder söker upp, och en påhittad gatuadress i
+     strukturerad data är värre än ingen alls (fel uppgift till Google). Lägg
+     till streetAddress, postalCode och geo här bara om en riktig, publik
+     besöksadress ska anges.
+     Lägg inte in aggregateRating eller review: omdömen ett företag publicerar
+     om sig självt räknas som self-serving och ger inga utökade sökresultat
+     för LocalBusiness. Se punkt 7 i ATT-GORA-INNAN-LANSERING.md. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://linusfonsterputs.se/#business",
+  "name": "Linus Fönsterputs",
+  "legalName": "Linus Fönsterputs",
+  "description": "Fönsterputs och kontorsputs i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.",
+  "url": "https://linusfonsterputs.se/",
+  "logo": "https://linusfonsterputs.se/bilder/logga-mork.png",
+  "image": "https://linusfonsterputs.se/og-bild.jpg",
+  "telephone": "+46762171833",
+  "email": "kontakt@linusfonsterputs.se",
+  "priceRange": "$$",
+  "currenciesAccepted": "SEK",
+  "paymentAccepted": "Faktura",
+  "taxID": "031221-5551",
+  "vatID": "SE031221555101",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Uppsala",
+    "addressRegion": "Uppsala län",
+    "addressCountry": "SE"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Uppsala" },
+    { "@type": "City", "name": "Knivsta" },
+    { "@type": "City", "name": "Storvreta" },
+    { "@type": "City", "name": "Enköping" },
+    { "@type": "City", "name": "Östhammar" },
+    { "@type": "City", "name": "Heby" }
+  ],
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:00", "closes": "17:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "14:00" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Tjänster",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Fönsterputs" }, "price": "950", "priceCurrency": "SEK", "description": "Fast pris per hus inkl. RUT-avdrag (1 900 kr ex. RUT), oavsett antal fönster." },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Kontorsputs" }, "price": "515", "priceCurrency": "SEK", "description": "Från 515 kr per tillfälle exklusive moms. Priset följer lokalens storlek." }
+    ]
+  }
+}
+</script>
 <link rel="stylesheet" href="stil.css">
 </head>
 <body>
@@ -135,6 +191,7 @@
       <a href="index.html#fonsterputs">Fönsterputs</a>
       <a href="index.html#kontorsputs">Kontorsputs</a>
       <a href="index.html#galleri">Galleri</a>
+      <a href="index.html#omdomen">Omdömen</a>
       <a href="index.html#om-linus">Om Linus</a>
       <a href="blogg.html">Blogg</a>
       <a href="index.html#kontakt">Kontakt</a>
@@ -155,6 +212,7 @@
     <a class="mlank" href="index.html#kontorsputs">Kontorsputs i Uppsala</a>
     <a class="mlank" href="index.html#sa-funkar-det">Så funkar det</a>
     <a class="mlank" href="index.html#galleri">Galleri</a>
+    <a class="mlank" href="index.html#omdomen">Omdömen</a>
     <a class="mlank" href="index.html#om-linus">Om Linus</a>
     <a class="mlank" href="blogg.html">Blogg</a>
     <a class="mlank" href="index.html#kontakt">Kontakt</a>
@@ -172,37 +230,50 @@
         <a href="index.html">Start</a> <span aria-hidden="true">›</span> <span>Kakor</span>
       </nav>
       <h1>Kakor och spårning</h1>
-      <p class="inlagg-ingress">Kort sagt: den här webbplatsen sätter inga kakor och mäter ingenting om dig.</p>
-      <p class="inlagg-meta">Senast uppdaterad <time datetime="2026-09-09">9 september 2026</time></p>
+      <p class="inlagg-ingress">Kort sagt: du väljer själv. Utan ditt ja sätts bara de kakor som sidan inte fungerar utan.</p>
+      <p class="inlagg-meta">Senast uppdaterad <time datetime="2026-09-18">18 september 2026</time></p>
     </div>
   </header>
 
   <div class="wrap inlagg-kropp juridik">
 
 <div class="juridik-ruta">
-  <p><strong>Den här webbplatsen använder inga kakor.</strong> Därför finns ingen samtyckesruta – det finns inget att samtycka till.</p>
+  <p><strong>Du väljer själv.</strong> Första gången du besöker sidan får du en samtyckesruta. Säger du nej sätts bara de kakor som sidan inte fungerar utan – ingen statistik och ingen karta laddas. Du kan ändra dig när som helst via <strong>Kakinställningar</strong> längst ned på varje sida.</p>
 </div>
 
 <h2>Vad är kakor?</h2>
 <p>En kaka (cookie) är en liten textfil som en webbplats sparar i din webbläsare, till exempel för att komma ihåg inställningar eller för att räkna besökare. Enligt 9 kap. 28 § lagen (2022:482) om elektronisk kommunikation måste en webbplats informera om kakor och hämta in ditt samtycke innan andra kakor än de strikt nödvändiga används.</p>
 
-<h2>Vad den här webbplatsen gör – och inte gör</h2>
+<h2>Kakorna på den här sidan</h2>
+
+<h3>Nödvändiga – sätts alltid</h3>
+<p>De här behövs för att sidan ska fungera och kräver inget samtycke.</p>
 <ul class="bocklista">
-  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Inga kakor.</strong> Varken egna eller från tredje part.</span></li>
-  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Ingen besöksstatistik.</strong> Ingen Google Analytics, ingen Meta-pixel, inga spårningsskript över huvud taget.</span></li>
-  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Ingenting sparas i din webbläsare.</strong> Varken localStorage eller sessionStorage används.</span></li>
-  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Inga externa anrop.</strong> Typsnitt, bilder, skript och stilmallar laddas från den här domänen. Din IP-adress skickas alltså inte vidare till Google eller någon annan bara för att du besöker sidan.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>CookieConsent</strong> (Cookiebot, Cybot A/S) – sparar vad du svarat i samtyckesrutan, så att du slipper frågan varje gång. Ligger kvar i ett år.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Cloudflare Turnstile</strong> – skiljer människor från spamrobotar i offertformuläret. Utan den skulle formuläret dränkas i skräppost.</span></li>
 </ul>
 
+<h3>Statistik – bara om du säger ja</h3>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Google Analytics 4</strong> (kakorna <code>_ga</code> och <code>_ga_*</code>, mätnings-ID G-L9W1RTLRWV). Visar hur många som besöker sidan, vilka sidor som läses och ungefär varifrån besökarna kommer. Din IP-adress kortas av av Google innan den lagras, och statistiken är inte kopplad till ditt namn. Kakorna ligger kvar i två år.</span></li>
+</ul>
+
+<h3>Marknadsföring – bara om du säger ja</h3>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Google Maps</strong> – kartan i sidfoten. Säger du nej laddas den inte alls, och inget anrop går till Google. Du ser i stället en ruta med en vanlig länk till Google Maps, som du själv väljer om du vill klicka på.</span></li>
+</ul>
+
+<p>Ingen annonsspårning används, ingen Meta-pixel finns på sidan och inga uppgifter säljs vidare. Typsnitt, bilder och stilmallar laddas från den här domänen, så de skickar ingenting vidare till någon annan.</p>
+
 <h2>Hur fungerar bokningen då?</h2>
-<p>Uppgifterna du fyller i under bokningen finns bara i webbläsarens arbetsminne så länge fliken är öppen. Stänger du fliken innan du skickat bokningen försvinner allt – ingenting sparas på din dator och ingenting skickas i förväg.</p>
-<p>Först när du trycker på <em>Bekräfta bokning</em> skickas uppgifterna till mig. Hur de hanteras därefter beskrivs i <a href="integritetspolicy.html">integritetspolicyn</a>.</p>
+<p>Uppgifterna du fyller i under bokningen finns bara i webbläsarens arbetsminne så länge fliken är öppen. Varken localStorage eller sessionStorage används. Stänger du fliken innan du skickat bokningen försvinner allt – ingenting sparas på din dator och ingenting skickas i förväg.</p>
+<p>Först när du trycker på <em>Skicka förfrågan</em> skickas uppgifterna till mig. Hur de hanteras därefter beskrivs i <a href="integritetspolicy.html">integritetspolicyn</a>.</p>
+
+<h2>Så här ändrar eller tar du bort dem</h2>
+<p>Klicka på <strong>Kakinställningar</strong> längst ned på sidan för att ändra ditt val, eller ta tillbaka det helt. Du kan också radera kakor direkt i webbläsaren: öppna utvecklarverktygen med F12, gå till fliken <em>Application</em> eller <em>Lagring</em> och titta under Cookies. Där ser du exakt vad som ligger sparat.</p>
 
 <h2>Om det ändras</h2>
-<p>Skulle jag i framtiden lägga till besöksstatistik eller någon annan tjänst som kräver kakor, kommer du att mötas av en samtyckesruta där du aktivt får välja innan något sätts – och den här sidan uppdateras samtidigt.</p>
-
-<h2>Så här ser du efter själv</h2>
-<p>Du behöver inte ta mitt ord för det. Öppna webbläsarens utvecklarverktyg med F12, gå till fliken <em>Application</em> eller <em>Lagring</em> och titta under Cookies och Storage. Där ska det vara tomt.</p>
+<p>Läggs någon ny tjänst till som kräver kakor uppdateras den här sidan, och du får välja i samtyckesrutan innan något sätts.</p>
 
     <p class="tillbaka-blogg"><a href="index.html">← Till startsidan</a></p>
   </div>
@@ -218,11 +289,11 @@
           <span class="logga-bild ljus" aria-hidden="true"></span>
         </a>
         <p>Fönsterputsning för villa och kontorsputs för företag i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.</p>
-        <!-- [BYT UT] Fyll i momsnummer och geografisk adress. Uppgifterna är
-             obligatoriska enligt 8 § lagen om elektronisk handel och
-             ska finnas lätt tillgängliga på sidan. -->
+        <!-- [BYT UT] Fyll i den geografiska adressen. Uppgiften är
+             obligatorisk enligt 8 § lagen om elektronisk handel och
+             ska finnas lätt tillgänglig på sidan. -->
         <p class="fskatt">Innehar F-skattsedel och ansvarsförsäkring<br>
-          Org.nr 031221-5551 · Momsreg.nr SEXXXXXXXXXX01<br>
+          Org.nr&nbsp;031221-5551 · Momsreg.nr&nbsp;SE031221555101<br>
           Gatuadress, postnummer och ort</p>
       </div>
 
@@ -232,6 +303,7 @@
           <li><a href="index.html#tjanster">Tjänster</a></li>
           <li><a href="index.html#sa-funkar-det">Så funkar det</a></li>
           <li><a href="index.html#galleri">Galleri</a></li>
+          <li><a href="index.html#omdomen">Omdömen</a></li>
           <li><a href="index.html#om-linus">Om Linus</a></li>
           <li><a href="blogg.html">Blogg</a></li>
           <li><a href="index.html#faq">Vanliga frågor</a></li>
@@ -242,8 +314,7 @@
         <h4>Kontakt</h4>
         <ul class="kontakt">
           <li><svg aria-hidden="true"><use href="#i-telefon"/></svg><a href="tel:+46762171833">076-217 18 33</a></li>
-          <!-- [BYT UT] Ersätt e-postadressen med Linus riktiga adress -->
-          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:hej@linusfonsterputs.se">hej@linusfonsterputs.se</a></li>
+          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></li>
           <li><svg aria-hidden="true"><use href="#i-klocka"/></svg><span>Mån–fre 07–17<br>Lör 09–14</span></li>
           <li><svg aria-hidden="true"><use href="#i-plats"/></svg><span>Utgångspunkt: Uppsala</span></li>
         </ul>
@@ -257,6 +328,38 @@
         </ul>
       </div>
 
+    </div>
+
+    <!-- Google-karta låst till företagsprofilen. Adressen är kopierad ur
+         Google Företagsprofil (Dela -> Bädda in en karta) och pekar på
+         profilens plats-id, så kortet visar namn, betyg och antal omdömen.
+         Byt den ALDRIG mot en adress av formen maps.google.com/maps?q=<text>.
+         Den formen gör en vanlig sökning och bygger ett eget kort av träffen,
+         som inte är kopplat till profilen och skriver ut "Inga recensioner"
+         hur många omdömen profilen än har. En giltig ersättare börjar med
+         https://www.google.com/maps/embed?pb=. Ny adress ska bytas på alla
+         tio sidor.
+         Kartan laddas först när besökaren godkänt marknadsföringskakor:
+         Cookiebot byter då data-cookieblock-src mot src. Fram till dess visas
+         rutan under, och inget anrop går till Google. -->
+    <div class="footer-karta">
+      <h4>Linus Fönsterputs på kartan</h4>
+      <div class="karta-ram">
+        <iframe
+          title="Karta som visar Linus Fönsterputs på Google Maps"
+          data-cookieblock-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d128316.84966204678!2d17.49364153455702!3d59.83334900943022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1a9c670f3e917a7%3A0xd2cdf096e53caba3!2sLinus%20F%C3%B6nsterputs%20Uppsala!5e0!3m2!1sen!2sse!4v1789751348973!5m2!1sen!2sse"
+          data-cookieconsent="marketing"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <p class="karta-av">
+          <svg aria-hidden="true"><use href="#i-plats"/></svg>
+          <span>Kartan kommer från Google och laddas först när du godkänt marknadsföringskakor.</span>
+          <span class="karta-knappar">
+            <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Ändra kakinställningar</button>
+            <a href="https://share.google/U0JNifvViv9w0H4gy" target="_blank" rel="noopener">Öppna i Google Maps</a>
+          </span>
+        </p>
+      </div>
     </div>
 
     <nav class="footer-juridik" aria-label="Villkor och integritet">

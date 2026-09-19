@@ -19,7 +19,7 @@ inte vidare någonstans förrän `BOKNING_URL` i `app.js` är ifylld.
 |---|---|
 | `index.html` | Startsida med hela bokningsvyn |
 | `stil.css` | All formgivning, mobilen först |
-| `app.js` | All JavaScript: priser, kalender, bokningsflöde |
+| `app.js` | All JavaScript: priser, kalender, bokningsflöde, omdömen |
 | `blogg.html` + tre inlägg | Blogg för sökordstrafik |
 | `kopvillkor.html` | Köpvillkor och ångerrätt |
 | `integritetspolicy.html` | Personuppgiftsbehandling enligt GDPR |
@@ -33,21 +33,30 @@ inte vidare någonstans förrän `BOKNING_URL` i `app.js` är ifylld.
 
 - **Mobilen först.** Datorvyn ligger i `@media (min-width: 1024px)`, så
   mobillayouten går att ändra utan att röra skrivbordsvyn – och tvärtom.
-- **Inga externa anrop.** Typsnitt, bilder och skript ligger på egen domän.
-  Inga kakor, ingen besöksstatistik, ingenting sparas i webbläsaren.
+- **Egna filer i botten, tredjepart bara efter samtycke.** Typsnitt, bilder och
+  egna skript ligger på egen domän. Cookiebot och Cloudflare Turnstile laddas
+  alltid (nödvändiga), medan Google Analytics 4 och kartan i sidfoten laddas
+  först när besökaren sagt ja. Ingen localStorage eller sessionStorage används.
 - **Priser räknas ut i webbläsaren.** Fast pris för fönsterputs, kvadratmeter­
   baserat för kontorsputs. Alla belopp före RUT hålls jämna, så att halva
   summan alltid blir ett helt krontal och radsummorna stämmer mot totalen.
 - **Tillgänglighet.** WCAG 2.1 AA på kontrast, tangentbordsnavigering och
   `prefers-reduced-motion`.
+- **Omdömena bor i `app.js`.** Listan `OMDOMEN` i avsnitt 7 är enda källan –
+  den bygger både karusellen på desktop och stapeln på mobil. Där ligger 30
+  riktiga Google-omdömen, ordagrant avskrivna. Är listan tom döljs hela
+  sektionen. Läs punkt 7 i `ATT-GORA-INNAN-LANSERING.md` innan du ändrar i
+  dem: påhittade eller tillrättalagda omdömen är olagliga, inte bara
+  olämpliga.
 
 ## Att känna till vid ändringar
 
 Bokningsvyn ligger **duplicerad i nio HTML-filer**. Ändrar du något i
 formuläret måste ändringen speglas i samtliga. Redigera `index.html` och kopiera
-sedan de delade blocken därifrån till övriga sidor – header, mobilmeny, sidfot
-och hela bokningsvyn. Alternativet är att låta `app.js` bygga formuläret från en
-enda mall, vilket tar bort problemet permanent.
+sedan de delade blocken därifrån till övriga sidor – header, mobilmeny, sidfot,
+`LocalBusiness`-blocket i `<head>` och hela bokningsvyn. Alternativet är att
+låta `app.js` bygga formuläret från en enda mall, vilket tar bort problemet
+permanent.
 
 ## Licenser
 

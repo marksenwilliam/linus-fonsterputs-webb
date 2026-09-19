@@ -256,11 +256,349 @@
   })();
 
 
+  /* ------------------------------------------------------------------------
+     7. Omdömen – Google-recensioner
+        Listan OMDOMEN nedan är sidans enda källa. Är den tom göms hela
+        sektionen, så sidan kan gå live utan tomma kort. Samma kort byggs
+        till karusellen (desktop) och till stapeln (mobil).
+
+        VIKTIGT: varje omdöme måste komma från en riktig kund som lämnat det
+        på Google, och texten ska stå ordagrant. Skriv inte om, korta inte och
+        slå inte ihop flera omdömen. Plocka heller inte bort omdömen för att
+        snygga till urvalet – det är i sig vilseledande. Påhittade omdömen är
+        förbjudna enligt punkt 23 b i svarta listan (bilaga I till direktiv
+        2005/29/EG, som gäller som svensk lag via marknadsföringslagen) och
+        Konsumentverket kan ingripa med förbud och sanktionsavgift.
+
+        Lägger du in ett exempel under tiden: sätt platshallare:true på det, så
+        varnar sidan synligt att omdömet inte är riktigt.
+     ------------------------------------------------------------------------ */
+
+  /* Sammanfattningen överst. Siffrorna måste stämma med Google-profilen den
+     dag sidan publiceras, och ses över när nya omdömen kommer in. */
+  var BETYG = {
+    snitt: 5,            /* Snittbetyg på Google, samma siffra som profilen visar */
+    antal: 30,           /* Antal omdömen. 0 döljer hela brickan */
+    profil: 'https://share.google/U0JNifvViv9w0H4gy'
+  };
+
+  /* Omdömena i den ordning de ligger på Google-profilen. Texterna är avskrivna
+     ordagrant, inklusive emojier och egna signaturer. Åtta kunder satte bara
+     betyg utan att skriva något – de har text: '' och räknas ändå in i
+     antalet ovan. Fältet roll är avsiktligt tomt: vilken tjänst varje omdöme
+     gällde framgår inte av profilen, och det ska inte gissas. */
+  var OMDOMEN = [
+    { namn: 'Joakim Wiberg', roll: '', betyg: 5, text: '' },
+    { namn: 'Emelie Kellnberger', roll: '', betyg: 5, text: 'Nöjda varje gång! Enkelt att boka och Linus tar alltid våra fönster som man måste stå på stege för att nå 🤩' },
+    { namn: 'elin Johansson', roll: '', betyg: 5, text: '' },
+    { namn: 'Marianne Olsson', roll: '', betyg: 5, text: 'Rekommenderar Linus varmt, han gör ett fantastiskt jobb med skinande resultat! /Marianne' },
+    { namn: 'Therese Skogh', roll: '', betyg: 5, text: 'Proffsigt utfört arbete och trevlig kommunikation. Vi kommer absolut att anlita Linus igen.' },
+    { namn: 'Linnéa Eriksson', roll: '', betyg: 5, text: '' },
+    { namn: 'Torsten Sandberg', roll: '', betyg: 5, text: 'Glasklart bra. Smidigt och bra. Mycket nöjda. //Torsten o Inger S' },
+    { namn: 'Julia Lyckberg', roll: '', betyg: 5, text: '' },
+    { namn: 'Cecilia Schmidt-Karlsson', roll: '', betyg: 5, text: 'Trevlig och noggrann! Rekommenderas!' },
+    { namn: 'Anna Larsson', roll: '', betyg: 5, text: 'Trevlig och duktig 🤗' },
+    { namn: 'Jörgen Anderson', roll: '', betyg: 5, text: '' },
+    { namn: 'Maria Lejskog', roll: '', betyg: 5, text: 'Mycket trevlig och pålitlig men framförallt noggrann och gör ett oerhört bra jobb. Kan varmt rekommendera Linus' },
+    { namn: 'Arne Pettersson', roll: '', betyg: 5, text: 'Över förväntan, även om jag hade höga förväntningar' },
+    { namn: 'Alexander Forslund', roll: '', betyg: 5, text: 'Toppen service, bemötande och slutresultat. Kan starkt rekommendera Linus!' },
+    { namn: 'Sophie Schelin', roll: '', betyg: 5, text: 'Superduktig! Fint resultat och trevligt bemötande!' },
+    { namn: 'Jenny Nilsson', roll: '', betyg: 5, text: '' },
+    { namn: 'Hildegun Weissenberg', roll: '', betyg: 5, text: '' },
+    { namn: 'Monica Magnusson', roll: '', betyg: 5, text: 'Så nöjda med Linus fönsterputs. Vårt uterum fick skinande glasväggar. Vi kommer kontakta Linus när det blir dax för fönsterputs igen.' },
+    { namn: 'Linda Göting', roll: '', betyg: 5, text: 'Så nöjd!' },
+    { namn: 'Kajsa Fagerström', roll: '', betyg: 5, text: 'Vi är jättenöjda med Linus som gjorde ett toppenbra jobb med våra fönster. Snabbt, rent, trevlig och bra pris! Vi kommer anlita honom igen!' },
+    { namn: 'Britta Gesar', roll: '', betyg: 5, text: 'Mycket trygg, trevlig och duktig på sitt jobb. Rekommenderar honom' },
+    { namn: 'Helene Hansen', roll: '', betyg: 5, text: 'Toppen fint resultat. Pålitlig och punktlig. Kan verkligen rekommendera denna firma.' },
+    { namn: 'ylva björkegren', roll: '', betyg: 5, text: 'Smidig kommunikation och väl utfört arbete till ett bra pris!' },
+    { namn: 'Daniel Thollin Hall', roll: '', betyg: 5, text: 'Duktig, snabb och smidig.' },
+    { namn: 'jonas malm', roll: '', betyg: 5, text: 'Linus var väldigt trevlig och gjorde ett fantastiskt bra jobb.' },
+    { namn: 'Annica Gadle', roll: '', betyg: 5, text: 'Jättenöjd med putsningen, snabbt och professionellt utfört. Har redan bokat ny tid.' },
+    { namn: 'Maritza Thulin', roll: '', betyg: 5, text: '' },
+    { namn: 'Kennel Krafts', roll: '', betyg: 5, text: 'Helt underbart att få fönstren putsade' },
+    { namn: 'Martin Kenving', roll: '', betyg: 5, text: 'Kanon! Riktigt bra service o resultat!' },
+    { namn: 'Joakim Eriksson', roll: '', betyg: 5, text: 'Rekommenderas! Linus är duktig och snabb!' }
+  ];
+
+  (function () {
+    var sektion = $('#omdomen');
+    if (!sektion || !OMDOMEN.length) return;   /* inga omdömen – sektionen förblir dold */
+
+    sektion.hidden = false;
+
+    /* --- Byggstenar ------------------------------------------------------ */
+
+    /** Fem stjärnor där de som ligger över betyget ritas tonade. */
+    function stjarnor(betyg) {
+      var ut = '';
+      for (var i = 1; i <= 5; i++) {
+        ut += '<svg viewBox="0 0 24 24" aria-hidden="true"' + (i > betyg ? ' class="tom"' : '') +
+              '><use href="#i-stjarna"/></svg>';
+      }
+      return ut;
+    }
+
+    /** Ett omdömeskort. `klippt` klipper texten till fyra rader (mobil). */
+    function byggKort(omd, klippt) {
+      var kort = document.createElement('article');
+      kort.className = 'omd-kort';
+
+      /* Kunder som bara satte betyg får en kort rad i stället för citat, så
+         att kortet inte blir en tom ruta. */
+      var text = document.createElement('p');
+      if (omd.text) {
+        text.className = 'omd-text' + (klippt ? ' klippt' : '') + (omd.platshallare ? ' utkast' : '');
+        text.textContent = omd.text;
+      } else {
+        text.className = 'omd-text omd-utan-text';
+        text.textContent = 'Lämnade betyg utan skriven text.';
+      }
+
+      var huvud = document.createElement('div');
+      huvud.className = 'omd-huvud';
+      huvud.innerHTML =
+        '<div class="omd-person">' +
+          '<span class="avatar" aria-hidden="true">' + omd.namn.charAt(0) + '</span>' +
+          '<span class="omd-person-text">' +
+            '<cite class="omd-namn"></cite>' +
+            (omd.roll ? '<span class="omd-meta"></span>' : '') +
+          '</span>' +
+        '</div>' +
+        '<span class="stjarnor omd-betyg" role="img" aria-label="' + omd.betyg + ' av 5 stjärnor">' + stjarnor(omd.betyg) + '</span>';
+      /* Namn och roll sätts som text, inte som HTML: de kommer från Google och
+         ska aldrig kunna bära med sig uppmärkning in på sidan. */
+      huvud.querySelector('.omd-namn').textContent = omd.namn;
+      if (omd.roll) huvud.querySelector('.omd-meta').textContent = omd.roll;
+
+      kort.appendChild(huvud);
+      kort.appendChild(text);
+
+      /* Citattecknet hör till ett citat. Kort som bara bär ett betyg får inget. */
+      if (omd.text) {
+        var citat = document.createElement('span');
+        citat.className = 'omd-citat';
+        citat.setAttribute('aria-hidden', 'true');
+        citat.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-citat"/></svg>';
+        kort.appendChild(citat);
+      }
+      return kort;
+    }
+
+    /* --- Varningen när omdömena är platshållare -------------------------- */
+    var notis = $('#omd-notis');
+    var harPlatshallare = OMDOMEN.some(function (o) { return o.platshallare; }) || BETYG.platshallare;
+    if (notis && harPlatshallare) notis.hidden = false;
+
+    /* --- Betygsbrickan --------------------------------------------------- */
+    var brickrad = $('#omd-brickrad');
+    if (brickrad && BETYG.antal > 0) {
+      var snitt = BETYG.snitt.toFixed(1).replace('.', ',');
+      var etikett = 'Betyg ' + snitt + ' av 5 på Google, baserat på ' + BETYG.antal + ' omdömen';
+      var bricka = document.createElement(BETYG.profil ? 'a' : 'div');
+      bricka.className = 'omd-bricka';
+      if (BETYG.profil) {
+        bricka.href = BETYG.profil;
+        bricka.target = '_blank';
+        bricka.rel = 'noopener';
+        bricka.setAttribute('aria-label', etikett + ' – öppnar Google i ny flik');
+      }
+      bricka.innerHTML =
+        '<svg class="g-logga" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-google"/></svg>' +
+        '<span class="omd-snitt">' + snitt + '</span>' +
+        '<span class="stjarnor stor" role="img" aria-label="' + etikett + '">' + stjarnor(Math.round(BETYG.snitt)) + '</span>' +
+        '<span class="omd-antal">' + BETYG.antal + ' omdömen på Google</span>';
+      brickrad.appendChild(bricka);
+      brickrad.hidden = false;
+    }
+
+    /* --- Karusellen (desktop) -------------------------------------------- */
+    /* Kortuppsättningen läggs två gånger i spåret. När spåret rullat en hel
+       uppsättning nollställs positionen, och eftersom nästa uppsättning ser
+       likadan ut syns aldrig något hopp. Kopian döljs för skärmläsare.
+
+       Bara omdömen med text hamnar i karusellen: ett kort som bara säger
+       "betyg utan text" ger inget i ett flöde som rullar förbi. De syns i
+       stapeln på mobilen i stället, och räknas med i siffran på brickan. */
+    (function () {
+      var fonster = $('#omd-fonster');
+      var spar = $('#omd-spar');
+      if (!fonster || !spar) return;
+
+      var medText = OMDOMEN.filter(function (o) { return o.text; });
+      if (!medText.length) return;
+
+      /* Korten är olika breda efter hur lång texten är. Med samma bredd åt
+         alla skulle "Så nöjd!" få lika hög ruta som ett stycke på fyra rader,
+         eftersom raden av kort sträcks till den högsta. */
+      function bredd(text) {
+        return Math.round(275 + Math.min(text.length * 1.25, 205)) + 'px';
+      }
+
+      function laggTill(omd, kopia) {
+        var kort = byggKort(omd, false);
+        kort.style.flex = '0 0 ' + bredd(omd.text);
+        if (kopia) kort.setAttribute('aria-hidden', 'true');
+        spar.appendChild(kort);
+      }
+      medText.forEach(function (o) { laggTill(o, false); });
+      medText.forEach(function (o) { laggTill(o, true); });
+
+      var laege = 0;          /* aktuell förskjutning i px, alltid <= 0 */
+      var fart = 0.35;        /* px per bildruta – lugn, läsbar hastighet */
+      var pekas = false;      /* muspekaren eller fokus ligger i karusellen */
+      var dras = false;
+      var syns = false;
+      var korare = null;
+
+      function halva() { return spar.scrollWidth / 2; }
+
+      function flytta() {
+        var h = halva();
+        if (h > 0) {
+          /* Håll läget inom en uppsättning, åt båda hållen. */
+          while (laege <= -h) laege += h;
+          while (laege > 0) laege -= h;
+        }
+        spar.style.transform = 'translateX(' + laege + 'px)';
+      }
+
+      function ruta() {
+        if (!pekas && !dras) { laege -= fart; flytta(); }
+        korare = requestAnimationFrame(ruta);
+      }
+
+      function start() {
+        if (korare === null && mjuk) korare = requestAnimationFrame(ruta);
+      }
+      function stopp() {
+        if (korare !== null) { cancelAnimationFrame(korare); korare = null; }
+      }
+
+      /* Rullar bara medan sektionen är i bild – ingen animation i bakgrunden. */
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (poster) {
+          syns = poster[0].isIntersecting;
+          if (syns) start(); else stopp();
+        }, { threshold: 0 }).observe(fonster);
+      } else {
+        start();
+      }
+
+      /* Paus när besökaren läser: hover, fokus i karusellen eller dold flik. */
+      fonster.addEventListener('mouseenter', function () { pekas = true; });
+      fonster.addEventListener('mouseleave', function () { pekas = false; });
+      fonster.addEventListener('focusin', function () { pekas = true; });
+      fonster.addEventListener('focusout', function () { pekas = false; });
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stopp(); else if (syns) start();
+      });
+
+      /* Dra med mus eller penna. Touch hanteras inte här: under 768px visas
+         stapeln i stället, och där ska sidan kunna scrollas som vanligt. */
+      var dragStart = 0, laegeStart = 0;
+      fonster.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'touch') return;
+        dras = true;
+        dragStart = e.clientX;
+        laegeStart = laege;
+        fonster.classList.add('dras');
+        fonster.setPointerCapture(e.pointerId);
+      });
+      fonster.addEventListener('pointermove', function (e) {
+        if (!dras) return;
+        e.preventDefault();
+        laege = laegeStart + (e.clientX - dragStart);
+        flytta();
+      });
+      function slappTag(e) {
+        if (!dras) return;
+        dras = false;
+        fonster.classList.remove('dras');
+        if (e.pointerId !== undefined && fonster.hasPointerCapture(e.pointerId)) {
+          fonster.releasePointerCapture(e.pointerId);
+        }
+      }
+      fonster.addEventListener('pointerup', slappTag);
+      fonster.addEventListener('pointercancel', slappTag);
+
+      /* Pilarna: ett kort i taget, så karusellen går att använda utan mus. */
+      function steg() {
+        var kort = spar.firstElementChild;
+        return kort ? kort.offsetWidth + 20 : 300;
+      }
+      var bak = $('#omd-bak'), fram = $('#omd-fram');
+      if (bak) bak.addEventListener('click', function () { laege += steg(); flytta(); });
+      if (fram) fram.addEventListener('click', function () { laege -= steg(); flytta(); });
+
+      flytta();
+    })();
+
+    /* --- Stapeln (mobil) -------------------------------------------------- */
+    /* Fyra omdömen visas direkt, resten hämtas i omgångar. Varje kort klipps
+       till fyra rader och fälls ut med en egen knapp – men bara om texten
+       faktiskt är längre än så, vilket mäts efter att kortet ritats. */
+    (function () {
+      var stapel = $('#omd-stapel');
+      var merRuta = $('#omd-mer');
+      var merKnapp = $('#omd-mer-knapp');
+      if (!stapel) return;
+
+      var visade = 0;
+      var FORSTA = 4, FLER = 8;
+
+      function ritaKort(omd) {
+        var kort = byggKort(omd, true);
+        var text = kort.querySelector('.omd-text');
+
+        var las = document.createElement('button');
+        las.type = 'button';
+        las.className = 'omd-las';
+        las.textContent = 'Läs mer';
+        las.hidden = true;
+        kort.insertBefore(las, kort.querySelector('.omd-citat'));
+
+        stapel.appendChild(kort);
+
+        /* Knappen ska bara finnas när något faktiskt är dolt. Mätningen görs
+           efter att layouten räknats om, annars är höjderna ännu 0. */
+        requestAnimationFrame(function () {
+          if (text.scrollHeight > text.clientHeight + 2) las.hidden = false;
+        });
+
+        las.addEventListener('click', function () {
+          var utfalld = !text.classList.contains('klippt');
+          /* Bara ett kort i taget är utfällt, som FAQ:n på samma sida. */
+          $$('.omd-kort', stapel).forEach(function (annat) {
+            var annanText = annat.querySelector('.omd-text');
+            var annanKnapp = annat.querySelector('.omd-las');
+            if (annat !== kort && annanText && !annanText.classList.contains('klippt')) {
+              annanText.classList.add('klippt');
+              if (annanKnapp) annanKnapp.textContent = 'Läs mer';
+            }
+          });
+          text.classList.toggle('klippt', utfalld);
+          las.textContent = utfalld ? 'Läs mer' : 'Visa mindre';
+        });
+      }
+
+      function visaFler() {
+        var omgang = visade === 0 ? FORSTA : FLER;
+        OMDOMEN.slice(visade, visade + omgang).forEach(ritaKort);
+        visade = Math.min(visade + omgang, OMDOMEN.length);
+        if (merRuta) merRuta.hidden = visade >= OMDOMEN.length;
+      }
+
+      visaFler();
+      if (merKnapp) merKnapp.addEventListener('click', visaFler);
+    })();
+  })();
+
+
   /* ==========================================================================
-     7. OFFERTFÖRFRÅGAN
+     8. OFFERTFÖRFRÅGAN
      ========================================================================== */
 
-  /* --- 7.1 State (endast i minnet) ------------------------------------- */
+  /* --- 8.1 State (endast i minnet) ------------------------------------- */
   var STANDARD = {
     fonster: { antal: 15, sprojsAntal: 0, sprojstvatt: false,
                balkong: false, karmar: false, bleck: false, behandling: false },
@@ -288,7 +626,7 @@
   };
 
 
-  /* --- 7.2 Prisberäkning ------------------------------------------------ */
+  /* --- 8.2 Prisberäkning ------------------------------------------------ */
 
   /** Avrundar arbetstiden uppåt till närmaste halvtimme. */
   /* Math.round först: yta × 1,1 kan ge t.ex. 440.00000000000006 i flyttal,
@@ -417,7 +755,7 @@
   }
 
 
-  /* --- 7.3 Prisrutan ---------------------------------------------------- */
+  /* --- 8.3 Prisrutan ---------------------------------------------------- */
 
   /* Priset visas bara i sista steget. Under vägen dit ligger fokus på en
      fråga i taget, så ingen summeringspanel konkurrerar om utrymmet. */
@@ -459,7 +797,7 @@
   }
 
 
-  /* --- 7.4 Formulärkontroller ------------------------------------------ */
+  /* --- 8.4 Formulärkontroller ------------------------------------------ */
 
   /** Markerar valda kort så att CSS kan visa bocken. */
   function synkaVald() {
@@ -554,7 +892,7 @@
   koppla('#f-sprojstvatt', function (v) { S.fonster.sprojstvatt = v; });
 
 
-  /* --- 7.5 Stegnavigering ----------------------------------------------- */
+  /* --- 8.5 Stegnavigering ----------------------------------------------- */
 
   /* Ett steg åt gången, en fråga per steg. Sektionerna ligger i DOM-ordning
      och de som är märkta data-bara hör till en enda tjänst – de hoppas över
@@ -707,7 +1045,7 @@
   $$('[data-avbryt]').forEach(function (b) { b.addEventListener('click', stangBokning); });
 
 
-  /* --- 7.6 Validering av kunduppgifter ---------------------------------- */
+  /* --- 8.6 Validering av kunduppgifter ---------------------------------- */
 
   /* Samma mönster som HTML5:s inbyggda e-postvalidering. Snällare regler
      (typ [^\s@]+@[^\s@]+) släpper igenom adresser som GoHighLevel sedan
@@ -780,7 +1118,7 @@
   });
 
 
-  /* --- 7.6b Cloudflare Turnstile ------------------------------------------
+  /* --- 8.6b Cloudflare Turnstile ------------------------------------------
      Skyddar offertformuläret mot spam. Widgeten renderas automatiskt av
      Turnstiles eget skript (se head) utifrån data-sitekey på #turnstile-
      ruta - dessa tre callbacks är de globala krokarna dit den. Token
@@ -791,7 +1129,7 @@
   window.turnstileFel = function () { turnstileToken = null; };
 
 
-  /* --- 7.7 Skicka förfrågan --------------------------------------------- */
+  /* --- 8.7 Skicka förfrågan --------------------------------------------- */
 
   /* ------------------------------------------------------------------
      LEVERANS AV FÖRFRÅGAN
@@ -926,7 +1264,7 @@
   });
 
 
-  /* --- 7.9 Uppstart ------------------------------------------------------ */
+  /* --- 8.9 Uppstart ------------------------------------------------------ */
   ritaFormular();
   ritaSteg();
 

@@ -56,12 +56,68 @@
   "name": "Guider om fönsterputs",
   "url": "https://linusfonsterputs.se/blogg.html",
   "inLanguage": "sv-SE",
-  "publisher": { "@type": "Organization", "name": "Linus Fönsterputs" },
+  "publisher": { "@id": "https://linusfonsterputs.se/#business", "@type": "Organization", "name": "Linus Fönsterputs" },
   "blogPost": [
     { "@type": "BlogPosting", "headline": "Hur ofta ska man putsa fönster?", "datePublished": "2026-06-04", "url": "https://linusfonsterputs.se/blogg-hur-ofta-putsa-fonster.html" },
     { "@type": "BlogPosting", "headline": "Vad kostar fönsterputs i Uppsala?", "datePublished": "2026-07-02", "url": "https://linusfonsterputs.se/blogg-vad-kostar-fonsterputs-uppsala.html" },
     { "@type": "BlogPosting", "headline": "RUT-avdrag för fönsterputs", "datePublished": "2026-08-06", "url": "https://linusfonsterputs.se/blogg-rut-avdrag-fonsterputs-stad.html" }
   ]
+}
+</script>
+<!-- Strukturerad data: LocalBusiness. Samma block ligger på alla indexerbara
+     sidor med samma @id, så att Google ser en enda verksamhet och inte en per
+     sida. Adressen anges bara på ort- och länsnivå: Linus jobbar hos kunden,
+     inte på en besöksadress som kunder söker upp, och en påhittad gatuadress i
+     strukturerad data är värre än ingen alls (fel uppgift till Google). Lägg
+     till streetAddress, postalCode och geo här bara om en riktig, publik
+     besöksadress ska anges.
+     Lägg inte in aggregateRating eller review: omdömen ett företag publicerar
+     om sig självt räknas som self-serving och ger inga utökade sökresultat
+     för LocalBusiness. Se punkt 7 i ATT-GORA-INNAN-LANSERING.md. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://linusfonsterputs.se/#business",
+  "name": "Linus Fönsterputs",
+  "legalName": "Linus Fönsterputs",
+  "description": "Fönsterputs och kontorsputs i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.",
+  "url": "https://linusfonsterputs.se/",
+  "logo": "https://linusfonsterputs.se/bilder/logga-mork.png",
+  "image": "https://linusfonsterputs.se/og-bild.jpg",
+  "telephone": "+46762171833",
+  "email": "kontakt@linusfonsterputs.se",
+  "priceRange": "$$",
+  "currenciesAccepted": "SEK",
+  "paymentAccepted": "Faktura",
+  "taxID": "031221-5551",
+  "vatID": "SE031221555101",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Uppsala",
+    "addressRegion": "Uppsala län",
+    "addressCountry": "SE"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Uppsala" },
+    { "@type": "City", "name": "Knivsta" },
+    { "@type": "City", "name": "Storvreta" },
+    { "@type": "City", "name": "Enköping" },
+    { "@type": "City", "name": "Östhammar" },
+    { "@type": "City", "name": "Heby" }
+  ],
+  "openingHoursSpecification": [
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:00", "closes": "17:00" },
+    { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "09:00", "closes": "14:00" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Tjänster",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Fönsterputs" }, "price": "950", "priceCurrency": "SEK", "description": "Fast pris per hus inkl. RUT-avdrag (1 900 kr ex. RUT), oavsett antal fönster." },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Kontorsputs" }, "price": "515", "priceCurrency": "SEK", "description": "Från 515 kr per tillfälle exklusive moms. Priset följer lokalens storlek." }
+    ]
+  }
 }
 </script>
 <link rel="stylesheet" href="stil.css">
@@ -152,6 +208,7 @@
       <a href="index.html#fonsterputs">Fönsterputs</a>
       <a href="index.html#kontorsputs">Kontorsputs</a>
       <a href="index.html#galleri">Galleri</a>
+      <a href="index.html#omdomen">Omdömen</a>
       <a href="index.html#om-linus">Om Linus</a>
       <a href="blogg.html">Blogg</a>
       <a href="index.html#kontakt">Kontakt</a>
@@ -171,6 +228,7 @@
     <a class="mlank" href="index.html#kontorsputs">Kontorsputs i Uppsala</a>
     <a class="mlank" href="index.html#sa-funkar-det">Så funkar det</a>
     <a class="mlank" href="index.html#galleri">Galleri</a>
+    <a class="mlank" href="index.html#omdomen">Omdömen</a>
     <a class="mlank" href="index.html#om-linus">Om Linus</a>
     <a class="mlank" href="blogg.html">Blogg</a>
     <a class="mlank" href="index.html#kontakt">Kontakt</a>
@@ -230,11 +288,11 @@
           <span class="logga-bild ljus" aria-hidden="true"></span>
         </a>
         <p>Fönsterputsning för villa och kontorsputs för företag i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.</p>
-        <!-- [BYT UT] Fyll i momsnummer och geografisk adress. Uppgifterna är
-             obligatoriska enligt 8 § lagen om elektronisk handel och
-             ska finnas lätt tillgängliga på sidan. -->
+        <!-- [BYT UT] Fyll i den geografiska adressen. Uppgiften är
+             obligatorisk enligt 8 § lagen om elektronisk handel och
+             ska finnas lätt tillgänglig på sidan. -->
         <p class="fskatt">Innehar F-skattsedel och ansvarsförsäkring<br>
-          Org.nr 031221-5551 · Momsreg.nr SEXXXXXXXXXX01<br>
+          Org.nr&nbsp;031221-5551 · Momsreg.nr&nbsp;SE031221555101<br>
           Gatuadress, postnummer och ort</p>
       </div>
 
@@ -244,6 +302,7 @@
           <li><a href="index.html#tjanster">Tjänster</a></li>
           <li><a href="index.html#sa-funkar-det">Så funkar det</a></li>
           <li><a href="index.html#galleri">Galleri</a></li>
+          <li><a href="index.html#omdomen">Omdömen</a></li>
           <li><a href="index.html#om-linus">Om Linus</a></li>
           <li><a href="blogg.html">Blogg</a></li>
           <li><a href="index.html#faq">Vanliga frågor</a></li>
@@ -254,8 +313,7 @@
         <h4>Kontakt</h4>
         <ul class="kontakt">
           <li><svg aria-hidden="true"><use href="#i-telefon"/></svg><a href="tel:+46762171833">076-217 18 33</a></li>
-          <!-- [BYT UT] Ersätt e-postadressen med Linus riktiga adress -->
-          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:hej@linusfonsterputs.se">hej@linusfonsterputs.se</a></li>
+          <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></li>
           <li><svg aria-hidden="true"><use href="#i-klocka"/></svg><span>Mån–fre 07–17<br>Lör 09–14</span></li>
           <li><svg aria-hidden="true"><use href="#i-plats"/></svg><span>Utgångspunkt: Uppsala</span></li>
         </ul>
@@ -269,6 +327,38 @@
         </ul>
       </div>
 
+    </div>
+
+    <!-- Google-karta låst till företagsprofilen. Adressen är kopierad ur
+         Google Företagsprofil (Dela -> Bädda in en karta) och pekar på
+         profilens plats-id, så kortet visar namn, betyg och antal omdömen.
+         Byt den ALDRIG mot en adress av formen maps.google.com/maps?q=<text>.
+         Den formen gör en vanlig sökning och bygger ett eget kort av träffen,
+         som inte är kopplat till profilen och skriver ut "Inga recensioner"
+         hur många omdömen profilen än har. En giltig ersättare börjar med
+         https://www.google.com/maps/embed?pb=. Ny adress ska bytas på alla
+         tio sidor.
+         Kartan laddas först när besökaren godkänt marknadsföringskakor:
+         Cookiebot byter då data-cookieblock-src mot src. Fram till dess visas
+         rutan under, och inget anrop går till Google. -->
+    <div class="footer-karta">
+      <h4>Linus Fönsterputs på kartan</h4>
+      <div class="karta-ram">
+        <iframe
+          title="Karta som visar Linus Fönsterputs på Google Maps"
+          data-cookieblock-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d128316.84966204678!2d17.49364153455702!3d59.83334900943022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1a9c670f3e917a7%3A0xd2cdf096e53caba3!2sLinus%20F%C3%B6nsterputs%20Uppsala!5e0!3m2!1sen!2sse!4v1789751348973!5m2!1sen!2sse"
+          data-cookieconsent="marketing"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        <p class="karta-av">
+          <svg aria-hidden="true"><use href="#i-plats"/></svg>
+          <span>Kartan kommer från Google och laddas först när du godkänt marknadsföringskakor.</span>
+          <span class="karta-knappar">
+            <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Ändra kakinställningar</button>
+            <a href="https://share.google/U0JNifvViv9w0H4gy" target="_blank" rel="noopener">Öppna i Google Maps</a>
+          </span>
+        </p>
+      </div>
     </div>
 
     <nav class="footer-juridik" aria-label="Villkor och integritet">

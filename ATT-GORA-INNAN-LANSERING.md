@@ -5,7 +5,7 @@ och företagsinformation finns på plats. Det som återstår är uppgifter som b
 du kan fylla i, plus två saker som måste vara gjorda innan sidan får gå live.
 
 Sök på `[BYT UT]` i projektet för att hitta varje ställe. Just nu finns
-**36 träffar** fördelade enligt listan längst ned.
+**27 träffar** fördelade enligt listan längst ned.
 
 ---
 
@@ -16,13 +16,13 @@ Kontrollerat mot gällande regler och åtgärdat:
 | Vad | Resultat |
 |---|---|
 | Kakor – LEK | **Rättat.** Kakpolicyn hänvisade till 6 kap. 18 § i den gamla lagen (2003:389). Bestämmelsen ligger sedan 3 juni 2022 i **9 kap. 28 § lagen (2022:482) om elektronisk kommunikation**. |
-| Kakor – i praktiken | Sidan sätter inga kakor, använder ingen localStorage och gör inga externa anrop. Ingen samtyckesruta behövs därför. Verifierat i koden. |
+| Kakor – i praktiken | **Inaktuell rad, rättad 18 september 2026.** Stämde när den skrevs, men sedan dess har Cookiebot, Google Analytics 4, Cloudflare Turnstile och en Google-karta tillkommit. Kakpolicyn och integritetspolicyn påstod fortfarande att sidan inte sätter några kakor och uppmanade besökaren att kontrollera i utvecklarverktygen att det var tomt. Båda sidorna är omskrivna efter hur sidan faktiskt fungerar: nödvändiga kakor (Cookiebot, Turnstile), statistik efter samtycke (GA4) och marknadsföring efter samtycke (kartan). |
 | GDPR artikel 13 | Uppfyllt – ändamål, rättslig grund per ändamål, lagringstider, mottagare, rättigheter och klagomål till IMY. Saknar bara personuppgiftsansvarigs identitet (se punkt 2). |
 | Distansavtalslagen | Uppfyllt – information innan avtal, 14 dagars ångerrätt, Konsumentverkets standardformulär, och den uttryckliga begäran om utförande inom ångerfristen som en **egen, omarkerad, obligatorisk kryssruta**. Verifierat att ingen ruta är förifylld. |
 | Konsumenttjänstlagen | Uppfyllt – reklamation inom skälig tid, två månader alltid i rätt tid, tre års reklamationsrätt. |
 | Prisinformationslagen | Uppfyllt – privatpriser inklusive moms och RUT med summan före avdrag bredvid, företagspriser tydligt märkta exklusive moms. |
 | RUT-taket | **Rättat.** Sidan angav 75 000 kr per person och år utan att nämna att taket delas med ROT (högst 50 000 kr får vara ROT). Klargörande inlagt på tre ställen. |
-| Marknadsföringslagen | Åtgärdat – inga påhittade omdömen eller betyg någonstans. Galleriets notis anger nu vilka bilder som är från utförda jobb och vilka som är exempelbilder (se punkt 5). |
+| Marknadsföringslagen | Åtgärdat – inga påhittade omdömen eller betyg någonstans. Omdömena på sidan är 30 riktiga Google-omdömen, avskrivna ordagrant och utan gallring (se punkt 7). Galleriets notis anger nu vilka bilder som är från utförda jobb och vilka som är exempelbilder (se punkt 5). |
 | ODR-plattformen | Inget att göra. EU:s ODR-plattform stängdes 20 juli 2025 och förordning 524/2013 är upphävd – länken får inte längre finnas. Sidan hänvisar rätt, till ARN. |
 | WCAG 2.1 AA – kontrast | **Rättat.** Sekundär text (`--text-2`) låg på 4,37:1 mot den isblå bakgrunden, under kravet 4,5:1. Tonen är mörkad till `#5E6B82`. Samtliga färgpar beräknade och godkända. |
 | WCAG 2.1 AA – struktur | Uppfyllt – `lang="sv"`, en h1 per sida, hoppa-till-innehåll-länk, alt-text på varje bild, label eller aria-label på varje fält, tillgängligt namn på varje knapp. |
@@ -36,17 +36,19 @@ Linus kan lämna – sidan kan inte gå live utan dem.
 
 ## 0.1 Vad som ändrades senast
 
-- **Omdömesavsnittet är borttaget i sin helhet.** De sex exempelomdömena,
-  betyget 4,9, raden ”Baserat på 87 omdömen på Google”, Google-loggan och
-  stjärnbetyget i heron är borta ur `index.html`. Navigationslänkarna till
-  *Omdömen* är borttagna på alla nio sidor, liksom den CSS och de SVG-symboler
-  som bara användes där.
+- **Omdömesavsnittet är tillbaka med riktigt innehåll.** Sektionen
+  `#omdomen` på startsidan är ombyggd som karusell (desktop) och stapel med
+  *Ladda fler* (mobil), och navigationslänkarna till *Omdömen* finns igen på
+  alla sidor. Innehållet är 30 riktiga Google-omdömen, avskrivna ordagrant –
+  se punkt 7. De sex påhittade exempelomdömena, betyget 4,9 och raden ”Baserat
+  på 87 omdömen på Google” från den gamla versionen är inte återinlagda
+  någonstans, och stjärnbetyget i heron är fortfarande borta.
 - **Förhandsvisningsläget är avstängt.** Bannern högst upp, varningsrutan
   ovanför omdömena, `noindex`-taggarna, robotspärren i `robots.txt` och
   `vercel.json` med `X-Robots-Tag` är borta. Sidan är alltså i skarpt läge.
 
 > **Sidan är därmed indexerbar.** Publicera den inte förrän punkt 1 och 2
-> nedan är avklarade – organisationsnummer och adress är fortfarande
+> nedan är avklarade – den geografiska adressen är fortfarande
 > platshållartext.
 
 Vill du tillfälligt tillbaka till granskningsläge: `node forhandsvisning.js pa`.
@@ -78,11 +80,10 @@ Kort sagt:
 Kontakterna sparas i GHL redan nu, även innan workflowet är byggt – så inga
 förfrågningar går förlorade medan Linus mejladress väntar på att skapas.
 
-**Då måste också integritetspolicyn ändras.** `integritetspolicy.html` punkt 5
-säger i dag att uppgifterna behandlas inom EU/EES. Det stämmer inte längre när
-GHL är inkopplat. Skriv om stycket så att det namnger HighLevel som mottagare,
-anger att uppgifter överförs till USA och vilken skyddsmekanism som gäller.
-Lägg samtidigt in HighLevel i listan över mottagare i samma punkt. Se även
+**Integritetspolicyn är redan uppdaterad för det här.** Punkt 5 i
+`integritetspolicy.html` namnger HighLevel Inc som mottagare, anger att
+uppgifter överförs till USA och att överföringen vilar på EU–U.S. Data Privacy
+Framework. Inget mer behöver göras där för GHL:s skull. Se även
 juridikavsnittet längst ned i GHL-KOPPLING.md.
 
 ### 1.2 Cloudflare Turnstile – secret key saknas
@@ -111,20 +112,34 @@ upp automatisk omdirigering från `http://` till `https://`.
 Dessa är obligatoriska enligt **8 § lagen om elektronisk handel (2002:562)**
 och enligt **GDPR artikel 13**. De ska stå på sidan, lätt att hitta.
 
-| Uppgift | Var den ska in |
-|---|---|
-| Organisationsnummer | Sidfoten på alla sidor, `kopvillkor.html`, `integritetspolicy.html` |
-| Momsregistreringsnummer | Sidfoten, `kopvillkor.html` |
-| Geografisk adress | Sidfoten, `kopvillkor.html`, `integritetspolicy.html` |
-| Riktig e-postadress | Sidfoten och samtliga policysidor (nu `hej@linusfonsterputs.se`) |
-| Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" |
+| Uppgift | Var den ska in | Status |
+|---|---|---|
+| Organisationsnummer | Sidfoten på alla sidor, `kopvillkor.html`, `integritetspolicy.html`, strukturerad data | **Klart** – `031221-5551` |
+| Momsregistreringsnummer | Sidfoten, `kopvillkor.html`, strukturerad data | **Klart** – `SE031221555101`. Numret är härlett ur org.nr enligt standardregeln (`SE` + tio siffror + `01`). Stäm av mot registerutdraget från Skatteverket. |
+| Geografisk adress | Sidfoten, `kopvillkor.html`, `integritetspolicy.html` | Kvarstår – platshållartext |
+| Riktig e-postadress | Sidfoten och samtliga policysidor | **Klart** – `kontakt@linusfonsterputs.se`. Brevlådan måste finnas innan sidan går live. |
+| Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" | Kontrollera |
 
-**Den strukturerade datan är rättad (2026-09-14).** `LocalBusiness`-blocket i
-`index.html` innehöll adressen `Gatan 1, 750 00 Uppsala`, som var påhittad –
-`address`- och `geo`-fälten är borttagna, eftersom fel uppgift till Google är
-värre än ingen alls. Lägg tillbaka `address` bara om Linus vill publicera en
-riktig, offentlig adress (annars är det en typisk service-area-verksamhet
-utan besöksadress, vilket `areaServed`-listan redan täcker).
+**Den strukturerade datan (uppdaterad 2026-09-18).** `LocalBusiness`-blocket
+ligger nu på alla sju indexerbara sidor med samma `@id`
+(`https://linusfonsterputs.se/#business`), så att Google ser en enda
+verksamhet i stället för en per sida. Bloggsidornas `publisher` pekar på samma
+`@id`. Blocket innehåller org.nr (`taxID`), momsnummer (`vatID`), e-post,
+telefon, öppettider, tjänstekatalog och `areaServed`.
+
+De två sidor som är `noindex` – `404.html` och `tack.html` – har medvetet
+inget block, eftersom sökmotorer aldrig läser strukturerad data där.
+
+`address` anges bara på ort- och länsnivå (Uppsala, Uppsala län, SE). Den
+tidigare påhittade adressen `Gatan 1, 750 00 Uppsala` är sedan 2026-09-14
+borta, och någon gatuadress läggs inte tillbaka på egen hand – fel uppgift
+till Google är värre än ingen alls. Fyll på med `streetAddress`, `postalCode`
+och `geo` bara om Linus vill publicera en riktig, offentlig besöksadress
+(annars är det en typisk service-area-verksamhet, vilket `areaServed` täcker).
+
+**Blocket är duplicerat i åtta filer.** Ändrar du en uppgift i det – e-post,
+telefon, priser, öppettider – måste ändringen speglas i samtliga, precis som
+för sidfoten och bokningsvyn.
 
 ## 3. Domän och delningsbild
 
@@ -132,6 +147,35 @@ utan besöksadress, vilket `areaServed`-listan redan täcker).
 |---|---|
 | Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt`, `@id` och `url` i `LocalBusiness`-blocket |
 | Delningsbild 1200×630 px | `og:image` – filen `og-bild.jpg` finns inte än |
+
+## 3.1 Google-kartan i sidfoten – klar
+
+Sidfoten har en Google-karta på alla tio sidor, låst till företagsprofilen.
+Kortet visar namn, betyg och antal omdömen, och länken *Öppna i Google Maps*
+går till profilen.
+
+**Byt aldrig inbäddningsadressen mot en av formen
+`maps.google.com/maps?q=<text>&output=embed`.** Den gör en vanlig sökning och
+bygger ett eget kort av träffen, som inte är kopplat till profilen och skriver
+ut *"Inga recensioner"* hur många omdömen profilen än har. Det var precis vad
+som hände i ett tidigare försök. En giltig adress börjar med
+`https://www.google.com/maps/embed?pb=` och hämtas i Google Företagsprofil
+under **Dela → Bädda in en karta**.
+
+Kartan är samtyckesspärrad: iframen har `data-cookieblock-src` i stället för
+`src`, och Cookiebot byter först när besökaren godkänt marknadsföringskakor.
+Utan samtycke visas en ruta med en vanlig länk, och inget anrop går till
+Google. Växlingen sker i CSS (`iframe:not([src])`), så den fungerar även på
+`tack.html` som inte laddar `app.js`.
+
+`vercel.json` har `https://www.google.com` och `https://maps.google.com` i
+`frame-src` – utan det blockerar sidans egen CSP kartan.
+
+Kartans gränssnittstext (*Kortkommandon*, *Villkor*, *Rapportera ett kartfel*)
+följer språket i inbäddningsadressen. Den som Google gav står på engelska
+(`!1sen!2sse` på två ställen). Vill du ha svenska: byt båda till `!1ssv!2sse`
+och kontrollera att kartan fortfarande laddar.
+
 
 ## 4. Leverantörer att lista i integritetspolicyn
 
@@ -175,17 +219,70 @@ avbryter på alla andra domäner, så besökare laddar aldrig något.
 Radera ändå filen och script-taggen längst ned i de nio HTML-sidorna innan
 sidan går live, så att ingen utvecklingskod följer med i produktionen.
 
-## 7. Om du vill ha tillbaka omdömen
+## 7. Omdömen – riktiga, och så här håller du dem aktuella
+
+Omdömesavsnittet ligger på startsidan (`#omdomen`, mellan galleriet och
+vanliga frågor), byggt som en karusell på desktop och en stapel med
+*Ladda fler* på mobil. **Innehållet är 30 riktiga Google-omdömen**, avskrivna
+ordagrant med emojier och egna signaturer i behåll. Brickan överst visar
+5,0 och 30 omdömen och länkar till företagsprofilen.
+
+### Var innehållet ligger
+
+Allt på ett ställe: avsnitt 7 i `app.js`.
+
+| Vad | Var | Att veta |
+|---|---|---|
+| Omdömena | `OMDOMEN`-listan | Ett objekt per omdöme: `namn`, `roll`, `betyg` (1–5) och `text`. |
+| Sammanfattningen | `BETYG`-objektet | `snitt` och `antal` måste stämma med Google-profilen, `profil` är länken dit. Brickan visas först när `antal` är större än 0. |
+
+Tre saker sköter sig själva:
+
+- **Tom lista döljer hela sektionen.** Ligger inget i `OMDOMEN` renderas
+  ingenting alls.
+- **Omdömen utan text** (åtta kunder satte bara betyg) får en kort rad i
+  stapeln på mobilen i stället för citat, och hoppas över i karusellen – ett
+  kort som bara säger "betyg utan text" ger inget i ett flöde som rullar
+  förbi. De räknas ändå in i siffran 30 på brickan.
+- **Den gula varningsrutan** ovanför korten visas bara om något objekt har
+  `platshallare: true`. Den är alltså borta nu, och kommer tillbaka om du
+  lägger in ett exempel under tiden du väntar på ett riktigt omdöme.
+
+### När nya omdömen kommer in
+
+1. Lägg till objektet överst i `OMDOMEN` (profilen visar nyast först).
+2. Räkna upp `antal` i `BETYG`, och justera `snitt` om medelbetyget ändrats.
+
+Fältet `roll` är tomt på alla trettio. Det är avsiktligt: vilken tjänst varje
+omdöme gällde framgår inte av profilen, och ska inte gissas. Vill du använda
+fältet framöver ska det stå kort och rymmas på en rad bredvid namnet.
+
+### Reglerna
 
 Riktiga omdömen får publiceras, men bara om de kommer från kunder som lämnat
-dem och godkänt att de visas med namn. Påhittade omdömen är förbjudna enligt
-punkt 23 b i svarta listan (bilaga I till direktiv 2005/29/EG, som gäller som
-svensk lag via marknadsföringslagen), och Konsumentverket kan ingripa med
-förbud och sanktionsavgift.
+dem och godkänt att de visas med namn. Namnen som står på sidan är exakt de
+kunderna själva publicerat på Google, med versaler och gemener som de skrev
+dem. Skriv av texten ordagrant – korta inte, skriv inte om och slå inte ihop
+flera omdömen till ett. Plocka heller inte bort omdömen för att snygga till
+urvalet: ett tillrättalagt urval är i sig vilseledande. Påhittade omdömen är
+förbjudna enligt punkt 23 b i svarta listan (bilaga I till direktiv
+2005/29/EG, som gäller som svensk lag via marknadsföringslagen), och
+Konsumentverket kan ingripa med förbud och sanktionsavgift.
 
-Vill du visa ett Google-betyg måste siffran och antalet stämma med den
-faktiska Google-profilen den dagen sidan publiceras, och den behöver ses över
-när nya omdömen kommer in.
+Betyget och antalet måste stämma med den faktiska Google-profilen den dagen
+sidan publiceras, och behöver ses över när nya omdömen kommer in.
+
+Ta gärna med omdömen som inte är femstjärniga. En sida med enbart toppbetyg
+läses som tillrättalagd, och plockar man bort de sämre omdömena är urvalet i
+sig vilseledande.
+
+### Strukturerad data: lägg inte in betyget där
+
+`aggregateRating` och `review` är medvetet utelämnade ur `LocalBusiness`-blocket.
+Google räknar omdömen som företaget självt publicerar om sig självt som
+*self-serving reviews*, och de ger inte utökade sökresultat för `LocalBusiness` –
+de kan dessutom leda till en manuell åtgärd. Betyget hör hemma på
+Google-profilen; sektionen på sidan länkar dit i stället.
 
 ---
 
@@ -198,15 +295,23 @@ när nya omdömen kommer in.
 - **Ångerrätt** enligt distansavtalslagen: information innan avtalet ingås,
   uttrycklig begäran om utförande inom ångerfristen som egen kryssruta, och
   Konsumentverkets standardformulär.
-- **Kakpolicy** – sidan sätter inga kakor, använder ingen besöksstatistik och
-  gör inga externa anrop. Därför behövs ingen samtyckesruta.
+- **Kakpolicy** – redovisar kaka för kaka vad som sätts och när: nödvändiga
+  (Cookiebot, Cloudflare Turnstile), statistik efter samtycke (Google
+  Analytics 4) och marknadsföring efter samtycke (Google-kartan i sidfoten).
+  Samtycket hanteras av Cookiebot och kan ändras via *Kakinställningar* i
+  sidfoten på varje sida.
 - **Typsnittet Inter hostas lokalt** i stället för från Google. Inga
-  besökar-IP-adresser lämnar sidan.
+  besökar-IP-adresser lämnar sidan för typsnittens skull.
 - **Priser** anges inklusive moms och RUT för privatpersoner, och exklusive
   moms för företag – enligt prisinformationslagen.
 - **robots.txt**, **sitemap.xml** och en **404-sida**.
+- **Strukturerad data** – `LocalBusiness` på alla indexerbara sidor med org.nr,
+  momsnummer, kontaktuppgifter, öppettider och tjänstekatalog, plus `FAQPage`
+  på startsidan och `Blog`/`BlogPosting` på bloggen.
 - **WCAG 2.1 AA** på kontrast och tangentbordsnavigering.
-- **Inga påhittade omdömen eller betyg** någonstans på sidan.
+- **Inga påhittade omdömen eller betyg** någonstans på sidan. De 30 omdömena i
+  `#omdomen` är riktiga Google-omdömen, ordagrant avskrivna, och brickan visar
+  profilens faktiska 5,0 av 30 (punkt 7).
 
 ## Om tillgänglighetslagen
 
@@ -234,15 +339,21 @@ behöver alltså ingenting byggas om.
 
 | Fil | Antal |
 |---|---|
-| index.html | 7 |
-| integritetspolicy.html | 5 |
-| kopvillkor.html | 4 |
-| cookies.html | 3 |
-| 404.html | 3 |
-| blogg.html | 3 |
-| blogg-hur-ofta-putsa-fonster.html | 3 |
-| blogg-vad-kostar-fonsterputs-uppsala.html | 3 |
-| blogg-rut-avdrag-fonsterputs-stad.html | 3 |
+| index.html | 5 |
+| integritetspolicy.html | 4 |
+| kopvillkor.html | 3 |
+| cookies.html | 2 |
+| 404.html | 2 |
+| tack.html | 2 |
+| blogg.html | 2 |
+| blogg-hur-ofta-putsa-fonster.html | 2 |
+| blogg-vad-kostar-fonsterputs-uppsala.html | 2 |
+| blogg-rut-avdrag-fonsterputs-stad.html | 2 |
 | sitemap.xml | 1 |
-| app.js | 1 |
-| **Totalt** | **36** |
+| **Totalt** | **27** |
+
+Kvar är två saker: domänen (som ska bytas överallt när den är klar) och den
+geografiska adressen. Org.nr, momsnummer, e-postadress och kartan är klara.
+
+Omdömena räknas inte in här: de är riktiga och ligger i `OMDOMEN` i `app.js`,
+inte bakom en `[BYT UT]`-markering. Se punkt 7.
