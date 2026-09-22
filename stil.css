@@ -122,15 +122,155 @@ section{padding:64px 0;}
 .knapp-vit:hover{background:var(--isbla);color:var(--bla);transform:translateY(-2px);}
 .knapp-liten{min-height:44px;padding:10px 20px;font-size:.94rem;}
 .knapp-bred{width:100%;}
-/* Tvåradig knapp: huvudordet stort och centrerat, förklaringen mindre under.
-   Storlekarna är i em så de följer knappens egen font-size (t.ex. i heron). */
-.knapp-staplad{flex-direction:column;gap:2px;line-height:1.2;}
-.knapp-staplad .knapp-rad{font-size:1.25em;font-weight:800;letter-spacing:-.01em;}
-.knapp-staplad .knapp-underrad{font-size:.82em;font-weight:600;opacity:.92;}
 .knapp[disabled],.knapp[aria-disabled="true"]{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
 /* På riktigt smala skärmar måste långa knapptexter få brytas,
    annars spränger knappen spalten (.knapp har white-space:nowrap). */
 @media(max-width:430px){.knapp{white-space:normal;max-width:100%;}}
+
+/* --------------------------------------------------------------------------
+   Raketknappen – heroens CTA
+   Portad rakt av från Hyper Detailings hero, som i sin tur portade den från
+   marksenmedia.com. Samma konstruktion: glöd underifrån, två infällda lager
+   som ger en hårfin ljuskant, ett hörn som viker upp sig vid hover, gnistor
+   som stiger genom fyllningen och en raket som ritar sig själv. Enda
+   skillnaden mot förlagan är färgen – Hyper Detailings orange byts mot
+   Linus blå. Hela färgsättningen sitter i --raket-bas och --raket-glod.
+
+   Basen är #1E40AF (samma djupa blå som .knapp-primar:active) och inte
+   --bla: glöden underifrån lyfter ytan rejält, och på --bla hamnar den
+   finstilta underraden på 3,6:1 mot vitt. Med den här basen landar
+   underraden på 4,7:1 och huvudraden på 8,0:1, alltså över AA.
+   -------------------------------------------------------------------------- */
+.raketknapp{
+  --raket-rund:.75em;
+  --raket-bas:#1E40AF;
+  --raket-glod:56 189 248;   /* --himmel, samma ljusa accent som ikoner och gradienter */
+  position:relative;         /* hållare för vik, gnistor och glödlager */
+  display:inline-flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  /* Samma mått som .hero-knappar .knapp hade, så heron inte flyttar på sig */
+  min-height:62px;padding:18px 34px;font-size:1.06rem;
+  border:none;               /* ingen outline-reset – global :focus-visible ska synas */
+  border-radius:var(--raket-rund);
+  background:
+    radial-gradient(65.28% 65.28% at 50% 100%,rgb(var(--raket-glod)/.85) 0%,rgb(var(--raket-glod)/0) 100%),
+    linear-gradient(0deg,var(--raket-bas),var(--raket-bas));
+  box-shadow:0 25px 50px -12px rgba(30,64,175,.45);
+  white-space:nowrap;cursor:pointer;
+  transition:all .25s ease;
+}
+
+/* Två infällda lager: först en 1px ljus kant, sedan fyllningen igen 2px in,
+   så kanten läses som en hårfin ljuslinje i stället för en ram. */
+.raketknapp::before,
+.raketknapp::after{
+  content:"";position:absolute;inset:var(--raket-inuti);z-index:0;
+  border-radius:calc(var(--raket-rund) - var(--raket-inuti));
+  transition:all .5s ease-in-out;
+}
+.raketknapp::before{
+  --raket-inuti:1px;
+  background:linear-gradient(177.95deg,rgba(255,255,255,.19) 0%,rgba(255,255,255,0) 100%);
+}
+.raketknapp::after{
+  --raket-inuti:2px;
+  background:
+    radial-gradient(65.28% 65.28% at 50% 100%,rgb(var(--raket-glod)/.85) 0%,rgb(var(--raket-glod)/0) 100%),
+    linear-gradient(0deg,var(--raket-bas),var(--raket-bas));
+}
+.raketknapp:active{transform:scale(.95);}
+
+/* Texten ligger överst av allt, staplad som tidigare. */
+.raketknapp-inner{
+  position:relative;z-index:2;
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  width:100%;line-height:1.2;color:var(--vit);
+  transition:color .2s ease-in-out;
+}
+
+/* Huvudraden: ordet och raketen, versaler och spärrade som i förlagan. */
+.raketknapp-rad{
+  display:inline-flex;align-items:center;justify-content:center;gap:.571em;
+  font-size:1.15em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+}
+
+/* Finstilt underrad: tunn och klart mindre än huvudraden, så den läses som en
+   upplysning och inte som en andra rubrik. Ingen sänkt opacitet – det är
+   graden och vikten som gör den finstilt, och full vithet är det som håller
+   den över 4,5:1 där glöden är som ljusast. */
+.raketknapp-underrad{
+  font-size:.7em;font-weight:400;letter-spacing:.03em;text-transform:none;
+}
+
+.raketknapp-ikon{width:1.143em;height:1.143em;transition:fill .1s linear;}
+
+/* Hörnviket uppe till höger, som viker upp sig vid hover */
+.raketknapp-vik{
+  position:absolute;top:0;right:0;z-index:1;
+  display:inline-block;width:1em;height:1em;
+  background:radial-gradient(100% 75% at 55%,rgb(var(--raket-glod)/.85) 0%,rgb(var(--raket-glod)/0) 100%);
+  box-shadow:0 0 3px #000;
+  border-top-right-radius:var(--raket-rund);border-bottom-left-radius:.5em;
+  transition:all .5s ease-in-out;
+}
+/* Vikets lyfta undersida – en bruten vit kvadrat vriden 45° och intryckt i
+   hörnet, så att dess kant bildar diagonalen som läses som vikningen.
+   Förskjutningen hålls i em mot viket, annars glider den ur ett mindre vik. */
+.raketknapp-vik::after{
+  content:"";position:absolute;top:0;right:0;width:150%;height:150%;
+  background:#E8E8E8;
+  transform:rotate(45deg) translateY(-1.125em);
+  pointer-events:none;
+}
+.raketknapp:hover .raketknapp-vik{margin-top:-1em;margin-right:-1em;}
+
+/* Gnistor som stiger genom fyllningen. Lägena och de spretiga längderna är
+   förlagans – det är de som gör att stigningen inte ser mekanisk ut. */
+.raketknapp-gnistor{
+  position:absolute;z-index:1;width:100%;height:100%;
+  overflow:hidden;pointer-events:none;
+}
+.raketknapp-gnistor i{
+  position:absolute;bottom:-10px;width:2px;height:2px;
+  background:#FFF;border-radius:var(--pill);pointer-events:none;
+  animation:gnistor infinite ease-in-out;
+}
+.raketknapp-gnistor i:nth-child(1){left:10%;opacity:1;animation-duration:2.35s;animation-delay:.2s;}
+.raketknapp-gnistor i:nth-child(2){left:30%;opacity:.7;animation-duration:2.5s;animation-delay:.5s;}
+.raketknapp-gnistor i:nth-child(3){left:25%;opacity:.8;animation-duration:2.2s;animation-delay:.1s;}
+.raketknapp-gnistor i:nth-child(4){left:44%;opacity:.6;animation-duration:2.05s;}
+.raketknapp-gnistor i:nth-child(5){left:50%;opacity:1;animation-duration:1.9s;}
+.raketknapp-gnistor i:nth-child(6){left:75%;opacity:.5;animation-duration:1.5s;animation-delay:1.5s;}
+.raketknapp-gnistor i:nth-child(7){left:88%;opacity:.9;animation-duration:2.2s;animation-delay:.2s;}
+.raketknapp-gnistor i:nth-child(8){left:58%;opacity:.8;animation-duration:2.25s;animation-delay:.2s;}
+.raketknapp-gnistor i:nth-child(9){left:98%;opacity:.6;animation-duration:2.6s;animation-delay:.1s;}
+.raketknapp-gnistor i:nth-child(10){left:65%;opacity:1;animation-duration:2.5s;animation-delay:.2s;}
+@keyframes gnistor{
+  0%{transform:translateY(0);}
+  85%{opacity:0;}
+  100%{transform:translateY(-55px);opacity:0;}
+}
+
+/* Raketen ritar sig själv vid hover och fylls sedan i igen */
+.raketknapp:focus .raketknapp-ikon{fill:#FFF;}
+.raketknapp:hover .raketknapp-ikon{
+  fill:transparent;
+  animation:raket-streck 1s linear forwards,raket-fylld .1s linear forwards .95s;
+}
+@keyframes raket-streck{from{stroke-dasharray:0 0 0 0;}to{stroke-dasharray:68 68 0 0;}}
+@keyframes raket-fylld{to{fill:#FFF;}}
+
+/* Samma responsiva beteende som knappen hade förut: full bredd i den smala
+   heron, en aning större från datorbredd och upp. */
+@media(min-width:1024px){
+  .raketknapp{min-height:66px;padding:20px 40px;font-size:1.12rem;}
+}
+@media(max-width:1023px){
+  .hero-knappar .raketknapp{width:100%;}
+}
+@media(max-width:430px){
+  .raketknapp{white-space:normal;max-width:100%;}
+}
 
 /* ==========================================================================
    5. Kort
