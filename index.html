@@ -393,13 +393,29 @@
     <!-- Trygghetspunkterna avslutar heron längst ned.
          .hero-botten har margin-top:auto och trycks därför till botten. -->
     <div class="hero-botten">
-      <ul class="usp">
-        <li><svg aria-hidden="true"><use href="#i-bock"/></svg> RUT-avdrag – jag sköter pappersarbetet</li>
-        <li><svg aria-hidden="true"><use href="#i-bock"/></svg> Svar inom 24 timmar</li>
-        <li><svg aria-hidden="true"><use href="#i-bock"/></svg> Försäkrad &amp; F-skatt</li>
-      </ul>
+      <!-- Betygsbrickan. Innehållet byggs av app.js ur samma BETYG-objekt som
+           brickan i omdömessektionen, så siffrorna finns på ett enda ställe
+           och inte kan glida isär. Tom och dold tills dess. -->
+      <a class="hero-betyg" id="hero-betyg" hidden></a>
     </div>
   </div>
+</section>
+
+
+<!-- ==========================================================================
+     2b. OMDÖMESRAD
+
+     Ett urval av Google-omdömena som glider förbi vågrätt, direkt under
+     heron. Korten byggs av app.js ur samma OMDOMEN-lista som omdömes-
+     sektionen längre ned – texterna finns alltså bara på ett ställe och kan
+     inte glida isär.
+
+     Raden är aria-hidden med flit. Samma omdömen står i sin helhet i
+     sektionen längre ned, med rubrik och korrekt uppmärkning; att läsa upp
+     dem två gånger gör sidan sämre för den som lyssnar, inte bättre.
+     ========================================================================== -->
+<section class="omd-rad" id="omd-rad" hidden>
+  <div class="omd-rad-spar" id="omd-rad-spar" aria-hidden="true"></div>
 </section>
 
 
@@ -420,22 +436,24 @@
       <!-- Kort 1: Fönsterputs -->
       <article class="kort kort-hover tjanst-kort in" id="fonsterputs">
         <span class="flagga"><svg aria-hidden="true"><use href="#i-eld"/></svg> Populärast</span>
-        <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-fonster"/></svg></div>
         <h3>Fönsterputs</h3>
         <p class="ingress">Professionell fönsterputsning in- och utvändigt i Uppsala med omnejd – till samma pris oavsett hur många fönster du har.</p>
 
-        <p class="fastpris-chip">1 500 kr <small>inkl. moms och RUT</small></p>
-
         <p class="ingar-rubrik">Detta ingår</p>
+        <!-- Samma arbete som förut, men uppdelat i de moment det faktiskt
+             består av, i samma form som kontorsputskortet. Inga nya tjänster
+             har tillkommit – varje punkt beskriver något som redan ingår. -->
         <ul class="bocklista">
-          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> Rengöring, putsning och torkning av glas in- och utvändigt</li>
-          <li><svg aria-hidden="true"><use href="#i-prislapp"/></svg> Tillägg: fönsterkarmar, fönsterbleck, spröjs, spröjstvätt, inglasad balkong och vattenavvisande behandling</li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Glas invändigt:</strong> varje ruta tvättas ren från damm och fingermärken, putsas och torkas för hand</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Glas utvändigt:</strong> samma noggranna arbete på utsidan, där väder och vägdamm sitter hårdast</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Kanter och hörn:</strong> eftertorkning längs glasets kanter så det inte blir ränder eller vattendroppar</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Normalstort hus:</strong> upp till 200 kvm boyta – alla fönster ingår, samma pris oavsett antal rutor</span></li>
         </ul>
 
         <div class="pris-rad">
           <span class="pris-fran">Fast pris per hus</span>
           <span class="pris-tal">1 500 kr</span>
-          <span class="pris-suffix">inkl. moms och RUT-avdrag (3 000 kr ex. RUT) – oavsett antal fönster. Tillval prissätts separat.</span>
+          <span class="pris-suffix">3 000 kr ex. RUT <small class="pris-villkor">Avser hus upp till 200 kvm boyta. Större hus offereras separat.</small></span>
         </div>
 
         <button class="knapp knapp-primar knapp-bred" data-boka data-tjanst="fonster">Boka &amp; se ditt pris</button>
@@ -443,7 +461,6 @@
 
       <!-- Kort 2: Kontorsputs -->
       <article class="kort kort-hover tjanst-kort in" id="kontorsputs">
-        <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-kontor"/></svg></div>
         <h3>Kontorsputs</h3>
         <p class="ingress">Allt glas invändigt – fönster, glasväggar, speglar och glasdörrar. Ett fräscht intryck och bättre arbetsmiljö.</p>
 
@@ -1210,6 +1227,11 @@
 
 
 <script src="app.js" defer></script>
+
+<!-- Agentation: verktyg för visuell återkoppling under utveckling. Filen
+     avbryter sig själv direkt utanför localhost, så den gör ingenting på den
+     publicerade sajten. Ta bort raden för att slå av verktyget helt. -->
+<script src="agentation-dev.js" defer></script>
 
 </body>
 </html>

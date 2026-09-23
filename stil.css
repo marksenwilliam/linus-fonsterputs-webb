@@ -19,6 +19,14 @@
 
   --stjarna:#FBBF24;   /* ENDAST recensionsstjärnor */
 
+  /* Rubriktypsnitt. Brödtexten är Inter; rubrikerna sattes tidigare i samma
+     typsnitt och smälte därför ihop med menyn. En serif skiljer dem åt utan
+     att kosta en enda ny fil: alla namn nedan finns redan i operativsystemen,
+     så inget laddas ned, inget licensvillkor tillkommer och CSP-regeln
+     font-src 'self' behöver inte luckras upp. Iowan Old Style står först för
+     macOS och iOS, Palatino och Georgia täcker Windows, serif fångar resten. */
+  --rubrikfont:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+
   --kant:#DBEAFE;                                  /* Ljusblå linje */
   --skugga:0 8px 24px rgba(37,99,235,.10);         /* Standardskugga på kort */
   --skugga-hog:0 16px 40px rgba(37,99,235,.18);    /* Hover-skugga */
@@ -273,6 +281,59 @@ section{padding:64px 0;}
 }
 
 /* ==========================================================================
+   4b. Omdömesraden under heron
+
+   En vågrät rad som glider förbi av sig själv. Spåret innehåller samma
+   uppsättning kort två gånger och flyttas exakt -50 %, så skarven hamnar på
+   samma pixel som utgångsläget och inte går att se.
+   ========================================================================== */
+.omd-rad{
+  padding:0;background:var(--vit);
+  /* overflow döljer den andra uppsättningen tills den glidit in i bild */
+  overflow:hidden;
+  /* Mjuk uttoning i kanterna i stället för en hård klippning */
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+}
+.omd-rad-spar{
+  display:flex;width:max-content;gap:14px;padding:18px 0;
+  animation:omd-glid var(--takt,180s) linear infinite;
+}
+/* Stannar när besökaren pekar på raden eller tabbar in i den, så att ett
+   omdöme går att läsa färdigt. */
+.omd-rad:hover .omd-rad-spar,
+.omd-rad:focus-within .omd-rad-spar{animation-play-state:paused;}
+@keyframes omd-glid{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+.omd-rad-kort{
+  flex:none;width:278px;margin:0;
+  /* Ett steg mörkare än --isbla. Värdet är inte nytt utan --kant, #DBEAFE,
+     som redan finns i paletten – då tillkommer ingen färg att hålla reda på.
+     Ramen får därför en egen, något djupare ton så korten inte blir kantlösa. */
+  background:var(--kant);
+  border:1px solid rgba(37,99,235,.20);
+  border-radius:var(--radie-s);
+  padding:14px 16px;
+  box-shadow:0 4px 14px rgba(37,99,235,.08);
+}
+.omd-rad-kort .stjarnor svg{width:13px;height:13px;}
+.omd-rad-kort blockquote{
+  margin:8px 0 10px;color:var(--text);
+  font-size:.88rem;line-height:1.5;
+  /* Fyra rader räcker för att ge omdömet en röst; hela texten står i
+     omdömessektionen längre ned. */
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+}
+.omd-rad-kort figcaption{color:var(--bla);font-size:.8rem;font-weight:700;}
+
+@media(prefers-reduced-motion:reduce){
+  /* Ingen egen rörelse. Raden blir i stället en vanlig rullningsbar lista,
+     så innehållet fortfarande går att nå. */
+  .omd-rad{overflow-x:auto;}
+  .omd-rad-spar{animation:none;}
+}
+
+/* ==========================================================================
    5. Kort
    ========================================================================== */
 .kort{
@@ -393,8 +454,27 @@ section{padding:64px 0;}
 }
 .hero-inner{display:flex;flex-direction:column;}
 .hero-txt{flex:none;}
-.hero-botten{margin-top:auto;display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
-.hero-botten .usp{margin-bottom:0;}
+/* Trygghetspunkterna och betygsbrickan står bredvid varandra när det finns
+   plats, och bryter till var sin rad när det inte gör det. Listan får det
+   lediga utrymmet, brickan bara sin egen bredd. */
+.hero-botten{
+  margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;
+  gap:14px 20px;
+}
+.hero-botten .hero-betyg{flex:0 0 auto;margin:0;}
+
+/* Under datorbredd ställs punkterna på höjden och sätts något mindre. Då blir
+   listan smal nog att brickan får plats bredvid i stället för under, vilket
+   är hela poängen med att de står tillsammans. */
+@media(max-width:1023px){
+  .hero-betyg{padding:7px 13px;font-size:.8rem;gap:7px;}
+  .hero-betyg .g-logga{width:16px;height:16px;}
+  .hero-betyg-stjarnor svg{width:13px;height:13px;}
+  .hero-betyg-snitt{font-size:.92rem;}
+  /* Loggan säger redan var betyget kommer ifrån, och aria-etiketten bär hela
+     meningen för den som lyssnar. */
+  .hero-betyg-kalla{display:none;}
+}
 @media(min-width:1024px){.hero{min-height:100vh;padding:130px 0 90px;}}
 .hero-bild{
   position:absolute;inset:0;z-index:0;
@@ -475,8 +555,59 @@ section{padding:64px 0;}
 @media(max-width:399px){.hero-txt{max-width:80%;}}
 .hero h1{
   color:var(--vit);margin-bottom:18px;max-width:11ch;
-  font-size:clamp(1.75rem,7.2vw,3.4rem);
+  /* Serifen har större teckenhöjd än Inter vid samma grad, därför nedjusterad
+     maxgrad. Den negativa spärren tas bort – den hörde till Inters täta
+     rubriksättning och gör en serif trång. */
+  font-family:var(--rubrikfont);
+  font-size:clamp(1.7rem,6.8vw,3.15rem);
+  font-weight:700;letter-spacing:0;line-height:1.12;
   text-shadow:0 2px 20px rgba(11,46,89,.45);
+}
+/* Ett litet moln bakom rubriken, en aning mörkare än heron i övrigt, så att
+   rubriken lyfter utan att bilden bakom tonas ned.
+
+   closest-side är hela poängen: gradientens slutform möter närmaste kant, och
+   sista stoppet är helt genomskinligt. Molnet är alltså slut redan innan
+   rubrikens egen ruta tar slut, och rutan är i sin tur bunden av max-width i
+   ch. Ingenting kan därför nå utanför texten och lägga sig över Linus.
+
+   Ingen filter:blur här. Oskärpa mjukar kanterna men flyttar samtidigt ut dem
+   utanför elementet, vilket är precis vad molnet inte får göra.
+
+   Bara startsidans hero – bloggens .under-hero delar klass men har ingen bild
+   bakom sig och behöver ingen sky. */
+.hero:not(.under-hero) h1{
+  /* Molnet växer uppåt, nedåt och åt vänster men aldrig åt höger: där står
+     Linus, och han ska inte täckas. Marginalerna tar tillbaka utrymmet så
+     rubriken ligger kvar på samma plats i heron. */
+  padding:34px 0 34px 30px;
+  margin-left:-30px;
+  margin-top:-34px;
+  /* Sidan kör border-box överallt, och då skulle vadderingen ätas ur
+     max-width:11ch och kasta om radbrytningen. Här ska texten behålla sina
+     elva tecken och vadderingen läggas utanför dem. */
+  box-sizing:content-box;
+  /* Fyra mjuka fläckar som överlappar varandra, i stället för en form.
+     Där de går omlott lägger sig opaciteten ovanpå varandra och bildar en
+     tätare kärna; ytterst tar var och en slut i genomskinligt. Konturen blir
+     därför oregelbunden och utan raka linjer, ungefär som ett moln.
+     Varje fläck tonar ut inom sin egen ruta, så ingenting når utanför
+     rubrikens box och lägger sig över Linus. */
+  background:
+    radial-gradient(38% 48% at 20% 32%, rgba(3,17,36,.56) 0%, rgba(3,17,36,0) 100%),
+    radial-gradient(44% 42% at 48% 64%, rgba(3,17,36,.50) 0%, rgba(3,17,36,0) 100%),
+    radial-gradient(32% 36% at 68% 26%, rgba(3,17,36,.42) 0%, rgba(3,17,36,0) 100%),
+    radial-gradient(34% 46% at 33% 74%, rgba(3,17,36,.46) 0%, rgba(3,17,36,0) 100%);
+  /* Tre lager skugga som alla följer bokstävernas form, inte en yta:
+     1 px ger en tät kant som skiljer vitt från fönsterrutorna bakom,
+     6 px lägger ett smalt mörkt fält närmast glyferna, och den breda 20 px
+     är sidans befintliga djupskugga som får ligga kvar underst.
+     Ingen radie är större än 20 px, så effekten stannar tätt intill texten
+     och kan inte nå bort till Linus. */
+  text-shadow:
+    0 1px 2px rgba(3,17,36,.62),
+    0 2px 6px rgba(3,17,36,.46),
+    0 2px 20px rgba(11,46,89,.45);
 }
 @media(min-width:1024px){.hero h1{max-width:15ch;margin-bottom:24px;}}
 /* Linus egna ord, satt mot ljusblatt strec sa det last som ett citat och
@@ -490,8 +621,11 @@ section{padding:64px 0;}
 }
 @media(min-width:640px){.hero-citat{max-width:24ch;}}
 .hero-citat-text{
-  display:block;color:var(--vit);font-weight:600;font-style:italic;
-  font-size:clamp(1rem,3.9vw,1.3rem);line-height:1.5;
+  display:block;color:var(--vit);font-style:italic;
+  /* Samma serif som rubriken. Vikten sänks från 600 till 500: en kursiv serif
+     bär redan tyngd, och 600 gjorde citatet tyngre än rubriken ovanför. */
+  font-family:var(--rubrikfont);font-weight:500;
+  font-size:clamp(.95rem,3.4vw,1.18rem);line-height:1.5;
 }
 .hero-citat-namn{
   display:block;margin-top:7px;color:var(--himmel);
@@ -509,6 +643,43 @@ section{padding:64px 0;}
 
 /* Större och tydligare huvudknapp, med extra luft ovanför så den hamnar
    längre ned i heron. */
+/* Betygsbricka i heron – socialt bevis precis ovanför bokningsknappen.
+   Ligger på fotot, därför en mörk halvgenomskinlig platta i stället för det
+   vita kortet som brickan i omdömessektionen använder. Vit text på plattan
+   ger 8,9:1 mot heron, alltså långt över AA.
+   Stjärnorna tänds en i taget: varje svg får sitt eget nummer i --i från
+   app.js, och fördröjningen räknas ut därifrån. Det gör att ordningen håller
+   även om antalet stjärnor skulle ändras. */
+.hero-betyg{
+  display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
+  margin:0;padding:9px 16px;
+  /* Utan detta blir brickan max-content bred och sticker ut ur textspalten
+     och in över Linus på smala skärmar. Med taket bryter den i stället rad
+     inuti spalten, vilket flex-wrap ovan redan är förberett för. */
+  max-width:100%;
+  background:rgba(3,17,36,.52);
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:var(--pill);
+  color:var(--vit);font-size:.88rem;font-weight:600;text-decoration:none;
+  animation:betyg-in .6s ease-out both;
+  transition:transform var(--overgang),border-color var(--overgang);
+}
+a.hero-betyg:hover{text-decoration:none;transform:translateY(-2px);border-color:rgba(255,255,255,.36);}
+.hero-betyg .g-logga{width:18px;height:18px;flex:none;}
+.hero-betyg-stjarnor{display:inline-flex;align-items:center;gap:2px;}
+.hero-betyg-stjarnor svg{
+  width:15px;height:15px;flex:none;fill:var(--stjarna);stroke:none;
+  animation:stjarna-in .42s cubic-bezier(.2,1.4,.4,1) both;
+  animation-delay:calc(.3s + var(--i) * .1s);
+}
+.hero-betyg-snitt{font-weight:800;font-size:1rem;letter-spacing:-.01em;}
+.hero-betyg-text{color:rgba(255,255,255,.84);font-weight:500;}
+@keyframes betyg-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+@keyframes stjarna-in{from{opacity:0;transform:scale(.35) rotate(-20deg);}to{opacity:1;transform:none;}}
+@media(prefers-reduced-motion:reduce){
+  .hero-betyg,.hero-betyg-stjarnor svg{animation:none;}
+}
+
 .hero-knappar{display:flex;flex-wrap:wrap;gap:14px;margin:38px 0 26px;}
 .hero-knappar .knapp{min-height:62px;padding:18px 34px;font-size:1.06rem;}
 @media(min-width:1024px){.hero-knappar{margin-top:44px;}.hero-knappar .knapp{min-height:66px;font-size:1.12rem;padding:20px 40px;}}
@@ -517,6 +688,11 @@ section{padding:64px 0;}
      botten, sa den hamnar tatt ovanfor trygghetspunkterna i stallet for
      att svava hogt upp i heron. */
   .hero-txt{flex:1;display:flex;flex-direction:column;}
+  /* Citatet satt tätt under rubriken och hamnade högt upp i heron. Med auto
+     här delas det lediga utrymmet mellan rubriken och citatet i stället för
+     att allt samlas ovanför knappen, så citatet sjunker ned mot nedre
+     halvan och luften hamnar där den gör nytta. */
+  .hero-citat{margin-top:auto;}
   .hero-knappar{max-width:320px;margin-top:auto;margin-bottom:20px;}
   .hero-knappar .knapp{width:100%;}
 }
@@ -563,18 +739,31 @@ section{padding:64px 0;}
   box-shadow:0 4px 12px rgba(249,115,22,.35);
 }
 .tjanst-kort .flagga svg{width:14px;height:14px;fill:var(--vit);stroke:none;flex:none;}
+/* Flaggan ligger absolut i kortets övre högra hörn och tar alltså ingen plats
+   i flödet. På smala skärmar räcker kortets bredd inte till för att hålla den
+   ifrån den centrerade rubriken, som dessutom blivit större. Rubriken skjuts
+   därför ned förbi flaggan – men bara i kort som faktiskt har en flagga, så
+   kontorsputskortet står kvar som det är. */
+@media(max-width:1023px){
+  .tjanst-kort .flagga ~ h3{margin-top:26px;}
+}
+/* Centrerad och satt i rubrikserifen. Ikoncirkeln ovanför är borttagen, så
+   rubriken är nu kortets översta element och bär det ensam – därav den högre
+   graden och luften under. Resten av kortet är fortsatt vänsterställt. */
 .tjanst-kort h3{
-  margin-bottom:8px;
-  font-size:clamp(1.55rem,4.4vw,1.9rem);
-  font-weight:800;
-  letter-spacing:-.03em;
+  margin-bottom:14px;
+  text-align:center;
+  font-family:var(--rubrikfont);
+  font-size:clamp(1.94rem,5.5vw,2.38rem);
+  font-weight:700;
+  letter-spacing:0;
   line-height:1.15;
 }
 .tjanst-kort .ingress{color:var(--text-2);font-size:.95rem;margin-bottom:18px;}
 /* Mobil: nätare kort så att alla tre går att skanna utan lång scroll */
 @media(max-width:639px){
   .tjanst-kort{padding:20px 18px;}
-  .tjanst-kort h3{font-size:1.45rem;}
+  .tjanst-kort h3{font-size:1.81rem;}
   .tjanst-kort .ingress{font-size:.88rem;margin-bottom:14px;}
   .tjanst-kort .ikon-cirkel{width:46px;height:46px;margin-bottom:12px;}
   .tjanst-kort .ikon-cirkel svg{width:23px;height:23px;}
@@ -582,7 +771,6 @@ section{padding:64px 0;}
   .tjanst-kort .bocklista{margin-bottom:16px;}
   .tjanst-kort .pris-rad{padding-top:14px;margin-bottom:14px;}
   .tjanst-kort .pris-tal{font-size:1.7rem;}
-  .tjanst-kort .fastpris-chip{padding:8px 13px;font-size:.98rem;margin-bottom:13px;}
   .tjanst-kort .ingar-rubrik{margin-bottom:9px;}
   .tjanster-grid{gap:16px;}
 }
@@ -594,19 +782,15 @@ section{padding:64px 0;}
 .tjanst-kort .pris-rad{flex-direction:column;align-items:flex-start;gap:6px;}
 .tjanst-kort .pris-rad .pris-suffix{white-space:normal;font-weight:500;}
 .tjanst-kort .pris-tal{white-space:nowrap;}
-.pris-fran{font-size:.8rem;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.06em;display:block;}
+/* "Fast pris per hus" är ett säljargument i sig och inte bara en etikett,
+   därför större och mörkare än den sekundära texten den delade stil med. */
+.pris-fran{font-size:1.02rem;color:var(--marin);font-weight:800;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:2px;}
 .pris-tal{font-size:2rem;font-weight:800;color:var(--marin);line-height:1.15;letter-spacing:-.03em;}
 .pris-suffix{font-size:.86rem;color:var(--text-2);font-weight:600;}
-
-/* Stor prisbadge på fönsterputskortet */
-.fastpris-chip{
-  display:inline-flex;align-items:baseline;gap:8px;
-  background:var(--isbla);border:1.5px dashed var(--bla);
-  color:var(--marin);font-weight:800;border-radius:var(--radie-s);
-  padding:10px 16px;margin-bottom:16px;font-size:1.05rem;
-}
-.fastpris-chip small{font-weight:600;font-size:.8rem;color:var(--bla);}
-.fastpris-chip{flex-wrap:wrap;gap:2px 8px;}
+/* Prisvillkoret. Underordnat i grad och vikt, men inte nedtonat i kontrast:
+   --text-2 ger 5,3:1 mot vitt kort, alltså över AA även i den här graden.
+   Villkoret begränsar vad priset gäller och måste därför gå att läsa. */
+.pris-villkor{display:block;margin-top:5px;font-size:.78rem;font-weight:500;line-height:1.45;}
 
 /* Intern länk vidare till tjänstesidan – ger både SEO-värde och en väg
    för besökare som vill läsa mer innan de bokar. */
@@ -1405,8 +1589,11 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
   text-shadow:0 2px 14px rgba(11,46,89,.45);
 }
 .hero-citat-text{
-  display:block;color:var(--vit);font-weight:600;font-style:italic;
-  font-size:clamp(1rem,3.9vw,1.3rem);line-height:1.5;
+  display:block;color:var(--vit);font-style:italic;
+  /* Samma serif som rubriken. Vikten sänks från 600 till 500: en kursiv serif
+     bär redan tyngd, och 600 gjorde citatet tyngre än rubriken ovanför. */
+  font-family:var(--rubrikfont);font-weight:500;
+  font-size:clamp(.95rem,3.4vw,1.18rem);line-height:1.5;
 }
 .hero-citat-namn{
   display:block;margin-top:7px;color:var(--himmel);
@@ -1517,11 +1704,10 @@ input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,2
     max-width:900px;margin-left:auto;margin-right:auto;gap:30px;
   }
   .tjanst-kort{padding:36px 32px;}
-  .tjanst-kort h3{font-size:2rem;}
+  .tjanst-kort h3{font-size:2.5rem;}
   .tjanst-kort .ingress{font-size:1.02rem;margin-bottom:18px;}
   .tjanst-kort .bocklista li{font-size:.99rem;margin-bottom:11px;}
   .tjanst-kort .bocklista{margin-bottom:22px;}
-  .tjanst-kort .fastpris-chip{margin-bottom:18px;font-size:1.12rem;padding:12px 18px;}
   .tjanst-kort .pris-rad{padding-top:20px;margin-bottom:20px;}
   .tjanst-kort .pris-tal{font-size:2.3rem;}
   .tjanst-kort .ikon-cirkel{width:60px;height:60px;margin-bottom:20px;}

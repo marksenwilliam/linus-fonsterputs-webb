@@ -278,7 +278,7 @@
      dag sidan publiceras, och ses över när nya omdömen kommer in. */
   var BETYG = {
     snitt: 5,            /* Snittbetyg på Google, samma siffra som profilen visar */
-    antal: 30,           /* Antal omdömen. 0 döljer hela brickan */
+    antal: 32,           /* Antal omdömen. 0 döljer hela brickan */
     profil: 'https://share.google/U0JNifvViv9w0H4gy'
   };
 
@@ -409,6 +409,61 @@
         '<span class="omd-antal">' + BETYG.antal + ' omdömen på Google</span>';
       brickrad.appendChild(bricka);
       brickrad.hidden = false;
+    }
+
+    /* --- Samma bricka i heron -------------------------------------------- */
+    /* Bygger ur samma BETYG som ovan. Stjärnorna får varsin fördröjning via
+       --i, så de tänds i tur och ordning i stället för samtidigt; resten av
+       rörelsen ligger i stil.css och stängs av vid prefers-reduced-motion. */
+    var heroBetyg = $('#hero-betyg');
+    if (heroBetyg && BETYG.antal > 0) {
+      var hSnitt = BETYG.snitt.toFixed(1).replace('.', ',');
+      var hEtikett = 'Betyg ' + hSnitt + ' av 5 på Google, baserat på ' +
+                     BETYG.antal + ' omdömen';
+      var hStjarnor = '';
+      for (var s = 1; s <= 5; s++) {
+        hStjarnor += '<svg viewBox="0 0 24 24" aria-hidden="true" style="--i:' + s + '">' +
+                     '<use href="#i-stjarna"/></svg>';
+      }
+      if (BETYG.profil) {
+        heroBetyg.href = BETYG.profil;
+        heroBetyg.target = '_blank';
+        heroBetyg.rel = 'noopener';
+        heroBetyg.setAttribute('aria-label', hEtikett + ' – öppnar Google i ny flik');
+      }
+      heroBetyg.innerHTML =
+        '<svg class="g-logga" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-google"/></svg>' +
+        '<span class="hero-betyg-stjarnor" role="img" aria-label="' + hEtikett + '">' +
+          hStjarnor +
+        '</span>' +
+        '<span class="hero-betyg-snitt">' + hSnitt + '</span>' +
+        '<span class="hero-betyg-text">· ' + BETYG.antal + ' omdömen' +
+          '<span class="hero-betyg-kalla"> på Google</span></span>';
+      heroBetyg.hidden = false;
+    }
+
+    /* --- Omdömesraden under heron ---------------------------------------- */
+    /* Samma OMDOMEN som allt annat. Bara de med text kommer med: ett kort
+       utan text säger ingenting i en rad som glider förbi.
+       Uppsättningen läggs två gånger i spåret och animationen flyttar spåret
+       exakt halva dess bredd. När den nollställs står nästa uppsättning på
+       samma pixel som den förra, och skarven syns inte. */
+    var radSpar = $('#omd-rad-spar');
+    var radSektion = $('#omd-rad');
+    var medText = OMDOMEN.filter(function (o) { return o.text; });
+    if (radSpar && radSektion && medText.length) {
+      var kort = medText.map(function (o) {
+        return '<figure class="omd-rad-kort">' +
+                 '<span class="stjarnor">' + stjarnor(o.betyg) + '</span>' +
+                 '<blockquote>' + o.text + '</blockquote>' +
+                 '<figcaption>' + o.namn + '</figcaption>' +
+               '</figure>';
+      }).join('');
+      radSpar.innerHTML = kort + kort;
+      /* Takten följer antalet kort, annars glider en lång lista obehagligt
+         fort och en kort lista obehagligt långsamt. */
+      radSpar.style.setProperty('--takt', (medText.length * 7) + 's');
+      radSektion.hidden = false;
     }
 
     /* --- Karusellen (desktop) -------------------------------------------- */
