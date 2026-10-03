@@ -1,0 +1,106 @@
+---
+/**
+ * SVG-symboler som återanvänds på hela sidan (ikoner, stjärnor, loggor).
+ * Används som <svg><use href="#i-bock"/></svg>.
+ *
+ * Stjärnan, citattecknet och Google-G:t behövs bara av omdömena på startsidan,
+ * men ligger med på alla sidor: en enda uppsättning är enklare att underhålla
+ * än tre, och kostar ett par hundra byte per sida.
+ */
+---
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    {/* Bock */}
+    <symbol id="i-bock" viewBox="0 0 24 24"><polyline points="4 12.5 9.5 18 20 6.5"/></symbol>
+    {/* Fönster */}
+    <symbol id="i-fonster" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3" y1="12" x2="21" y2="12"/>
+    </symbol>
+    {/* Hus */}
+    <symbol id="i-hus" viewBox="0 0 24 24">
+      <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.8V20h14V9.8"/><path d="M9.5 20v-5.5h5V20"/>
+    </symbol>
+    {/* Kontor */}
+    <symbol id="i-kontor" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="12" height="18" rx="1.5"/><path d="M15 8h6v13h-6"/>
+      <line x1="6.5" y1="7" x2="8" y2="7"/><line x1="10" y1="7" x2="11.5" y2="7"/>
+      <line x1="6.5" y1="11" x2="8" y2="11"/><line x1="10" y1="11" x2="11.5" y2="11"/>
+      <line x1="6.5" y1="15" x2="8" y2="15"/><line x1="10" y1="15" x2="11.5" y2="15"/>
+      <line x1="18" y1="12" x2="18" y2="12.01"/><line x1="18" y1="16" x2="18" y2="16.01"/>
+    </symbol>
+    {/* Kalkylator */}
+    <symbol id="i-kalkyl" viewBox="0 0 24 24">
+      <rect x="4" y="2.5" width="16" height="19" rx="2"/><rect x="7.5" y="6" width="9" height="3.5" rx="1"/>
+      <line x1="8" y1="13" x2="8" y2="13.01"/><line x1="12" y1="13" x2="12" y2="13.01"/><line x1="16" y1="13" x2="16" y2="13.01"/>
+      <line x1="8" y1="17" x2="8" y2="17.01"/><line x1="12" y1="17" x2="12" y2="17.01"/><line x1="16" y1="17" x2="16" y2="17.01"/>
+    </symbol>
+    {/* Kalender */}
+    <symbol id="i-kalender" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/>
+      <line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>
+      <rect x="6.5" y="13" width="3" height="3" rx=".6"/>
+    </symbol>
+    {/* Klocka */}
+    <symbol id="i-klocka" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></symbol>
+    {/* Sköld */}
+    <symbol id="i-skold" viewBox="0 0 24 24"><path d="M12 2.5 20 6v6c0 5-3.4 8.3-8 9.5-4.6-1.2-8-4.5-8-9.5V6l8-3.5Z"/><polyline points="8.8 12 11.2 14.4 15.4 10"/></symbol>
+    {/* Telefon */}
+    <symbol id="i-telefon" viewBox="0 0 24 24"><path d="M6.5 3h3l1.6 4-2 1.4a12.5 12.5 0 0 0 6.5 6.5l1.4-2 4 1.6v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.5 5.2 2 2 0 0 1 6.5 3Z"/></symbol>
+    {/* Kuvert */}
+    <symbol id="i-kuvert" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><polyline points="3 6.5 12 13 21 6.5"/></symbol>
+    {/* Plats */}
+    <symbol id="i-plats" viewBox="0 0 24 24"><path d="M12 21.5s7-6.2 7-11.5a7 7 0 1 0-14 0c0 5.3 7 11.5 7 11.5Z"/><circle cx="12" cy="10" r="2.6"/></symbol>
+    {/* Person */}
+    <symbol id="i-person" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.1 3.4-6.5 7.5-6.5s7.5 2.4 7.5 6.5"/></symbol>
+    {/* Dokument (F-skatt) */}
+    <symbol id="i-dokument" viewBox="0 0 24 24"><path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5L14 2.5Z"/><polyline points="14 2.5 14 7.5 19 7.5"/><line x1="8.5" y1="13" x2="15.5" y2="13"/><line x1="8.5" y1="16.5" x2="13" y2="16.5"/></symbol>
+    {/* Kvitto / RUT */}
+    <symbol id="i-kvitto" viewBox="0 0 24 24"><path d="M5 2.5h14v19l-2.3-1.6-2.4 1.6-2.3-1.6-2.4 1.6L7.3 20 5 21.5v-19Z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="12" x2="15.5" y2="12"/></symbol>
+    {/* Prislapp */}
+    <symbol id="i-prislapp" viewBox="0 0 24 24"><path d="M20.5 12.8 12.8 20.5a2 2 0 0 1-2.8 0l-6.5-6.5a2 2 0 0 1-.6-1.5l.3-6.2a2 2 0 0 1 1.9-1.9l6.2-.3a2 2 0 0 1 1.5.6l6.5 6.5a2 2 0 0 1 0 2.8Z"/><circle cx="8.3" cy="8.3" r="1.6"/></symbol>
+    {/* Stapeldiagram (prisjämförelse) */}
+    <symbol id="i-diagram" viewBox="0 0 24 24"><line x1="3.5" y1="21" x2="20.5" y2="21"/><rect x="5" y="12" width="3.6" height="6"/><rect x="10.2" y="7" width="3.6" height="11"/><rect x="15.4" y="14.5" width="3.6" height="3.5"/></symbol>
+    {/* Info */}
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><line x1="12" y1="11" x2="12" y2="16.5"/><line x1="12" y1="7.7" x2="12" y2="7.71"/></symbol>
+    {/* Varning */}
+    <symbol id="i-varning" viewBox="0 0 24 24"><path d="M12 3.5 21.5 20H2.5L12 3.5Z"/><line x1="12" y1="10" x2="12" y2="14.5"/><line x1="12" y1="17.3" x2="12" y2="17.31"/></symbol>
+    {/* Pilar */}
+    <symbol id="i-pil-v" viewBox="0 0 24 24"><polyline points="14.5 5 7.5 12 14.5 19"/></symbol>
+    <symbol id="i-pil-ner" viewBox="0 0 24 24"><polyline points="5 9 12 16 19 9"/></symbol>
+    <symbol id="i-pil-lr" viewBox="0 0 24 24"><polyline points="9 8 5 12 9 16"/><polyline points="15 8 19 12 15 16"/></symbol>
+    {/* Raka pilar med skaft: snett uppåt (knapparnas ikoncirkel), åt höger
+        (valkort, karusell) och nedåt (FAQ). Karusellens vänsterpil är den
+        högra, vriden 180° i stil.css. */}
+    <symbol id="i-pil-snett" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></symbol>
+    <symbol id="i-pil-h" viewBox="0 0 24 24"><path d="M4.5 12h15"/><path d="m13.5 6 6 6-6 6"/></symbol>
+    <symbol id="i-pil-ner-rak" viewBox="0 0 24 24"><path d="M12 4.5v15"/><path d="m6 13.5 6 6 6-6"/></symbol>
+    {/* Kryss (stäng) */}
+    <symbol id="i-kryss" viewBox="0 0 24 24"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></symbol>
+    {/* Tjänster och tillval i bandet under tjänsterubriken */}
+    <symbol id="i-karm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1.5"/><rect x="7.5" y="7.5" width="9" height="9" rx=".5"/></symbol>
+    <symbol id="i-bleck" viewBox="0 0 24 24"><rect x="5.5" y="3" width="13" height="13.5" rx="1"/><line x1="12" y1="3" x2="12" y2="16.5"/><path d="M3 20.5h18l-1.6-4H4.6Z"/></symbol>
+    <symbol id="i-sprojs" viewBox="0 0 24 24"><rect x="3.5" y="3" width="17" height="18" rx="1.5"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="3.5" y1="9" x2="20.5" y2="9"/><line x1="3.5" y1="15" x2="20.5" y2="15"/></symbol>
+    <symbol id="i-balkong" viewBox="0 0 24 24"><path d="M5.5 11V7.5a6.5 6.5 0 0 1 13 0V11"/><line x1="3.5" y1="11" x2="20.5" y2="11"/><line x1="3.5" y1="21" x2="20.5" y2="21"/><path d="M6.5 11v10M10.5 11v10M13.5 11v10M17.5 11v10"/></symbol>
+    <symbol id="i-droppe" viewBox="0 0 24 24"><path d="M12 3s6.2 6.6 6.2 11.1a6.2 6.2 0 0 1-12.4 0C5.8 9.6 12 3 12 3Z"/><path d="M9.2 14.6a2.9 2.9 0 0 0 2.6 2.6"/></symbol>
+    <symbol id="i-spegel" viewBox="0 0 24 24"><ellipse cx="12" cy="9.8" rx="6" ry="7.3"/><path d="M12 17.1V21"/><path d="M8.5 21h7"/><path d="M9.6 7.4a3.4 3.4 0 0 1 2.4-1.6"/></symbol>
+    {/* Stadssiluett (områdeskorten) */}
+    <symbol id="i-stad" viewBox="0 0 48 48"><path d="M3 44h42"/><rect x="6" y="20" width="10" height="24"/><path d="M9 25h4M9 30h4M9 35h4"/><path d="M16 44V12h12v32"/><path d="M20 16h4M20 21h4M20 26h4M20 31h4M20 36h4"/><path d="M28 44V24h12v20"/><path d="M32 28h4M32 33h4M32 38h4"/><path d="M22 12V7"/><path d="M34 24v-4"/></symbol>
+    {/* Plus / minus */}
+    <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    {/* Eldflamma (fylld) */}
+    <symbol id="i-eld" viewBox="0 0 24 24"><path d="M12 23a7.5 7.5 0 0 1-5.14-12.96C8.2 8.77 11.5 6.5 11 1.5c6 4 9 8 3 14 1 0 2.5 0 5-2.47.27.77.5 1.6.5 2.47A7.5 7.5 0 0 1 12 23Z"/></symbol>
+    {/* Stjärna (fylld) */}
+    <symbol id="i-stjarna" viewBox="0 0 24 24"><path d="m12 2.6 2.9 6 6.6.9-4.8 4.6 1.2 6.5-5.9-3.1-5.9 3.1 1.2-6.5L2.5 9.5l6.6-.9 2.9-6Z"/></symbol>
+    {/* Citattecken (fyllt) */}
+    <symbol id="i-citat" viewBox="0 0 24 24"><path d="M14.02 21v-7.39c0-5.7 3.73-9.57 8.98-10.61l1 2.15c-2.44.92-4 3.64-4 5.85h4v10h-9.98Zm-14.02 0v-7.39c0-5.7 3.75-9.57 9-10.61l1 2.15c-2.43.92-4 3.64-4 5.85h3.98v10H0Z"/></symbol>
+    {/* Google G (färglagd) */}
+    <symbol id="i-google" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M23.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.51h6.47a5.54 5.54 0 0 1-2.4 3.63v3h3.86c2.26-2.09 3.57-5.17 3.57-8.87Z"/>
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.94-2.91l-3.87-3c-1.07.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96h-4v3.09A12 12 0 0 0 12 24Z"/>
+      <path fill="#FBBC05" d="M5.27 14.28a7.2 7.2 0 0 1 0-4.56V6.63h-4a12 12 0 0 0 0 10.74l4-3.09Z"/>
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.27 6.63l4 3.09C6.22 6.87 8.87 4.75 12 4.75Z"/>
+    </symbol>
+  </defs>
+</svg>

@@ -1,0 +1,1684 @@
+/* ==========================================================================
+   LINUS FÖNSTERPUTS – all formgivning
+
+   Formspråket följer Framer-mallen Movers (se _design-reference/movers-framer/
+   DESIGN-PLAN.md): vit och grå botten, stora rundade hörn, pillerknappar,
+   tätt satta rubriker i Geist och brödtext i Inter Display. Förlagans enda
+   färg var orange – här är den Linus blå, och sidfoten är marinblå.
+
+   Mobilen först. Två brytpunkter, samma som i förlagan:
+     810 px   surfplatta
+     1200 px  dator (menyn och heroens kort intill texten)
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DESIGNSYSTEM – variabler
+   ========================================================================== */
+:root{
+  /* Accent. Sidans enda färg, precis som orange var förlagans. Vit text på
+     --bla ger 5,2:1 och klarar alltså AA även i knappgrad. */
+  --bla:#2563EB;
+  --bla-hover:#1D4ED8;
+  --bla-mjuk:#EFF6FF;   /* tonad accent: valda val, ikonplattor */
+  --bla-ljus:#60A5FA;   /* accent på mörk botten: 5,3:1 mot --marin */
+  --marin:#0B2E59;      /* sidfoten */
+
+  /* Neutralt. --text-2 är ett snäpp mörkare än förlagans #757575: den gav
+     bara 4,4:1 mot de grå korten, den här ger 5,1:1 mot --yta och 5,3:1 mot
+     vitt – alltså AA överallt där brödtext står. */
+  --svart:#0A0A0A;
+  --text:#0A0A0A;
+  --text-2:#6B6B6B;
+  --text-3:#404040;     /* text på den grå knappen, 7,9:1 */
+  --yta:#F9F9F9;        /* kort och sektionsytor */
+  --yta-2:#F5F5F5;      /* fält, FAQ-rader, sekundärknappar */
+  --linje:#E1E1E1;      /* avdelare och grå knapp */
+  --linje-ljus:#ECECEC; /* hårfina ramar */
+  --vit:#FFFFFF;
+  --dampad:#C2C6CF;     /* skrivmaskinsordet i heron */
+  --morkt:#0B0B0B;      /* heroens botten under fotot */
+
+  --gron:#16A34A;       /* ENDAST bekräftelser och godkänd validering (ikoner, ramar, ytor) */
+  /* Mörkare nyans av systemgrönt, används ENDAST när grönt sätts som text eller
+     som botten bakom vit text. #16A34A ger bara 3,3:1 mot vitt och klarar därför
+     inte WCAG AA för text – denna nyans ger 5,0:1. Samma roll, tillgänglig kontrast. */
+  --gron-text:#15803D;
+  --rod:#DC2626;
+  --stjarna:#FBBF24;   /* ENDAST recensionsstjärnor */
+
+  /* Typsnitt, båda självhostade (public/typsnitt/typsnitt.css). */
+  --font-rubrik:'Geist',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-text:'Inter Display','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+
+  /* Former */
+  --radie-xl:30px;
+  --radie-l:20px;
+  --radie-m:15px;
+  --radie-s:12px;
+  --pill:999px;
+  --skugga-flyt:0 9px 16px rgba(0,0,0,.08);       /* flytande pillers */
+  --skugga-lyft:24px 32px 112px rgba(0,0,0,.08);  /* kort i hoverläge */
+
+  /* Rörelse. Förlagan animerar med en överdämpad fjäder (stiffness 200,
+     damping 44) som landar på ungefär en sekund utan att studsa – den här
+     kurvan är dess närmaste motsvarighet i CSS. */
+  --mjuk-ut:cubic-bezier(.22,1,.36,1);
+  --overgang:.3s cubic-bezier(.22,1,.36,1);
+
+  /* Ramar: hero, omdömen och sidfot ligger som rundade kort en bit in från
+     skärmkanten, som i förlagan. */
+  --ram-luft:6px;
+  --ram-max:1426px;
+
+  /* Linus riktiga logotyp. Definieras EN gång här och återanvänds via
+     background-image i header, sidfot och bokningsvyn.
+     --logga-mork: originalfärger, för vita bottnar.
+     --logga-ljus: vit knockout med ljusblå skrapa, för mörk botten. */
+  --logga-mork:url("/bilder/logga-mork.png");
+  --logga-ljus:url("/bilder/logga-ljus.png");
+  --logga-forh:3.897;
+}
+@media(min-width:1200px){:root{--ram-luft:7px;}}
+
+/* ==========================================================================
+   2. Grundreset och typografi
+   ========================================================================== */
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  font-family:var(--font-text);
+  /* Optisk storlek 32 = "Inter Display". Ärvs av allt på sidan, så även den
+     lilla texten får den täta displayvarianten som förlagan är satt i.
+     Geist saknar axeln och påverkas inte. */
+  font-variation-settings:"opsz" 32;
+  font-size:16px;line-height:1.4;
+  color:var(--text);background:var(--vit);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body.laast{overflow:hidden;} /* används när mobilmenyn är öppen */
+h1,h2,h3,h4{
+  font-family:var(--font-rubrik);font-weight:500;
+  color:var(--svart);line-height:1.12;margin:0 0 .5em;
+}
+h1{font-size:35px;letter-spacing:-.05em;line-height:1.06;}
+h2{font-size:28px;letter-spacing:-.06em;}
+h3{font-size:20px;letter-spacing:-.03em;line-height:1.2;}
+h4{font-size:16px;letter-spacing:-.02em;}
+@media(min-width:810px){h1{font-size:46px;}h2{font-size:32px;}}
+@media(min-width:1200px){h1{font-size:56px;}h2{font-size:48px;}}
+p{margin:0 0 1rem;}
+a{color:var(--bla);text-decoration:none;}
+a:hover{text-decoration:underline;}
+img,svg{max-width:100%;display:block;}
+ul,ol{margin:0;padding:0;list-style:none;}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+input,select,textarea{font-family:inherit;font-size:16px;color:var(--text);}
+
+/* Synlig fokusmarkering överallt (WCAG) */
+:focus-visible{outline:3px solid var(--bla);outline-offset:3px;border-radius:6px;}
+#hemsida :focus-visible{outline-color:var(--bla);box-shadow:0 0 0 3px var(--vit);}
+
+/* Hoppa till innehåll – för tangentbordsanvändare */
+.hoppa{position:absolute;left:-9999px;top:0;z-index:200;background:var(--vit);color:var(--svart);
+  padding:12px 20px;border-radius:0 0 var(--radie-s) 0;font-weight:600;}
+.hoppa:focus{left:0;}
+
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
+/* ==========================================================================
+   3. Layoutbyggstenar
+   ========================================================================== */
+.wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 20px;}
+@media(min-width:810px){.wrap{padding:0 40px;}}
+@media(min-width:1200px){.wrap{padding:0 43px;}}
+
+/* Sidhuvudet ligger i flödet och följer inte med, så ankarlänkarna behöver
+   bara en liten marginal ovanför. */
+section[id],footer[id]{scroll-margin-top:16px;}
+
+.sektion{padding:56px 0;}
+@media(min-width:810px){.sektion{padding:64px 0;}}
+@media(min-width:1200px){.sektion{padding:72px 0;}}
+
+/* Ett rundat kort en bit in från skärmkanten. Taket i bredd gör att heron,
+   omdömena och sidfoten aldrig blir bredare än innehållet runt dem. */
+.ram{
+  width:calc(100% - var(--ram-luft) * 2);max-width:var(--ram-max);
+  margin-left:auto;margin-right:auto;
+  border-radius:var(--radie-l);
+}
+
+/* --- Sektionsrubriker ------------------------------------------------------
+   Två varianter, som i förlagan: centrerad, och vänsterställd med en länk
+   eller knapp längst till höger (.vanster). */
+.sekt-topp{max-width:660px;margin:0 auto 44px;text-align:center;}
+.sekt-topp h2{margin:0 0 16px;}
+.sekt-topp p{
+  margin:0 auto;max-width:460px;
+  font-size:16px;line-height:1.4;letter-spacing:-.01em;color:var(--text-2);
+}
+.sekt-topp.vanster{
+  max-width:none;text-align:left;
+  display:flex;flex-direction:column;align-items:flex-start;gap:24px;
+}
+.sekt-topp.vanster p{margin:0;max-width:540px;}
+.sekt-topp-text{max-width:720px;}
+@media(min-width:810px){
+  .sekt-topp{margin-bottom:56px;}
+  .sekt-topp.vanster{flex-direction:row;align-items:flex-end;justify-content:space-between;gap:40px;}
+}
+@media(min-width:1200px){
+  .sekt-topp{margin-bottom:64px;}
+  .sekt-topp p{font-size:18px;}
+}
+
+/* Liten rubrik ovanför sektionens H2 – ren text, som i förlagan */
+.etikett{
+  display:block;margin-bottom:14px;
+  font-family:var(--font-rubrik);font-weight:500;font-size:15px;letter-spacing:-.02em;
+  color:var(--text-2);
+}
+@media(min-width:1200px){.etikett{font-size:16px;margin-bottom:18px;}}
+
+/* ==========================================================================
+   4. Knappar
+   Alla knappar delar samma anatomi: 52 px hög pill, Inter Display 600 och
+   tät spärr. Varianterna skiljer bara i färg – och i om de bär en rund
+   ikoncirkel före texten (.knapp-ikon).
+   ========================================================================== */
+.knapp{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:52px;padding:14px 26px;border-radius:var(--pill);
+  font-family:var(--font-text);font-weight:600;font-size:16px;line-height:1.24;letter-spacing:-.04em;
+  text-align:center;text-decoration:none;white-space:nowrap;
+  border:1px solid transparent;
+  transition:background-color var(--overgang),color var(--overgang),border-color var(--overgang),transform var(--overgang);
+}
+.knapp:hover{text-decoration:none;}
+.knapp:active{transform:scale(.98);}
+.knapp-primar{background:var(--bla);color:var(--vit);}
+.knapp-primar:hover{background:var(--bla-hover);color:var(--vit);}
+.knapp-sekundar{background:var(--yta-2);color:var(--svart);}
+.knapp-sekundar:hover{background:var(--linje);color:var(--svart);}
+.knapp-gra{background:var(--linje);color:var(--text-3);}
+.knapp-gra:hover{background:#D6D6D6;color:var(--svart);}
+.knapp-vit{background:var(--vit);color:var(--svart);}
+.knapp-vit:hover{background:var(--yta-2);color:var(--svart);}
+.knapp-kontur{background:var(--vit);color:var(--svart);border-color:var(--linje);}
+.knapp-kontur:hover{border-color:var(--svart);color:var(--svart);}
+/* Glasknappen ligger på heroens foto */
+.knapp-glas{
+  background:rgba(245,245,245,.12);color:var(--vit);border-color:rgba(255,255,255,.18);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.knapp-glas:hover{background:rgba(245,245,245,.22);color:var(--vit);}
+.knapp-liten{min-height:44px;padding:10px 18px;font-size:15px;}
+.knapp-bred{width:100%;}
+.knapp[disabled],.knapp[aria-disabled="true"]{opacity:.45;cursor:not-allowed;transform:none!important;}
+.knapp > svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Ikoncirkeln. Pilen vrids ett åttondels varv vid hover – förlagans
+   knappar saknar hovertillstånd helt, så den rörelsen är vårt tillägg. */
+.knapp-ikon{padding:10px 22px 10px 10px;}
+.knapp-cirkel{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bla);color:var(--vit);
+  transition:transform var(--overgang),background-color var(--overgang);
+}
+.knapp-cirkel.gra{background:var(--linje);color:var(--svart);}
+.knapp-primar .knapp-cirkel{background:var(--vit);color:var(--bla);}
+.knapp-cirkel svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.knapp-ikon:hover .knapp-cirkel{transform:rotate(45deg);}
+
+/* På riktigt smala skärmar måste långa knapptexter få brytas,
+   annars spränger knappen spalten (.knapp har white-space:nowrap). */
+@media(max-width:430px){.knapp{white-space:normal;max-width:100%;}}
+
+/* Textlänk med svart ikoncirkel efter texten – "Läs mer"-länken i
+   förlagans sektionsrubriker. Används både som <a> och som <button>. */
+.pil-lank{
+  display:inline-flex;align-items:center;gap:10px;flex:none;
+  padding:0;background:none;border:0;cursor:pointer;
+  font-family:var(--font-text);font-weight:600;font-size:16px;line-height:1.24;letter-spacing:-.04em;
+  color:var(--svart);text-decoration:none;white-space:nowrap;
+}
+.pil-lank:hover{text-decoration:none;color:var(--svart);}
+.pil-cirkel{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--svart);color:var(--vit);
+  transition:background-color var(--overgang),transform var(--overgang);
+}
+.pil-cirkel svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.pil-lank:hover .pil-cirkel{background:var(--bla);transform:rotate(45deg);}
+
+/* ==========================================================================
+   5. Toppbanner och sidhuvud
+   ========================================================================== */
+/* Bannern fylls av app.js med betyget ur BETYG – samma siffror som i heron
+   och omdömessektionen. Tom och dold tills dess, och på sidor utan app.js. */
+.toppbanner{background:var(--bla);color:var(--vit);font-size:14px;font-weight:500;line-height:1.4;}
+.toppbanner[hidden]{display:none;}
+.toppbanner-inner{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  min-height:38px;padding-top:8px;padding-bottom:8px;padding-left:44px;padding-right:44px;
+  text-align:center;
+}
+.toppbanner p{margin:0;}
+.toppbanner a{color:var(--vit);font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;}
+.toppbanner-stang{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.14);color:var(--vit);
+  transition:background-color var(--overgang);
+}
+.toppbanner-stang:hover{background:rgba(255,255,255,.28);}
+.toppbanner-stang svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;}
+
+/* Sidhuvudet ligger i flödet och rullar undan med sidan, som i förlagan.
+   z-index gör att det ligger över mobilmenyns bakgrund när menyn är öppen,
+   så logotypen och stängknappen syns. */
+.topp{position:relative;z-index:91;background:var(--vit);}
+/* Med menyn öppen ligger logotypen och krysset direkt på menyarket, så att
+   arkets rundade kant syns hela vägen runt. */
+.topp.meny-oppen{background:transparent;}
+.topp-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;height:72px;}
+@media(min-width:1200px){.topp-inner{height:96px;gap:24px;}}
+
+.logga{display:flex;align-items:center;flex:none;text-decoration:none;}
+.logga:hover{text-decoration:none;}
+.logga-bild{
+  display:block;height:38px;aspect-ratio:var(--logga-forh);
+  background-repeat:no-repeat;background-position:left center;background-size:contain;
+}
+.logga-bild.ljus{background-image:var(--logga-ljus);}
+.logga-bild.mork{background-image:var(--logga-mork);}
+@media(min-width:1200px){.topp .logga-bild{height:48px;}}
+
+/* --- Huvudmenyn (dator) --------------------------------------------------- */
+.nav{display:none;}
+@media(min-width:1200px){
+  .nav{display:flex;align-items:center;gap:26px;margin-right:auto;margin-left:40px;}
+}
+.nav > a,.nav-knapp{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 0;
+  font-size:17px;font-weight:400;letter-spacing:-.02em;color:var(--svart);
+  text-decoration:none;white-space:nowrap;
+  transition:color .2s ease;
+}
+.nav > a:hover,.nav-knapp:hover{color:var(--bla);text-decoration:none;}
+.nav-knapp svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--overgang);}
+
+/* Tjänstemenyn. Öppnas av hover och av tangentbordsfokus, och dessutom av
+   ett klick (rorelse.js växlar .oppen och aria-expanded) – så den fungerar
+   för mus, tangentbord och pekskärm. */
+.nav-meny{position:relative;}
+.nav-panel{
+  position:absolute;top:calc(100% + 12px);left:-28px;z-index:95;
+  width:520px;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;
+  padding:16px;background:var(--vit);border-radius:var(--radie-s);
+  box-shadow:0 22px 60px rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.05);
+  opacity:0;visibility:hidden;transform:translateY(8px);
+  transition:opacity .25s ease,transform .3s var(--mjuk-ut),visibility .25s;
+}
+/* Osynlig brygga över glappet, så att panelen inte stängs medan muspekaren
+   är på väg ned till den. */
+.nav-panel::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;}
+.nav-meny:hover .nav-panel,.nav-meny:focus-within .nav-panel,.nav-meny.oppen .nav-panel{
+  opacity:1;visibility:visible;transform:none;
+}
+.nav-meny:hover .nav-knapp svg,.nav-meny.oppen .nav-knapp svg{transform:rotate(180deg);}
+.nav-panel a{
+  display:flex;flex-direction:column;gap:3px;padding:12px 14px;border-radius:10px;
+  text-decoration:none;transition:background-color .2s ease;
+}
+.nav-panel a:hover{background:var(--yta);text-decoration:none;}
+.nav-panel b{font-weight:500;font-size:16px;letter-spacing:-.01em;color:var(--svart);}
+.nav-panel small{font-size:14px;line-height:1.35;color:var(--text-2);}
+
+.topp-hoger{display:none;}
+@media(min-width:1200px){.topp-hoger{display:flex;align-items:center;gap:12px;}}
+.topp-tel{padding:10px 22px 10px 18px;}
+.topp-tel svg{stroke:var(--bla);}
+
+/* Hamburgare */
+.burgare{
+  display:flex;flex-direction:column;justify-content:center;gap:5px;
+  width:44px;height:44px;padding:12px 11px;border-radius:var(--radie-s);flex:none;
+  background:var(--yta-2);
+}
+@media(min-width:1200px){.burgare{display:none;}}
+.burgare span{display:block;height:2px;width:100%;background:var(--svart);border-radius:2px;transition:transform var(--overgang),opacity var(--overgang);}
+.burgare[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.burgare[aria-expanded="true"] span:nth-child(2){opacity:0;}
+.burgare[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* --- Mobilmenyn ------------------------------------------------------------
+   Ett vitt ark som täcker skärmen en bit in från kanten, med mörk ton runt
+   om. Sidhuvudet ligger kvar ovanpå arket (z-index ovan), så logotypen och
+   krysset syns högst upp. */
+.mobmeny{
+  position:fixed;inset:0;z-index:90;
+  background:rgba(10,10,10,.45);
+  opacity:0;visibility:hidden;
+  transition:opacity .3s ease,visibility .3s;
+}
+.mobmeny.oppen{opacity:1;visibility:visible;}
+@media(min-width:1200px){.mobmeny{display:none;}}
+.mobmeny-ark{
+  position:absolute;inset:var(--ram-luft);
+  display:flex;flex-direction:column;
+  padding:128px 24px 24px;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--vit);border-radius:var(--radie-l);
+  transform:translateY(-14px);transition:transform .4s var(--mjuk-ut);
+}
+.mobmeny.oppen .mobmeny-ark{transform:none;}
+.mobmeny a.mlank{
+  display:block;padding:11px 4px;
+  font-size:22px;font-weight:400;letter-spacing:-.02em;color:var(--svart);text-decoration:none;
+}
+.mobmeny a.mlank:hover{color:var(--bla);}
+.mobmeny-knappar{margin-top:auto;padding-top:28px;display:flex;flex-direction:column;gap:10px;}
+.mob-tel svg{stroke:var(--bla);}
+
+/* ==========================================================================
+   6. Hero
+   Ett rundat fotokort. Text till vänster på mörk gradient och bokningskortet
+   till höger, som i förlagan – men med fotot förankrat i högerkanten, så
+   att Linus står i luckan mellan texten och kortet i stället för bakom
+   kortet. Fotots skala följer heroens höjd, så hans avstånd till kortet är
+   detsamma på alla datorbredder.
+   ========================================================================== */
+.hero{padding:0 0 8px;}
+.hero-ram{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:var(--morkt);color:var(--vit);
+}
+
+/* MOBIL FÖRST. Stående foto i sin egen proportion högst upp, som tonar över
+   i heroens mörka botten. Innehållet börjar under Linus ansikte. */
+.hero-bild{position:absolute;left:0;top:0;width:100%;z-index:-1;}
+.hero-bild img{display:block;width:100%;height:auto;}
+.hero-bild::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,
+    rgba(0,0,0,.12) 0%,
+    rgba(0,0,0,0) 22%,
+    rgba(0,0,0,.42) 38%,
+    rgba(11,11,11,.84) 62%,
+    var(--morkt) 90%);
+}
+
+.hero-inner{position:relative;display:flex;flex-direction:column;gap:40px;padding-top:18px;padding-bottom:20px;}
+.hero-txt{min-width:0;}
+
+/* Två brickor högst upp. Glaset gör dem läsbara mot himlen i fotot. */
+.hero-brickor{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-bricka{
+  display:inline-flex;align-items:center;gap:8px;min-height:40px;
+  padding:8px 15px 8px 12px;border-radius:var(--pill);
+  border:1px solid rgba(255,255,255,.24);
+  background:rgba(10,10,10,.36);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  font-size:14px;line-height:1.3;color:var(--vit);
+}
+.hero-bricka svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.hero-bricka b{font-weight:600;}
+
+/* Rubriken. Varje rad är ett eget block. Det skrivande ordet sist i andra
+   raden får en egen rad under datorbredd och kan inte radbrytas på dator –
+   då ändras aldrig rubrikens höjd när ett längre ord skrivs ut, och inget
+   under den hoppar. */
+/* På mobil börjar texten under Linus huvud, som i fotot slutar vid ungefär
+   60 % av bredden. */
+.hero-txt{padding-top:calc(60vw - 6px);}
+.hero-rubrik{
+  margin:22px 0 18px;
+  color:var(--vit);font-size:35px;line-height:1.04;letter-spacing:-.05em;
+}
+.hero-rad{display:block;}
+.skrivmaskin{color:var(--dampad);}
+@media(max-width:1199px){.hero-rad .skrivmaskin{display:block;min-height:1.04em;}}
+@media(min-width:1200px){.hero-rad{white-space:nowrap;}}
+/* Det skrivande ordet ritas ur data-text, så att det aldrig blir text i
+   DOM:en (se rorelse.js). */
+.skrivmaskin-ord::before{content:attr(data-text);}
+/* Markören. Förlagans markör är osynlig – den här syns svagt bara medan
+   ett ord skrivs eller suddas, så rörelsen syns tydligare. */
+.skrivmaskin-ord::after{
+  content:"";display:inline-block;width:2px;height:.82em;margin-left:3px;
+  background:currentColor;vertical-align:-.04em;opacity:0;
+}
+.skrivmaskin.skriver .skrivmaskin-ord::after{opacity:.7;}
+
+/* Linus egna ord. Fotot är på honom, så citatet får ett ansikte. */
+.hero-citat{margin:0;max-width:470px;font-size:16px;line-height:1.45;letter-spacing:-.01em;color:rgba(255,255,255,.92);}
+.hero-citat-text{display:block;}
+.hero-citat-namn{display:block;margin-top:6px;font-size:14px;font-weight:600;color:rgba(255,255,255,.7);}
+
+.hero-knappar{display:flex;flex-direction:column;gap:12px;margin-top:28px;}
+.hero-knappar .knapp{width:100%;}
+
+.hero-botten{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin-top:40px;}
+.hero-botten[hidden]{display:none;}
+.hero-botten-text{margin:0;max-width:210px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.9);}
+
+/* Betygsbrickan. Byggs av app.js ur samma BETYG-objekt som brickan i
+   omdömessektionen, så siffrorna finns på ett enda ställe. Stjärnorna tänds
+   en i taget: varje svg får sitt nummer i --i från app.js. */
+.hero-betyg{display:inline-flex;align-items:center;gap:12px;color:var(--vit);text-decoration:none;}
+.hero-betyg[hidden]{display:none;}
+a.hero-betyg:hover{text-decoration:none;color:var(--vit);}
+.hero-betyg-ikon{
+  width:48px;height:48px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.26);background:rgba(255,255,255,.08);
+  transition:border-color var(--overgang);
+}
+a.hero-betyg:hover .hero-betyg-ikon{border-color:rgba(255,255,255,.6);}
+.hero-betyg .g-logga{width:22px;height:22px;}
+.hero-betyg-text{display:flex;flex-direction:column;gap:2px;}
+.hero-betyg-rad{display:flex;align-items:center;gap:8px;}
+.hero-betyg-snitt{font-size:18px;font-weight:500;letter-spacing:-.02em;line-height:1.1;}
+.hero-betyg-stjarnor{display:inline-flex;align-items:center;gap:2px;}
+.hero-betyg-stjarnor svg{
+  width:13px;height:13px;flex:none;fill:var(--stjarna);stroke:none;
+  animation:stjarna-in .42s cubic-bezier(.2,1.4,.4,1) both;
+  animation-delay:calc(.8s + var(--i) * .1s);
+}
+.hero-betyg-antal{font-size:14px;color:rgba(255,255,255,.72);}
+@keyframes stjarna-in{from{opacity:0;transform:scale(.35) rotate(-20deg);}to{opacity:1;transform:none;}}
+
+/* --- Bokningskortet --------------------------------------------------------
+   Förlagans offertformulär, översatt till en ingång i Linus riktiga
+   bokningsflöde: tjänstevalen öppnar bokningsvyn med tjänsten förvald
+   (data-boka + data-tjanst, se app.js). */
+.hero-kort{
+  width:100%;max-width:440px;
+  background:var(--vit);color:var(--svart);
+  border-radius:24px;padding:10px;
+}
+.hero-kort-bar{
+  display:flex;align-items:center;justify-content:center;min-height:57px;
+  margin:0;padding:14px 16px;border-radius:16px;
+  background:var(--bla);color:var(--vit);
+  font-family:var(--font-rubrik);font-weight:500;font-size:20px;line-height:1.24;letter-spacing:-.04em;
+  text-align:center;
+}
+.hero-kort-kropp{padding:18px 12px 10px;}
+.hero-kort-under{margin:0 0 22px;text-align:center;font-size:14px;color:var(--text-2);}
+.hero-kort-fraga{margin:0 0 4px;font-size:16.8px;font-weight:500;letter-spacing:-.02em;color:var(--svart);}
+.hero-kort-etikett{margin:0 0 14px;font-size:14px;font-weight:500;color:#6F6F6F;}
+.hero-val-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.hero-val{
+  display:flex;align-items:center;gap:14px;width:100%;
+  padding:12px 12px 12px 12px;border-radius:16px;
+  background:var(--yta-2);text-align:left;
+  transition:background-color var(--overgang);
+}
+.hero-val:hover{background:var(--bla-mjuk);}
+.hero-val-ikon{
+  width:44px;height:44px;border-radius:var(--radie-s);flex:none;
+  display:flex;align-items:center;justify-content:center;background:var(--vit);
+}
+.hero-val-ikon svg{width:22px;height:22px;stroke:var(--bla);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.hero-val-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.hero-val-txt b{font-family:var(--font-rubrik);font-weight:500;font-size:18px;letter-spacing:-.03em;color:var(--svart);}
+.hero-val-txt small{font-size:14px;line-height:1.35;color:var(--text-2);}
+.hero-val-pil{
+  width:32px;height:32px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--vit);color:var(--svart);
+  transition:background-color var(--overgang),color var(--overgang);
+}
+.hero-val-pil svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.hero-val:hover .hero-val-pil{background:var(--bla);color:var(--vit);}
+.hero-kort-fot{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;
+  margin:16px 0 0;text-align:center;font-size:14px;color:var(--text-2);
+}
+.hero-kort-fot a{color:var(--text-2);text-decoration:underline;text-underline-offset:3px;}
+.hero-kort-fot a:hover{color:var(--svart);}
+
+/* SURFPLATTA: liggande foto med Linus till höger om textspalten, och
+   kortet under texten på den mörka botten. */
+@media(min-width:810px){
+  .hero-bild{height:580px;}
+  .hero-txt{padding-top:0;}
+  .hero-bild img{width:100%;height:100%;object-fit:cover;object-position:28% 20%;}
+  .hero-bild::after{
+    background:
+      linear-gradient(90deg,rgba(0,0,0,.84) 0%,rgba(0,0,0,.72) 40%,rgba(0,0,0,.3) 62%,rgba(0,0,0,0) 80%),
+      linear-gradient(180deg,rgba(11,11,11,0) 70%,var(--morkt) 100%);
+  }
+  .hero-inner{padding-top:56px;padding-bottom:40px;gap:56px;}
+  .hero-txt{max-width:56%;}
+  .hero-rubrik{margin-top:28px;font-size:44px;}
+  .hero-citat{font-size:17px;}
+  .hero-knappar{flex-direction:row;flex-wrap:wrap;}
+  .hero-knappar .knapp{width:auto;}
+}
+/* Kortet centreras under texten på surfplatta, som i förlagan. */
+@media(min-width:810px) and (max-width:1199px){.hero-kort{margin:0 auto;}}
+
+/* DATOR: fotot fyller hela kortet, och text, luft och kort delar på bredden.
+   Mittkolumnen är luften där Linus står. Textspalten krymper med skärmen så
+   att den aldrig når fram till hans ansikte. */
+@media(min-width:1200px){
+  /* Kortet har fotots proportion, 16:9, och blir aldrig högre än fotot –
+     allt innehåll ryms inom den ytan. */
+  .hero-ram{display:flex;align-items:center;aspect-ratio:16/9;}
+  .hero-bild{inset:0;height:100%;}
+  .hero-bild img{object-position:center top;}
+  .hero-bild::after{
+    background:linear-gradient(90deg,
+      rgba(0,0,0,.86) 0%,
+      rgba(0,0,0,.76) 30%,
+      rgba(0,0,0,.42) 48%,
+      rgba(0,0,0,.08) 64%,
+      rgba(0,0,0,0) 72%);
+  }
+  .hero .wrap{padding-left:30px;padding-right:30px;}
+  .hero-inner{
+    display:grid;align-items:center;gap:0;
+    grid-template-columns:minmax(0,min(660px,calc(100% - 556px))) 1fr 340px;
+    padding-top:clamp(32px,4vw,64px);padding-bottom:clamp(32px,4vw,64px);
+  }
+  .hero-txt{grid-column:1;max-width:none;}
+  .hero-kort{grid-column:3;max-width:none;}
+  .hero-rubrik{margin-top:30px;font-size:clamp(46px,3.9vw,56px);}
+  .hero-citat{font-size:18px;}
+  .hero-botten{margin-top:clamp(28px,3.6vw,56px);}
+}
+
+/* ==========================================================================
+   7. Omdömesraden under heron
+   Spåret innehåller samma uppsättning kort två gånger och flyttas exakt
+   -50 %, så skarven hamnar på samma pixel som utgångsläget och inte syns.
+   ========================================================================== */
+.omd-rad{
+  padding:0;background:var(--vit);overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+}
+.omd-rad-spar{
+  display:flex;width:max-content;gap:12px;padding:28px 0;
+  animation:band-vanster var(--takt,180s) linear infinite;
+}
+/* Stannar när besökaren pekar på raden eller tabbar in i den, så att ett
+   omdöme går att läsa färdigt. */
+.omd-rad:hover .omd-rad-spar,
+.omd-rad:focus-within .omd-rad-spar{animation-play-state:paused;}
+.omd-rad-kort{
+  flex:none;width:300px;margin:0;
+  background:var(--vit);border:1px solid var(--linje-ljus);border-radius:var(--radie-m);
+  padding:16px 20px;
+}
+.omd-rad-kort .stjarnor svg{width:14px;height:14px;}
+.omd-rad-kort blockquote{
+  margin:10px 0 12px;color:var(--svart);
+  font-size:15px;line-height:1.45;letter-spacing:-.01em;
+  /* Fyra rader räcker för att ge omdömet en röst; hela texten står i
+     omdömessektionen längre ned. */
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+}
+.omd-rad-kort figcaption{font-family:var(--font-rubrik);font-weight:500;font-size:15px;letter-spacing:-.02em;color:var(--text-2);}
+
+/* ==========================================================================
+   8. Rullande band
+   Delas av tjänstebandet och galleriet. Spåret bär sitt innehåll två gånger
+   och flyttas exakt halva sin bredd, åt höger eller vänster. Hastigheten
+   sätts per band med --takt.
+   ========================================================================== */
+.band{
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
+}
+.band-spar{display:flex;gap:10px;width:max-content;animation:band-hoger var(--takt,30s) linear infinite;}
+.band:hover .band-spar,.band:focus-within .band-spar{animation-play-state:paused;}
+@keyframes band-hoger{from{transform:translateX(-50%);}to{transform:translateX(0);}}
+@keyframes band-vanster{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* Tjänstebandet: tjänsterna och tillvalen med sina priser */
+.band-tjanster{margin-top:-8px;}
+.band-kort{
+  display:flex;align-items:center;gap:14px;flex:none;
+  padding:15px 30px 15px 16px;
+  background:var(--vit);border:1px solid var(--linje-ljus);border-radius:var(--radie-m);
+}
+.band-ikon{
+  width:50px;height:50px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;background:var(--yta-2);
+}
+.band-ikon svg{width:24px;height:24px;stroke:var(--svart);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.band-kort b{display:block;font-family:var(--font-rubrik);font-weight:500;font-size:20px;letter-spacing:-.04em;line-height:1.24;color:var(--svart);white-space:nowrap;}
+.band-kort small{display:block;margin-top:2px;font-size:16px;color:var(--text-2);white-space:nowrap;}
+
+/* ==========================================================================
+   9. Tjänster och priser
+   Förlagans priskort: rubrik, ingress, pris, knapp, avdelare och vad som
+   ingår. Hela kortet är tryckbart (app.js), knappen är den riktiga
+   kontrollen för tangentbord och skärmläsare.
+   ========================================================================== */
+.pris-grid{
+  display:grid;gap:20px;grid-template-columns:1fr;
+  max-width:944px;margin:48px auto 0;
+}
+@media(min-width:810px){.pris-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:56px;}}
+
+.tjanst-kort{
+  position:relative;display:flex;flex-direction:column;min-width:0;overflow:hidden;
+  padding:30px 24px 32px;border-radius:var(--radie-l);background:var(--yta);
+  cursor:pointer;scroll-margin-top:16px;
+  transition:background-color var(--overgang),box-shadow var(--overgang);
+}
+@media(min-width:1200px){.tjanst-kort{padding:32px 32px 40px;}}
+.tjanst-kort:hover{background:var(--vit);box-shadow:var(--skugga-lyft);}
+/* Rastret av prickar i det populära kortets övre hörn, som förlagans */
+.tjanst-kort.popular::before{
+  content:"";position:absolute;top:0;right:0;width:200px;height:170px;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(37,99,235,.38) 1.3px,transparent 1.7px);
+  background-size:11px 11px;
+  -webkit-mask-image:radial-gradient(ellipse at 100% 0%,#000 0%,transparent 70%);
+  mask-image:radial-gradient(ellipse at 100% 0%,#000 0%,transparent 70%);
+}
+.tjanst-kort .flagga{
+  position:absolute;top:26px;right:22px;z-index:1;
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 11px 4px 7px;border-radius:46px;
+  background:var(--vit);box-shadow:var(--skugga-flyt);
+  font-size:14px;line-height:1.3;color:var(--svart);
+}
+.tjanst-kort .flagga svg{width:15px;height:15px;flex:none;fill:#EA580C;stroke:none;}
+.tjanst-kort h3{position:relative;margin:0 0 10px;font-size:22px;letter-spacing:-.02em;line-height:1.12;}
+.tjanst-kort .flagga ~ h3{padding-right:120px;}
+.tjanst-kort .ingress{position:relative;margin:0 0 26px;font-size:14px;line-height:1.45;color:var(--text-2);}
+
+/* Prisblocket. .pris-rad delas med bokningsvyns specifikation, därför
+   staplas den uttryckligen här – och specifikationens fetstil och
+   oradbrytbara sista kolumn får inte följa med in i kortet. */
+.tjanst-kort .pris-rad{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;margin:0 0 26px;padding:0;border:0;}
+.tjanst-kort .pris-rad span:last-child{font-weight:400;white-space:normal;}
+.pris-fran{font-size:14px;color:var(--text-2);}
+.pris-tal{font-family:var(--font-rubrik);font-weight:500;font-size:38px;line-height:1.16;letter-spacing:-.06em;color:var(--svart);white-space:nowrap;}
+.pris-suffix{font-size:14px;line-height:1.45;color:var(--text-2);}
+/* Prisvillkoret. Underordnat i grad men inte nedtonat i kontrast – det
+   begränsar vad priset gäller och måste därför gå att läsa. */
+.pris-villkor{display:block;margin-top:4px;font-size:13px;line-height:1.45;}
+.tjanst-kort .knapp{position:relative;}
+
+.ingar-rubrik{
+  margin:30px 0 16px;padding-top:26px;border-top:1px solid var(--linje);
+  font-size:14px;font-weight:500;color:var(--text-2);
+}
+.bocklista li{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;font-size:16px;line-height:1.4;color:var(--svart);}
+.bocklista li:last-child{margin-bottom:0;}
+.bocklista li svg{width:20px;height:20px;flex:none;margin-top:0;stroke:var(--svart);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.bocklista strong{font-weight:600;}
+.tjanst-kort.popular .bocklista li svg{stroke:var(--bla);}
+
+/* Ikonen står i textraden, inte ovanför den. */
+.rut-rad{
+  max-width:780px;margin:32px auto 0;text-align:center;
+  font-size:14px;line-height:1.5;color:var(--text-2);
+}
+.rut-rad svg{
+  display:inline-block;width:18px;height:18px;margin-right:6px;vertical-align:-4px;
+  stroke:var(--bla);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+}
+
+/* Prisjämförelsen mot marknaden */
+.jamfor{
+  position:relative;overflow:hidden;
+  max-width:944px;margin:24px auto 0;padding:26px 24px;
+  background:var(--vit);border:1px solid var(--linje-ljus);border-radius:var(--radie-l);
+}
+@media(min-width:810px){.jamfor{padding:30px 32px;}}
+.jamfor h3{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:20px;}
+.jamfor h3 svg{width:22px;height:22px;flex:none;stroke:var(--bla);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.jamfor-rad{
+  display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between;align-items:center;
+  margin:0;padding:14px 0;border-bottom:1px dashed var(--linje);font-size:15px;
+}
+.jamfor-rad:nth-last-of-type(2){border-bottom:none;}
+.jamfor-rad .namn{font-weight:600;color:var(--svart);}
+.jamfor-rad .marknad{color:var(--text-2);}
+.jamfor-rad .vi{
+  font-weight:600;color:var(--vit);white-space:nowrap;
+  background:var(--bla);padding:5px 14px;border-radius:var(--pill);font-size:14px;
+}
+.jamfor .kalla{font-size:13px;color:var(--text-2);margin:12px 0 0;}
+
+/* Raderna glider in efter varandra och prischipen kommer sist när rutan
+   rullats in i bild. Allt hänger på .syns, som rorelse.js sätter en gång. */
+.jamfor.syns .jamfor-rad{animation:jamfor-rad-in .6s var(--mjuk-ut) both;}
+.jamfor.syns .jamfor-rad:nth-of-type(1){animation-delay:.25s;}
+.jamfor.syns .jamfor-rad:nth-of-type(2){animation-delay:.38s;}
+.jamfor.syns .jamfor-rad .vi{animation:jamfor-chip-in .5s cubic-bezier(.34,1.56,.64,1) both;}
+.jamfor.syns .jamfor-rad:nth-of-type(1) .vi{animation-delay:.55s;}
+.jamfor.syns .jamfor-rad:nth-of-type(2) .vi{animation-delay:.68s;}
+@keyframes jamfor-rad-in{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
+@keyframes jamfor-chip-in{from{opacity:0;transform:scale(.72);}to{opacity:1;transform:none;}}
+
+/* ==========================================================================
+   10. Så funkar det
+   En tunn linje genom stegens nummer, som i förlagan. Sektionen klipper
+   linjen vid skärmkanten.
+   ========================================================================== */
+.sa-funkar{overflow:hidden;}
+.steg-grid{display:grid;gap:32px;grid-template-columns:1fr;}
+@media(min-width:810px){.steg-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}}
+.steg{display:flex;flex-direction:column;}
+.steg-nr{position:relative;display:flex;justify-content:center;margin-bottom:24px;}
+.steg-nr::before{
+  content:"";position:absolute;top:50%;left:-100vw;right:-100vw;height:1px;
+  background:var(--linje-ljus);
+}
+.steg-nr span{
+  position:relative;z-index:1;
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--yta-2);box-shadow:0 0 0 10px var(--vit);
+  font-family:var(--font-rubrik);font-weight:500;font-size:18px;color:var(--text-2);
+}
+.steg-kort{
+  flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:44px 26px;border:1px solid var(--linje-ljus);border-radius:var(--radie-l);background:var(--vit);
+}
+@media(min-width:1200px){.steg-kort{padding:56px 32px;}}
+.ikon-cirkel{
+  width:56px;height:56px;border-radius:16px;flex:none;margin-bottom:24px;
+  display:flex;align-items:center;justify-content:center;background:var(--yta-2);
+}
+.ikon-cirkel svg{width:28px;height:28px;stroke:var(--text-2);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.steg-kort h3{margin:0 0 10px;font-size:22px;letter-spacing:-.02em;}
+.steg-kort p{margin:0;max-width:300px;font-size:16px;line-height:1.4;color:var(--text-2);}
+
+/* ==========================================================================
+   11. Om Linus
+   Förlagans "om oss": tre märken i grå kort och ett brett foto med ett
+   citat ovanpå – här Linus egna ord.
+   ========================================================================== */
+.varde-grid{display:grid;gap:12px;grid-template-columns:1fr;}
+@media(min-width:810px){.varde-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}}
+.varde-kort{padding:20px 24px;border-radius:var(--radie-m);background:var(--yta);}
+.varde-kort-rubrik{
+  display:flex;align-items:center;gap:10px;margin:0 0 6px;
+  font-family:var(--font-rubrik);font-weight:500;font-size:22px;letter-spacing:-.02em;line-height:1.12;color:var(--svart);
+}
+.varde-kort-rubrik svg{width:24px;height:24px;flex:none;stroke:var(--bla);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.varde-kort p:last-child{margin:0;font-size:16px;color:var(--text-2);}
+
+.om-foto{margin:24px 0 0;}
+.om-foto-bild{position:relative;border-radius:var(--radie-l);overflow:hidden;aspect-ratio:4/3;background:var(--yta);}
+.om-foto-bild img{width:100%;height:100%;object-fit:cover;object-position:72% 40%;}
+/* MOBIL: citatet står under fotot – det är för långt för att ligga ovanpå
+   en så liten bild. */
+.om-citat{margin-top:12px;padding:24px;border-radius:var(--radie-l);background:var(--yta);}
+.om-citat blockquote{margin:0 0 20px;}
+.om-citat blockquote p{
+  margin:0;font-family:var(--font-rubrik);font-weight:500;
+  font-size:18px;line-height:1.35;letter-spacing:-.02em;color:var(--svart);
+}
+.om-citat-person{display:flex;align-items:center;gap:12px;}
+.om-citat-person img{width:48px;height:48px;flex:none;border-radius:50%;object-fit:cover;object-position:35% 12%;}
+.om-citat-person b{display:block;font-weight:500;font-size:17px;letter-spacing:-.02em;}
+.om-citat-person small{display:block;font-size:14px;color:var(--text-2);}
+/* SURFPLATTA OCH UPPÅT: citatet ligger på fotot, nere till vänster. */
+@media(min-width:810px){
+  .om-foto{position:relative;}
+  .om-foto-bild{aspect-ratio:16/9;}
+  .om-foto-bild::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(28deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.42) 34%,rgba(0,0,0,0) 58%);
+  }
+  .om-citat{position:absolute;left:0;bottom:0;margin:0;max-width:600px;padding:40px;background:none;color:var(--vit);}
+  .om-citat blockquote p{color:var(--vit);font-size:18px;}
+  .om-citat-person img{border:2px solid rgba(255,255,255,.75);}
+  .om-citat-person small{color:rgba(255,255,255,.78);}
+}
+@media(min-width:1200px){
+  .om-foto-bild{aspect-ratio:1354/560;}
+  .om-citat{padding:48px;max-width:640px;}
+  .om-citat blockquote p{font-size:20px;}
+}
+
+/* ==========================================================================
+   12. Områden
+   ========================================================================== */
+.omrade-grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));}
+@media(min-width:810px){.omrade-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}}
+@media(min-width:1200px){.omrade-grid{grid-template-columns:repeat(6,minmax(0,1fr));}}
+.omrade-kort{
+  display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+  padding:16px;border-radius:var(--radie-m);background:var(--yta);
+}
+.omrade-kort svg{width:48px;height:48px;flex:none;stroke:var(--svart);fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;}
+.omrade-kort b{display:block;font-family:var(--font-rubrik);font-weight:500;font-size:20px;letter-spacing:-.02em;line-height:1.15;color:var(--svart);}
+.omrade-kort small{display:block;margin-top:3px;font-size:14px;line-height:1.35;color:var(--text-2);}
+@media(min-width:810px) and (max-width:1199px){
+  .omrade-kort{flex-direction:row;align-items:center;gap:14px;}
+}
+
+/* ==========================================================================
+   13. Galleri – ett rullande band av foton
+   ========================================================================== */
+.galleri-band{margin-top:-8px;}
+.galleri-band .band-spar{gap:14px;animation-name:band-vanster;}
+.gal-bild{position:relative;flex:none;height:220px;margin:0;border-radius:var(--radie-l);overflow:hidden;background:var(--yta);}
+@media(min-width:810px){.gal-bild{height:260px;}}
+@media(min-width:1200px){.gal-bild{height:320px;}}
+.gal-bild img{display:block;height:100%;width:auto;}
+.gal-bild::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:60%;pointer-events:none;
+  background:linear-gradient(0deg,rgba(0,0,0,.6),rgba(0,0,0,0));
+}
+.gal-bild figcaption{
+  position:absolute;left:14px;right:14px;bottom:14px;z-index:1;
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:var(--vit);
+}
+.gal-tagg{
+  display:inline-block;padding:3px 10px;border-radius:var(--pill);
+  background:var(--vit);color:var(--svart);font-size:13px;font-weight:500;line-height:1.4;
+}
+.gal-titel{font-family:var(--font-rubrik);font-weight:500;font-size:17px;letter-spacing:-.02em;line-height:1.2;}
+.gal-under{font-size:14px;color:rgba(255,255,255,.85);margin-top:-3px;}
+/* Liten notis om att bilderna är exempelbilder */
+.galleri-notis{text-align:center;margin:28px auto 0;max-width:640px;font-size:14px;color:var(--text-2);}
+
+/* ==========================================================================
+   14. Omdömen – Google-recensioner
+   Sektionen byggs av app.js utifrån listan OMDOMEN. Ligger ingen recension
+   där döljer sig hela sektionen, så sidan kan gå live utan tomma kort.
+
+   Förlagans omdömesram: grå rundad yta, sammanfattningen till vänster och
+   korten som flödar ut förbi högerkanten. Dator: en löpande karusell som
+   går att dra i, med pilar för tangentbordet. Mobil: en lodrät stapel som
+   laddar fler i omgångar.
+   ========================================================================== */
+.omdomen{padding:8px 0;}
+.omd-ram{background:var(--yta);overflow:hidden;padding:56px 0 64px;}
+@media(min-width:810px){.omd-ram{padding:72px 0 80px;}}
+@media(min-width:1200px){.omd-ram{padding:96px 0 104px;}}
+
+.omd-notis{
+  display:flex;align-items:flex-start;gap:10px;
+  max-width:680px;margin:0 0 32px;padding:14px 18px;
+  background:#FEF3C7;border:1px solid #FCD34D;border-radius:var(--radie-s);
+  color:#78350F;font-size:14px;line-height:1.6;
+}
+.omd-notis svg{width:18px;height:18px;flex:none;margin-top:3px;stroke:#B45309;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Pilarna bor i rubrikraden, som i förlagan. Vänsterpilen är den högra
+   vriden ett halvt varv. */
+.omd-pilar{display:none;}
+@media(min-width:810px){.omd-pilar{display:flex;gap:10px;flex:none;}}
+.omd-pil{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--vit);color:var(--svart);
+  transition:background-color var(--overgang),color var(--overgang);
+}
+.omd-pil.bak{background:var(--linje);}
+.omd-pil:hover{background:var(--bla);color:var(--vit);}
+.omd-pil svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.omd-pil.bak svg{transform:rotate(180deg);}
+
+.omd-innehall{display:flex;flex-direction:column;gap:12px;}
+@media(min-width:810px){
+  .omd-innehall{flex-direction:row;align-items:stretch;}
+  /* Karusellen sträcker sig ut till ramens högerkant, där ramen klipper den. */
+  .omd-karusell{flex:1;min-width:0;margin-right:-40px;}
+}
+@media(min-width:1200px){.omd-karusell{margin-right:-43px;}}
+
+/* --- Sammanfattningen ------------------------------------------------------ */
+.omd-summering{
+  display:flex;flex-direction:column;gap:22px;
+  padding:30px 28px;border-radius:var(--radie-l);background:var(--vit);
+}
+@media(min-width:810px){.omd-summering{flex:0 0 300px;}}
+@media(min-width:1200px){.omd-summering{flex-basis:326px;padding:40px;}}
+.omd-summering-text{margin:0;padding-top:20px;border-top:1px solid var(--linje);font-size:16px;line-height:1.45;color:var(--text-2);}
+.omd-summering .knapp{margin-top:auto;}
+
+/* Betygsbrickan: Google-logga, snittbetyg, stjärnor och antal. Byggs av app.js. */
+.omd-brickrad{display:block;}
+.omd-bricka{
+  display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px 14px;
+  color:var(--svart);text-decoration:none;
+}
+a.omd-bricka:hover{text-decoration:none;color:var(--svart);}
+.omd-bricka .g-logga{
+  width:52px;height:52px;padding:13px;border-radius:50%;background:var(--yta-2);
+  transition:background-color var(--overgang);
+}
+a.omd-bricka:hover .g-logga{background:var(--bla-mjuk);}
+.omd-snitt{font-family:var(--font-rubrik);font-weight:500;font-size:48px;line-height:1;letter-spacing:-.06em;}
+.omd-bricka .stjarnor{grid-column:1/-1;}
+.omd-antal{grid-column:1/-1;font-size:15px;color:var(--text-2);}
+
+.stjarnor{display:inline-flex;align-items:center;gap:3px;}
+.stjarnor svg{width:18px;height:18px;flex:none;fill:var(--stjarna);stroke:none;}
+.stjarnor.stor svg{width:22px;height:22px;}
+.stjarnor .tom{fill:rgba(251,191,36,.32);}
+
+/* --- Karusellen ------------------------------------------------------------ */
+.omd-fonster{overflow:hidden;cursor:grab;-webkit-user-select:none;user-select:none;height:100%;}
+/* Korten tonar in mot sammanfattningen i stället för att klippas tvärt
+   när karusellen rullar. */
+@media(min-width:810px){
+  .omd-fonster{
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 36px);
+    mask-image:linear-gradient(90deg,transparent 0,#000 36px);
+  }
+}
+.omd-fonster.dras{cursor:grabbing;}
+.omd-spar{display:flex;gap:12px;width:max-content;height:100%;will-change:transform;}
+.omd-spar .omd-kort{flex:0 0 360px;}
+@media(min-width:1200px){.omd-spar .omd-kort{flex-basis:378px;}}
+
+/* --- Kortet (samma i karusellen och i mobilstapeln) -------------------------
+   Förlagans ordning: stjärnor, texten i rubrikgrad och personen längst ned.
+   app.js lägger stjärnorna och personen i samma huvud – display:contents
+   löser upp huvudet så att ordningen kan sättas här. */
+.omd-kort{
+  position:relative;display:flex;flex-direction:column;gap:22px;
+  padding:30px 28px;border-radius:var(--radie-l);background:var(--vit);text-align:left;
+}
+@media(min-width:1200px){.omd-kort{padding:32px;}}
+.omd-huvud{display:contents;}
+.omd-betyg{order:1;}
+.omd-text{
+  order:2;flex:1;margin:0;
+  font-family:var(--font-rubrik);font-weight:500;font-size:20px;line-height:1.18;letter-spacing:-.02em;color:var(--svart);
+}
+@media(min-width:1200px){.omd-text{font-size:22px;line-height:1.12;}}
+.omd-las{order:3;}
+.omd-person{order:4;display:flex;align-items:center;gap:12px;min-width:0;padding-right:56px;}
+.omd-citat{order:5;}
+
+/* Exempeltext markeras diskret – notisen överst bär varningen. */
+.omd-text.utkast{border-left:3px dotted #D97706;padding-left:13px;}
+/* Kunder som bara satte betyg utan att skriva något. */
+.omd-text.omd-utan-text{font-family:var(--font-text);font-weight:400;font-style:italic;font-size:16px;letter-spacing:0;color:var(--text-2);}
+
+.avatar{
+  width:52px;height:52px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--yta-2);color:var(--svart);
+  font-family:var(--font-rubrik);font-weight:500;font-size:19px;
+  /* Vissa skriver sitt namn med liten begynnelsebokstav på Google. Namnet
+     återges ordagrant, men initialen i ringen sätts versal. */
+  text-transform:uppercase;
+}
+.omd-person-text{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.omd-namn{font-style:normal;font-weight:500;font-size:16.8px;letter-spacing:-.02em;line-height:1.25;color:var(--svart);}
+/* Rollen håller sig på en rad – bryts den blir kortets fot ojämnt hög. */
+.omd-meta{font-size:14px;color:var(--text-2);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* Citattecknet står nere till höger, där förlagan visar plattformens logga. */
+.omd-citat{
+  position:absolute;right:28px;bottom:30px;
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;background:var(--yta-2);
+}
+@media(min-width:1200px){.omd-citat{right:32px;bottom:32px;}}
+.omd-citat svg{width:16px;height:16px;fill:var(--bla);stroke:none;}
+
+/* --- Mobilstapeln ------------------------------------------------------------ */
+.omd-stapel{display:flex;flex-direction:column;gap:12px;}
+.omd-mer{display:flex;justify-content:center;margin-top:20px;}
+/* Fyra rader text, resten fälls ut med knappen under. */
+.omd-text.klippt{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;flex:none;}
+.omd-las{
+  align-self:flex-start;margin-top:-10px;padding:6px 0;min-height:44px;
+  font-size:15px;font-weight:600;color:var(--bla);text-decoration:underline;text-underline-offset:3px;
+}
+.omd-las:hover{color:var(--bla-hover);}
+
+/* Karusellen på surfplatta och dator, stapeln på mobil – aldrig båda. */
+.omd-mobil{display:block;}
+.omd-karusell{display:none;}
+@media(min-width:810px){
+  .omd-mobil{display:none;}
+  .omd-karusell{display:block;}
+}
+
+/* Delarna ligger dolda tills app.js fyllt dem. Egna [hidden]-regler behövs:
+   reglerna ovan sätter display och vinner annars över webbläsarens [hidden]. */
+.omd-notis[hidden],.omd-brickrad[hidden],.omd-mer[hidden],.omd-las[hidden]{display:none;}
+
+/* ==========================================================================
+   15. Blogg – kort med bild
+   Delas av startsidan och blogg.html.
+   ========================================================================== */
+.blogg-grid{display:grid;gap:40px;grid-template-columns:1fr;}
+@media(min-width:810px){.blogg-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}}
+.blogg-kort{position:relative;display:flex;flex-direction:column;}
+.blogg-bild{display:block;aspect-ratio:438/286;margin-bottom:20px;border-radius:var(--radie-l);overflow:hidden;background:var(--yta);}
+.blogg-bild img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--mjuk-ut);}
+.blogg-kort:hover .blogg-bild img{transform:scale(1.1);}
+.inlagg-meta{margin:0;font-family:var(--font-rubrik);font-weight:500;font-size:15px;letter-spacing:-.02em;color:var(--text-2);}
+.blogg-kort .inlagg-meta{margin-bottom:12px;}
+.blogg-kort h2,.blogg-kort h3{margin:0 0 12px;font-size:24px;line-height:1.1;letter-spacing:-.02em;}
+@media(min-width:1200px){.blogg-kort h2,.blogg-kort h3{font-size:26px;}}
+.blogg-kort h2 a,.blogg-kort h3 a{color:var(--svart);text-decoration:none;}
+/* Rubriklänken täcker hela kortet, så att bilden också går att trycka på. */
+.blogg-kort h2 a::after,.blogg-kort h3 a::after{content:"";position:absolute;inset:0;}
+.blogg-kort:hover h2 a,.blogg-kort:hover h3 a{color:var(--bla);}
+.blogg-kort p{margin:0;font-size:16px;line-height:1.45;color:var(--text-2);}
+
+/* ==========================================================================
+   16. FAQ
+   Två spalter som i förlagan: rubrik och kontakt till vänster, frågorna
+   till höger.
+   ========================================================================== */
+.faq-layout{display:grid;gap:40px;grid-template-columns:1fr;}
+@media(min-width:1200px){.faq-layout{grid-template-columns:minmax(0,1fr) minmax(0,1.42fr);gap:64px;}}
+.faq-sida{display:flex;flex-direction:column;gap:36px;}
+.faq-sida h2{margin:0 0 16px;max-width:12ch;}
+.faq-sida p{margin:0;max-width:400px;font-size:16px;line-height:1.4;color:var(--text-2);}
+@media(min-width:1200px){
+  .faq-sida{justify-content:space-between;}
+  .faq-sida p{font-size:18px;}
+}
+.faq-kontakt{display:flex;flex-wrap:wrap;align-items:center;gap:16px 22px;}
+.faq-person{display:flex;align-items:center;gap:12px;padding-right:22px;border-right:1px solid var(--linje);}
+.faq-person img{width:46px;height:46px;flex:none;border-radius:50%;object-fit:cover;object-position:35% 12%;}
+.faq-person b{display:block;font-weight:500;font-size:17px;letter-spacing:-.02em;color:var(--svart);}
+.faq-person small{display:block;font-size:14px;color:var(--text-2);}
+.faq-tel{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-rubrik);font-weight:500;font-size:20px;letter-spacing:-.04em;
+  color:var(--svart);text-decoration:none;white-space:nowrap;
+}
+.faq-tel:hover{color:var(--bla);text-decoration:none;}
+.faq-tel svg{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+
+.faq{margin:0;}
+.faq-post{margin-bottom:8px;border-radius:var(--radie-l);background:var(--yta-2);overflow:hidden;}
+.faq-post:last-child{margin-bottom:0;}
+.faq-fraga{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;
+  min-height:72px;padding:18px 18px 18px 22px;text-align:left;
+  font-family:var(--font-rubrik);font-weight:500;font-size:17px;line-height:1.24;letter-spacing:-.03em;color:var(--svart);
+}
+@media(min-width:810px){.faq-fraga{min-height:88px;padding:22px 24px;font-size:20px;letter-spacing:-.04em;}}
+.faq-ikon{
+  width:40px;height:40px;flex:none;border-radius:50%;background:var(--vit);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .35s var(--mjuk-ut);
+}
+.faq-ikon svg{width:18px;height:18px;stroke:var(--text-2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s ease;}
+.faq-fraga:hover .faq-ikon svg{stroke:var(--svart);}
+.faq-post.oppen .faq-ikon{transform:rotate(180deg);}
+.faq-post.oppen .faq-ikon svg{stroke:var(--bla);}
+.faq-svar[hidden]{display:none;}
+.faq-svar-inner{padding:0 22px 22px;font-size:16px;line-height:1.5;letter-spacing:-.01em;color:var(--text-2);}
+@media(min-width:810px){.faq-svar-inner{padding:0 24px 26px;font-size:18px;line-height:1.4;}}
+.faq-post.oppen .faq-svar-inner{animation:faq-in .45s var(--mjuk-ut) both;}
+@keyframes faq-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+
+/* ==========================================================================
+   17. Avslutande CTA med siffror
+   Förlagans grå kort med tre räknare. Siffrorna räknas upp av rorelse.js
+   när kortet rullas in i bild – i HTML står slutvärdet, så utan JavaScript
+   eller med reducerad rörelse står rätt siffra direkt.
+   ========================================================================== */
+.cta{padding-top:8px;}
+.cta-kort{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:56px 20px;border-radius:var(--radie-xl);background:var(--yta);
+}
+@media(min-width:810px){.cta-kort{padding:64px 40px;}}
+@media(min-width:1200px){.cta-kort{padding:72px 40px;}}
+.cta-kort h2{max-width:520px;margin:0 auto 36px;}
+.siffror{display:grid;gap:12px;grid-template-columns:1fr;width:100%;max-width:780px;margin:0 0 36px;}
+@media(min-width:810px){.siffror{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;}}
+.siffra-kort{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:18px 20px;border-radius:var(--radie-l);background:var(--vit);
+}
+.siffra-rad{display:flex;align-items:center;gap:8px;}
+.siffra-rad svg{width:24px;height:24px;flex:none;stroke:var(--bla);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.siffra{
+  font-family:var(--font-rubrik);font-weight:500;font-size:24px;letter-spacing:-.03em;line-height:1.2;
+  color:var(--svart);white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.siffra-etikett{font-size:16px;line-height:1.35;color:var(--text-2);}
+.cta-kort > p{max-width:520px;margin:0 auto 24px;font-size:16px;line-height:1.45;color:var(--text-2);}
+@media(min-width:1200px){.cta-kort > p{font-size:18px;}}
+.cta .tel-rad{margin:22px 0 0;font-size:16px;color:var(--text-2);}
+.cta .tel-rad a{color:var(--svart);font-weight:600;text-decoration:underline;text-underline-offset:4px;white-space:nowrap;}
+
+/* ==========================================================================
+   18. Sidfot
+   Marinblått rundat kort, som förlagans mörka sidfot.
+   ========================================================================== */
+.footer{padding:0 0 var(--ram-luft);}
+.footer-ram{background:var(--marin);color:rgba(255,255,255,.72);padding:52px 0 28px;}
+@media(min-width:1200px){.footer-ram{padding:64px 0 36px;}}
+.footer h4{
+  margin:0 0 18px;font-family:var(--font-rubrik);font-weight:500;font-size:16px;letter-spacing:-.02em;
+  color:rgba(255,255,255,.6);
+}
+.footer-grid{display:grid;gap:40px 24px;grid-template-columns:1fr;}
+@media(min-width:640px){.footer-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(min-width:1200px){.footer-grid{grid-template-columns:1.5fr 1fr 1.25fr 1fr;gap:40px;}}
+.footer-om .logga{margin-bottom:18px;}
+.footer-om .logga-bild{height:46px;}
+.footer p{font-size:15px;line-height:1.6;}
+.footer li{margin-bottom:12px;font-size:17px;line-height:1.35;color:var(--vit);}
+.footer li:last-child{margin-bottom:0;}
+.footer a{color:var(--vit);text-decoration:none;}
+/* Länkarna glider åt höger vid hover, som i förlagan */
+.footer li a{display:inline-block;transition:transform .4s var(--mjuk-ut),color .2s ease;}
+.footer li a:hover{transform:translateX(8px);color:var(--vit);text-decoration:none;}
+.footer .kontakt li{display:flex;gap:12px;align-items:flex-start;}
+.footer .kontakt svg{width:20px;height:20px;flex:none;margin-top:1px;stroke:var(--bla-ljus);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.footer .fskatt{margin:16px 0 0;font-size:13px;line-height:1.6;color:rgba(255,255,255,.6);}
+
+/* --- Google-kartan i sidfoten -------------------------------------------
+   Kartan laddas först när besökaren godkänt marknadsföringskakor. Fram till
+   dess saknar iframen src, och då visas rutan .karta-av i stället – utan att
+   ett enda anrop går till Google. Växlingen sköts helt i CSS på om src finns
+   eller inte, så den fungerar även på sidor som inte laddar app.js. */
+.footer-karta{margin-top:44px;}
+.karta-ram{
+  position:relative;overflow:hidden;border-radius:var(--radie-m);
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+}
+.karta-ram iframe{display:block;width:100%;height:260px;border:0;}
+.karta-ram iframe:not([src]){display:none;}
+.karta-ram iframe[src] ~ .karta-av{display:none;}
+.karta-av{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  margin:0;padding:30px 20px;text-align:center;
+  font-size:14px;color:rgba(255,255,255,.72);
+}
+.karta-av svg{width:26px;height:26px;stroke:var(--bla-ljus);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.karta-av a{color:var(--vit);text-decoration:underline;text-underline-offset:3px;}
+.karta-knappar{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;}
+@media(min-width:640px){.karta-ram iframe{height:300px;}}
+
+.footer-botten{
+  display:flex;flex-direction:column;gap:16px;
+  margin-top:40px;padding-top:24px;border-top:1px solid rgba(255,255,255,.14);
+}
+@media(min-width:1200px){.footer-botten{flex-direction:row;align-items:center;justify-content:space-between;gap:32px;}}
+.footer-juridik{display:flex;flex-wrap:wrap;gap:8px 24px;}
+.footer-juridik a{font-size:15px;color:rgba(255,255,255,.82);}
+.footer-juridik a:hover{color:var(--vit);text-decoration:underline;}
+/* "Kakinställningar" - öppnar Cookiebots panel igen, se onclick i sidfoten. */
+.samtycke-fotlank{
+  background:none;border:0;padding:0;cursor:pointer;font-family:inherit;
+  color:rgba(255,255,255,.82);text-decoration:none;font-size:15px;
+}
+.samtycke-fotlank:hover{color:var(--vit);text-decoration:underline;}
+.footer-slut{margin:0;max-width:620px;font-size:14px;line-height:1.55;color:rgba(255,255,255,.6);}
+.footer-slutlogga{display:flex;justify-content:flex-end;margin-top:28px;}
+.footer-slutlogga .logga-bild{height:52px;}
+@media(min-width:1200px){.footer-slutlogga .logga-bild{height:64px;}}
+@media(max-width:1199px){.footer{padding-bottom:84px;}} /* plats för den fasta mobil-CTA:n */
+
+/* ==========================================================================
+   19. Fast mobil-CTA
+   ========================================================================== */
+.mob-cta{
+  position:fixed;left:0;right:0;bottom:0;z-index:80;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--linje-ljus);
+  transform:translateY(120%);visibility:hidden;
+  transition:transform .4s var(--mjuk-ut),visibility .4s;
+}
+.mob-cta.visa{transform:translateY(0);visibility:visible;}
+@media(min-width:1200px){.mob-cta{display:none;}}
+
+/* ==========================================================================
+   20. Rörelse
+   Allt som rör sig vid inläsning och vid scroll. rorelse.js sätter
+   .rorelse på <html> när rörelse är tillåten och IntersectionObserver
+   finns – utan den klassen står allt synligt från början.
+   ========================================================================== */
+/* Block som glider upp 32 px när de rullas in i bild. Fördröjningen sätts
+   per element med --d, så att ingress, knapp och innehåll kommer i tur och
+   ordning efter rubriken. */
+.in{transition:opacity 1s var(--mjuk-ut),transform 1s var(--mjuk-ut);transition-delay:var(--d,0s);}
+.rorelse .in:not(.syns){opacity:0;transform:translateY(32px);}
+
+/* Rubriker som tonas in tecken för tecken. rorelse.js delar upp texten och
+   ger varje tecken sitt nummer i --i. Skärmläsare får hela rubriken ur
+   dess aria-label. */
+.tecken-ord{display:inline-block;white-space:nowrap;}
+.tecken-t{
+  display:inline-block;
+  transition:opacity .5s var(--mjuk-ut),transform .5s var(--mjuk-ut);
+  transition-delay:calc(var(--i,0) * 8ms);
+}
+.rorelse .tecken:not(.syns) .tecken-t{opacity:0;transform:translateY(10px);}
+
+/* Heroens intåg: fotot zoomar sakta ut och innehållet glider upp i tur och
+   ordning. Bara CSS, så innehållet syns även om JavaScript inte laddar. */
+.hero-bild img{animation:hero-zoom 1.4s var(--mjuk-ut) .1s both;}
+.hero-in{animation:upp-in 1s var(--mjuk-ut) both;animation-delay:var(--d,.1s);}
+@keyframes hero-zoom{from{transform:scale(1.1);}to{transform:none;}}
+@keyframes upp-in{from{opacity:0;transform:translateY(32px);}to{opacity:1;transform:none;}}
+
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  *,*::before,*::after{
+    animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;transition-delay:0s!important;
+  }
+  .rorelse .in:not(.syns){opacity:1;transform:none;}
+  /* Banden står still och blir vanliga rullningsbara listor, så innehållet
+     fortfarande går att nå. */
+  .omd-rad,.band{overflow-x:auto;}
+  .omd-rad-spar,.band-spar{animation:none;}
+}
+
+/* ==========================================================================
+   21. OFFERTGUIDEN – helskärmsvy, ett steg i taget
+
+   Varje steg är exakt en vyhöjd och aldrig mer, så kunden aldrig behöver
+   rulla för att se både frågan och fälten. Höjden sätts i dvh, som räknar
+   bort webbläsarens egen adressrad på mobil; vh gör inte det och skulle
+   trycka ned navigeringen utanför skärmen.
+   ========================================================================== */
+/* Vyn är exakt en skärmhöjd hög och delas i tre: topprad, stegmätare och
+   stegytan som tar resten. Då behöver ingen höjd gissas, och ett steg kan
+   aldrig göra sidan högre än skärmen. */
+#bokning{display:none;background:var(--vit);}
+body.bokar{overflow:hidden;}
+body.bokar #hemsida{display:none;}
+body.bokar #bokning{display:flex;flex-direction:column;height:100dvh;}
+.bok-topp,.stegrad{flex:none;}
+.bok-kropp{flex:1;min-height:0;}
+#kundform{height:100%;}
+body.bokar .mob-cta{display:none!important;}
+body.bokar .topp,body.bokar .mobmeny{display:none;}
+
+.bok-topp{background:var(--vit);border-bottom:1px solid var(--linje-ljus);}
+.bok-topp-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;height:64px;}
+.bok-topp .logga-bild{height:38px;}
+.tillbaka-lank{
+  display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 16px 8px 12px;
+  border-radius:var(--pill);background:var(--yta-2);border:0;cursor:pointer;
+  color:var(--svart);font-weight:600;font-size:15px;letter-spacing:-.02em;font-family:inherit;
+  transition:background-color var(--overgang);
+}
+.tillbaka-lank:hover{background:var(--linje);}
+.tillbaka-lank svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ---- Stegmätare: en tunn linje och en rad text ------------------------- */
+.stegrad{background:var(--vit);padding:16px 0 0;}
+/* Samma bredd som stegets innehåll, annars spänner mätaren över hela
+   sidan medan frågan står i en smal spalt. */
+.stegrad .wrap{max-width:660px;}
+.stegspar{height:4px;border-radius:2px;background:var(--linje-ljus);overflow:hidden;}
+.stegspar span{display:block;height:100%;width:0;border-radius:2px;background:var(--bla);transition:width .35s var(--mjuk-ut);}
+.stegtext{margin:8px 0 0;font-size:13px;font-weight:500;color:var(--text-2);}
+
+/* ---- Ett steg --------------------------------------------------------- */
+.bok-steg{display:none;}
+.bok-steg.aktiv{
+  display:flex;flex-direction:column;height:100%;
+  max-width:620px;margin:0 auto;padding:0 20px 18px;
+  /* Ryms innehållet inte ändå rullar steget invändigt, aldrig hela sidan. */
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.steg-inner{
+  flex:1 0 auto;display:flex;flex-direction:column;justify-content:center;gap:20px;
+  padding:20px 0;min-height:auto;
+}
+.steg-nav{flex-shrink:0;}
+.steg-inner.mitten{align-items:center;text-align:center;}
+
+.steg-fraga h2{margin:0 0 8px;font-size:clamp(26px,6vw,36px);line-height:1.1;letter-spacing:-.05em;}
+.steg-fraga p{margin:0;color:var(--text-2);font-size:16px;line-height:1.5;}
+.steg-not{margin:0;font-size:14px;color:var(--text-2);line-height:1.55;}
+.steg-not a{font-weight:600;}
+
+/* Navigeringen ligger alltid i botten av steget, aldrig utanför vyn */
+.steg-nav{display:flex;gap:12px;padding-top:4px;}
+.steg-nav .knapp{flex:1;min-height:54px;}
+.steg-nav .knapp-sekundar{flex:0 0 auto;padding-left:24px;padding-right:24px;}
+
+/* ---- Fält ------------------------------------------------------------- */
+/* Två fält per rad även på telefon. Sex fält staplade på varandra skulle
+   inte rymmas i en vyhöjd, och paren hör ihop två och två ändå. */
+.falt-par{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:339px){.falt-par{grid-template-columns:1fr;}}
+.falt-par.en{grid-template-columns:1fr;}
+
+.ffalt{display:flex;flex-direction:column;gap:6px;min-width:0;}
+.ffalt label{font-size:14px;font-weight:500;color:#5F5F5F;}
+.ffalt label.dold{position:absolute;left:-9999px;}
+.ffalt input,.ffalt textarea{
+  width:100%;font:inherit;font-size:16px;color:var(--svart);
+  background:var(--yta-2);border:2px solid transparent;border-radius:14px;
+  padding:13px 16px;min-height:52px;
+  transition:border-color var(--overgang),background-color var(--overgang),box-shadow var(--overgang);
+}
+.ffalt textarea{resize:vertical;min-height:110px;line-height:1.55;}
+.ffalt input::placeholder,.ffalt textarea::placeholder{color:#8C8C8C;}
+.ffalt input:focus,.ffalt textarea:focus{
+  outline:none;border-color:var(--bla);background:var(--vit);box-shadow:0 0 0 4px rgba(37,99,235,.12);
+}
+.ffalt.fel input,.ffalt.fel textarea{border-color:var(--rod);}
+.ffalt.ok input{border-color:var(--gron);}
+/* Tom felrad tar ingen höjd, så steget inte reserverar plats i onödan. */
+.faltfel{margin:0;font-size:13px;font-weight:600;color:var(--rod);}
+.faltfel:empty{display:none;}
+.falt-not{margin:0;font-size:14px;color:var(--text-2);line-height:1.5;}
+
+/* ---- Stepper och reglage ---------------------------------------------- */
+.stepper{display:flex;align-items:center;justify-content:center;gap:18px;}
+.stepper button{
+  width:56px;height:56px;flex:none;border-radius:50%;cursor:pointer;
+  background:var(--yta-2);border:0;color:var(--svart);
+  display:flex;align-items:center;justify-content:center;
+  transition:background-color var(--overgang),color var(--overgang);
+}
+.stepper button:hover:not(:disabled){background:var(--bla);color:var(--vit);}
+.stepper button:disabled{opacity:.4;cursor:not-allowed;}
+.stepper button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;}
+.stepper .varde{
+  font-family:var(--font-rubrik);font-weight:500;font-size:56px;letter-spacing:-.05em;
+  color:var(--svart);min-width:2.2em;text-align:center;line-height:1;
+}
+/* Antal fönster och antal med spröjs delar steg. */
+.tal-par{display:flex;flex-direction:column;gap:18px;}
+@media(min-width:520px){.tal-par{flex-direction:row;gap:24px;}.tal-grupp{flex:1;}}
+.tal-grupp{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:var(--radie-l);background:var(--yta);}
+.tal-etikett{margin:0;font-size:14px;font-weight:500;color:#5F5F5F;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
+.tal-etikett span{font-weight:600;color:var(--bla);font-size:13px;}
+.tal-par .stepper{gap:14px;}
+.tal-par .stepper button{width:46px;height:46px;background:var(--vit);}
+.tal-par .stepper .varde{font-size:44px;min-width:2em;}
+
+.stort-varde{margin:0;text-align:center;font-family:var(--font-rubrik);font-weight:500;font-size:52px;letter-spacing:-.05em;color:var(--svart);line-height:1;}
+input[type="range"]{
+  -webkit-appearance:none;appearance:none;width:100%;height:6px;
+  border-radius:3px;background:var(--linje);cursor:pointer;
+}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:28px;height:28px;border-radius:50%;
+  background:var(--bla);border:3px solid var(--vit);box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+input[type="range"]::-moz-range-thumb{
+  width:28px;height:28px;border-radius:50%;border:3px solid var(--vit);
+  background:var(--bla);box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+input[type="range"]:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(37,99,235,.18);}
+
+/* ---- Valkort: tjänst, frekvens och tillägg ---------------------------- */
+.val-lista{display:flex;flex-direction:column;gap:10px;}
+.val-lista.tat{gap:8px;}
+.val-lista.tat .val-kort{padding:11px 14px;}
+.val-lista.tat .val-txt b{font-size:16px;}
+.val-kort{
+  display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+  background:var(--yta-2);border:2px solid transparent;border-radius:16px;
+  padding:15px 16px;cursor:pointer;font-family:inherit;
+  transition:border-color var(--overgang),background-color var(--overgang);
+}
+/* hidden-attributet måste slå display:flex, annars går kortet inte att
+   dölja från JavaScript. */
+.val-kort[hidden]{display:none;}
+.val-kort:hover{border-color:var(--linje);}
+.val-kort.vald{border-color:var(--bla);background:var(--bla-mjuk);}
+.val-kort input{position:absolute;opacity:0;width:1px;height:1px;}
+.val-kort:focus-within{box-shadow:0 0 0 4px rgba(37,99,235,.14);}
+.val-ikon{
+  width:46px;height:46px;flex:none;border-radius:var(--radie-s);background:var(--vit);
+  display:flex;align-items:center;justify-content:center;
+}
+.val-ikon svg{width:24px;height:24px;stroke:var(--bla);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.val-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.val-txt b{font-family:var(--font-rubrik);font-weight:500;font-size:18px;letter-spacing:-.03em;line-height:1.25;color:var(--svart);}
+.val-txt small{color:var(--text-2);font-size:14px;line-height:1.4;}
+/* Populära tillägg. Flamman flimrar svagt för att dra ögat dit utan att
+   bli en blinkande reklamskylt – och står stilla för den som valt att
+   minska rörelser i systemet. Flaggan ligger på samma rad som namnet,
+   annars blir korten högre och steget slutar rymmas på en kort skärm. */
+.val-kort.populart .val-txt{flex-direction:row;align-items:center;gap:9px;flex-wrap:wrap;}
+.val-txt .flagga{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:#C2410C;
+}
+.val-txt .flagga svg{
+  width:13px;height:13px;flex:none;fill:#EA580C;stroke:none;
+  transform-origin:50% 85%;animation:flamma 1.7s ease-in-out infinite;
+}
+@keyframes flamma{
+  0%,100%{transform:scale(1) rotate(0deg);opacity:.9;}
+  25%{transform:scale(1.16) rotate(-5deg);opacity:1;}
+  50%{transform:scale(.95) rotate(4deg);opacity:.82;}
+  75%{transform:scale(1.09) rotate(-2deg);opacity:1;}
+}
+
+.val-chip{
+  flex:none;font-size:14px;font-weight:600;color:var(--svart);
+  background:var(--vit);border-radius:var(--pill);padding:5px 12px;
+}
+.val-bock{
+  width:26px;height:26px;flex:none;border-radius:50%;border:2px solid var(--linje);background:var(--vit);
+  display:flex;align-items:center;justify-content:center;
+}
+.val-bock svg{width:15px;height:15px;stroke:var(--vit);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.val-kort.vald .val-bock{background:var(--bla);border-color:var(--bla);}
+.val-kort.vald .val-bock svg{opacity:1;}
+
+/* ---- Prisrutan i sista steget ----------------------------------------- */
+.prisruta{background:var(--yta);border-radius:var(--radie-l);padding:24px;text-align:center;}
+.pris-stor{margin:0;font-family:var(--font-rubrik);font-weight:500;font-size:52px;letter-spacing:-.06em;color:var(--svart);line-height:1;}
+.pris-under{margin:10px 0 0;font-size:15px;color:var(--text-2);}
+.pris-lank{
+  margin-top:14px;background:none;border:0;cursor:pointer;font-family:inherit;
+  font-size:15px;font-weight:600;color:var(--bla);text-decoration:underline;text-underline-offset:3px;
+}
+.pris-rader{margin-top:16px;text-align:left;border-top:1px solid var(--linje);padding-top:14px;}
+.pris-rad{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:15px;color:var(--svart);}
+.pris-rad span:last-child{font-weight:600;white-space:nowrap;}
+.pris-rad.summa{border-top:1px solid var(--linje);margin-top:6px;padding-top:10px;font-weight:600;}
+.pris-rad.gron span:last-child{color:var(--gron-text);}
+
+/* ---- Godkännande ------------------------------------------------------ */
+.gdpr-kort{
+  display:flex;align-items:flex-start;gap:12px;cursor:pointer;
+  background:var(--yta-2);border:2px solid transparent;border-radius:16px;
+  padding:15px 16px;font-size:15px;line-height:1.55;color:var(--svart);
+  transition:border-color var(--overgang);
+}
+.gdpr-kort:hover{border-color:var(--linje);}
+.gdpr-kort.fel{border-color:var(--rod);}
+.gdpr-kort input{position:absolute;opacity:0;width:1px;height:1px;}
+.gdpr-kort .check-ruta{
+  width:24px;height:24px;flex:none;margin-top:1px;border-radius:7px;
+  border:2px solid var(--linje);background:var(--vit);
+  display:flex;align-items:center;justify-content:center;
+}
+.gdpr-kort .check-ruta svg{width:14px;height:14px;stroke:var(--vit);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;opacity:0;}
+.gdpr-kort input:checked+.check-ruta{background:var(--bla);border-color:var(--bla);}
+.gdpr-kort input:checked+.check-ruta svg{opacity:1;}
+.gdpr-kort input:focus-visible+.check-ruta{box-shadow:0 0 0 4px rgba(37,99,235,.18);}
+/* Länkarna i kryssrutan får inte äta klicket på själva rutan – de öppnar
+   villkoren i ny flik, resten av ytan kryssar i som vanligt. */
+.gdpr-kort a{color:var(--bla);font-weight:600;text-decoration:underline;}
+.gdpr-kort a:hover{color:var(--svart);}
+
+/* ---- Felruta ---------------------------------------------------------- */
+.felruta{
+  display:none;align-items:flex-start;gap:10px;
+  background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;
+  padding:13px 15px;font-size:14px;line-height:1.5;color:#991B1B;
+}
+.felruta.visa{display:flex;}
+.felruta svg{width:19px;height:19px;flex:none;margin-top:1px;stroke:var(--rod);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ---- Bock och referensnummer (tacksidan) ------------------------------ */
+.bock-cirkel{
+  width:76px;height:76px;border-radius:50%;background:var(--gron);
+  display:flex;align-items:center;justify-content:center;
+}
+.bock-cirkel svg{width:38px;height:38px;stroke:var(--vit);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+.boknr{
+  display:flex;flex-direction:column;gap:4px;margin:0;
+  background:var(--yta);border-radius:var(--radie-m);padding:14px 24px;
+}
+.boknr .etik{font-size:13px;font-weight:500;color:var(--text-2);}
+.boknr .nr{font-family:var(--font-rubrik);font-size:24px;font-weight:500;letter-spacing:-.02em;color:var(--svart);}
+
+/* Honungsfälla: osynlig för människor men kvar i DOM:en, så att robotar som
+   fyller i allt avslöjar sig. display:none skulle många robotar hoppa över,
+   därför flyttas den ur bild i stället. */
+.honung{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+
+/* Spinner i skicka-knappen */
+.spinner{display:none;width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);border-top-color:var(--vit);animation:snurr .6s linear infinite;}
+.knapp.laddar .spinner{display:inline-block;}
+.knapp.laddar .etikett-txt{opacity:.7;}
+@keyframes snurr{to{transform:rotate(360deg);}}
+
+/* Cloudflare Turnstile. Widgeten har en fast bredd (~300px) – centreras så
+   den inte hamnar klistrad mot vänsterkanten i den smalare bokningsrutan. */
+.turnstile-ruta{display:flex;justify-content:center;}
+
+/* ==========================================================================
+   22. Tacksidan (fristående sida efter skickad förfrågan, tack.html)
+   ========================================================================== */
+.tack-sida{max-width:640px;padding:56px 20px 72px;text-align:center;min-height:62svh;}
+@media(min-width:1200px){.tack-sida{padding-top:88px;}}
+.tack-bock{margin:0 auto 24px;}
+.tack-sida h1{margin:0 0 14px;font-size:clamp(32px,6vw,48px);}
+.tack-text{margin:0 auto 28px;max-width:520px;color:var(--text-2);font-size:18px;line-height:1.5;}
+.tack-sida .prisruta{margin-bottom:24px;}
+.tack-sida .boknr{margin:0 auto 24px;max-width:280px;}
+.tack-sida [hidden]{display:none;}
+.tack-sida .pris-rad{flex-wrap:wrap;gap:4px 12px;}
+.tack-sida .pris-rad span{min-width:0;overflow-wrap:anywhere;}
+.tack-sida .pris-rad span:last-child{white-space:normal;}
+.tack-hem{margin-top:8px;}
+.tack-hem .knapp{display:inline-flex;min-width:220px;}
+
+/* ==========================================================================
+   23. Undersidor – sidhuvud för blogg, inlägg, juridik och 404
+   En grå rundad ram med brödsmulor, rubrik och ingress, samma form som
+   omdömesramen på startsidan.
+   ========================================================================== */
+.sid-topp{padding:0 0 8px;}
+.sid-topp-ram{background:var(--yta);padding:44px 0 48px;}
+@media(min-width:810px){.sid-topp-ram{padding:64px 0 64px;}}
+@media(min-width:1200px){.sid-topp-ram{padding:88px 0 88px;}}
+.sid-topp h1{max-width:20ch;margin:0 0 18px;font-size:34px;}
+@media(min-width:810px){.sid-topp h1{font-size:44px;}}
+@media(min-width:1200px){.sid-topp h1{font-size:56px;}}
+.sid-ingress{margin:0 0 16px;max-width:60ch;font-size:17px;line-height:1.45;color:var(--text-2);}
+@media(min-width:1200px){.sid-ingress{font-size:18px;}}
+.sid-topp .inlagg-meta{margin-top:4px;}
+/* Brödsmulor ger både orientering och intern länkning */
+.smulor{margin:0 0 22px;font-size:14px;color:var(--text-2);}
+.smulor a{color:var(--svart);text-decoration:underline;text-underline-offset:3px;}
+.smulor span{opacity:.85;}
+
+/* Läsbar radlängd är viktigare än full bredd i löpande text */
+.inlagg-kropp{max-width:800px;padding-top:48px;padding-bottom:64px;}
+@media(min-width:1200px){.inlagg-kropp{padding-top:64px;padding-bottom:80px;}}
+.inlagg-kropp h2{margin:44px 0 14px;font-size:26px;letter-spacing:-.04em;}
+@media(min-width:810px){.inlagg-kropp h2{font-size:30px;}}
+.inlagg-kropp h2:first-child{margin-top:0;}
+.inlagg-kropp h3{margin:28px 0 10px;font-size:20px;}
+.inlagg-kropp p{font-size:17px;line-height:1.7;color:#2B2B2B;}
+.inlagg-kropp .bocklista{margin:16px 0 22px;}
+.inlagg-kropp .bocklista li{font-size:17px;line-height:1.6;color:#2B2B2B;margin-bottom:12px;}
+.inlagg-kropp .bocklista li svg{margin-top:4px;stroke:var(--bla);}
+.inlagg-kropp a{text-decoration:underline;text-underline-offset:3px;}
+
+.inlagg-cta{
+  margin:48px 0 32px;padding:40px 24px;text-align:center;
+  background:var(--yta);border-radius:var(--radie-xl);
+}
+.inlagg-kropp .inlagg-cta h2{margin:0 0 10px;font-size:26px;}
+.inlagg-kropp .inlagg-cta p{color:var(--text-2);font-size:17px;margin:0 auto 22px;max-width:44ch;}
+.tillbaka-blogg{margin:0;}
+.tillbaka-blogg a{font-weight:600;color:var(--svart);}
+.tillbaka-blogg a:hover{color:var(--bla);}
+
+/* ==========================================================================
+   24. JURIDISKA SIDOR – integritetspolicy, köpvillkor, kakor
+   Bygger vidare på artikellayouten (.inlagg-kropp) och lägger bara till det
+   som behövs för villkorstext: faktaruta, tabell, blankett och platshållare.
+   ========================================================================== */
+.juridik h2{margin-top:44px;}
+.juridik h2:first-of-type{margin-top:8px;}
+.juridik h3{margin-top:26px;}
+.juridik p,.juridik li{font-size:16px;}
+.juridik .bocklista li{font-size:16px;}
+
+/* Sammanfattningsruta överst på varje sida */
+.juridik-ruta{
+  background:var(--yta);border-left:3px solid var(--bla);
+  border-radius:var(--radie-m);padding:18px 20px;margin:0 0 8px;
+}
+.juridik-ruta p{margin:0;color:var(--svart);}
+
+/* Ändamål och rättslig grund */
+.juridik-tabell{
+  width:100%;border-collapse:separate;border-spacing:0;margin:18px 0;font-size:15px;
+  border:1px solid var(--linje-ljus);border-radius:var(--radie-m);overflow:hidden;
+}
+.juridik-tabell th,.juridik-tabell td{
+  text-align:left;padding:12px 16px;border-bottom:1px solid var(--linje-ljus);vertical-align:top;
+}
+.juridik-tabell thead th{background:var(--yta);color:var(--svart);font-weight:600;}
+.juridik-tabell tbody tr:last-child td{border-bottom:0;}
+/* Under 560 px blir tabellen två staplade rader per post i stället för
+   två kolumner – annars pressas texten till en oläslig remsa. */
+@media(max-width:560px){
+  .juridik-tabell,.juridik-tabell tbody,.juridik-tabell tr,.juridik-tabell td{display:block;width:100%;}
+  .juridik-tabell thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+  .juridik-tabell tr{border-bottom:1px solid var(--linje-ljus);padding:4px 0;}
+  .juridik-tabell tr:last-child{border-bottom:0;}
+  .juridik-tabell td{border:0;padding:6px 14px;}
+  .juridik-tabell td:last-child{color:var(--text-2);font-size:14px;padding-top:0;}
+  .juridik-tabell td:last-child::before{content:'Rättslig grund: ';font-weight:600;color:var(--svart);}
+}
+
+/* Konsumentverkets standardformulär för ångerrätt */
+.angerblankett{
+  border:1px dashed var(--linje);border-radius:var(--radie-m);
+  background:var(--yta);padding:18px 20px;margin:18px 0;
+}
+.angerblankett p{margin:0 0 10px;font-size:15px;}
+.angerblankett p:last-child{margin-bottom:0;}
+
+/* Uppgifter som måste fyllas i innan sidan publiceras – syns tydligt så att
+   ingen platshållare råkar följa med ut i skarp drift. */
+.platshallare{
+  background:#FEF3C7;border-bottom:2px dotted #B45309;color:#78350F;
+  padding:1px 5px;border-radius:3px;font-weight:600;
+}
+
+/* ==========================================================================
+   25. FÖRHANDSVISNINGSBANNER
+   Visas bara när bygget görs med FORHANDSVISNING=true (se README.md).
+   Ligger i sidflödet, inte fastklistrad – syns vid inläsning på varje sida
+   och rullar sedan undan, så att den inte stör granskningen av designen.
+   ========================================================================== */
+.forhandsvisning{
+  background:#78350F;color:#FEF3C7;
+  font-size:13px;line-height:1.5;padding:9px 0;
+  border-bottom:2px solid #B45309;
+}
+.forhandsvisning .wrap{display:block;}
+.forhandsvisning b{color:#FDE68A;}
+@media(min-width:1200px){.forhandsvisning{font-size:14px;text-align:center;}}

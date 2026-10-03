@@ -1,0 +1,788 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { datumSv } from '../config';
+import { INLAGG, sokvag } from '../data/inlagg';
+
+/**
+ * FAQ-schema. Byggt av samma frågor och svar som visas på sidan (avsnitt 8
+ * nedan), vilket är ett krav från Google. Kan ge utökade sökresultat. Ändra
+ * du ett svar på sidan – ändra det här också.
+ */
+const faq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Hur fungerar RUT-avdraget?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Du betalar bara halva arbetskostnaden för fönsterputs hemma hos dig – avdraget på 50 % dras direkt på fakturan och jag sköter allt pappersarbete med Skatteverket. Taket är 75 000 kr per person och år, och det delas med ett eventuellt ROT-avdrag. Priset du ser i bokningen är redan uträknat med RUT. Kontorsputs är en företagstjänst och omfattas inte av RUT.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Måste jag vara hemma när du kommer?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Nej, det behövs inte. Många kunder lämnar en nyckel eller uppger portkod i bokningen. Jag låser alltid efter mig och skickar ett SMS när jobbet är klart.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Vad händer om det regnar på putsdagen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Modern putsteknik gör att resultatet håller även om det duggar. Vid kraftigt regn eller hård vind hör jag av mig och vi hittar en ny tid – kostnadsfritt såklart.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Har du med egen utrustning och medel?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Ja, jag tar med allt som behövs: skrapor, dukar, stege och miljömärkta rengöringsmedel. Du behöver inte förbereda någonting.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Hur avbokar eller ombokar jag?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Kostnadsfritt fram till 24 timmar före bokad tid – ring eller sms:a mig på 076-217 18 33 så löser vi det direkt.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Är det verkligen fast pris på fönsterputsen?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Ja – för ett standardhus. 1 500 kr per hus inkl. RUT-avdrag (3 000 kr ex. RUT) gäller oavsett hur många fönster du har. Grundpriset täcker putsning av glaset in- och utvändigt. Vill du ha mer än så finns tillval: avtorkning av fönsterkarmar, avtorkning av fönsterbleck, fönster med spröjs, spröjstvätt, inglasad balkong eller uterum, samt en vattenavvisande behandling som håller rutan ren längre. Varje tillval syns direkt i priset när du kryssar i det.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Vilka områden jobbar du i?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Uppsala med omnejd: Uppsala, Knivsta, Storvreta, Enköping, Östhammar och Heby. Osäker på om jag når dig? Ring så kollar vi!',
+      },
+    },
+  ],
+};
+
+/**
+ * Tjänstebandet under tjänsterubriken. Priserna är desamma som i
+ * bokningsvyn (Bokningsvy.astro) och räknas fram i app.js – ändras ett pris
+ * där måste det ändras här också.
+ */
+const bandposter = [
+  { ikon: 'i-fonster', namn: 'Fönsterputs', text: 'Fast pris 1 500 kr inkl. RUT' },
+  { ikon: 'i-kontor', namn: 'Kontorsputs', text: 'Från 515 kr per tillfälle, ex. moms' },
+  { ikon: 'i-karm', namn: 'Fönsterkarmar', text: 'Tillval · +300 kr inkl. RUT' },
+  { ikon: 'i-balkong', namn: 'Inglasad balkong eller uterum', text: 'Tillval · +200 kr inkl. RUT' },
+  { ikon: 'i-bleck', namn: 'Fönsterbleck', text: 'Tillval · +200 kr inkl. RUT' },
+  { ikon: 'i-sprojs', namn: 'Spröjstvätt', text: 'Tillval · +300 kr inkl. RUT' },
+  { ikon: 'i-droppe', namn: 'Vattenavvisande behandling', text: 'Tillval · +375 kr inkl. RUT' },
+  { ikon: 'i-spegel', namn: 'Glasväggar och speglar', text: 'Ingår i kontorsputs' },
+];
+
+/** Orterna. Samma lista som i sidfoten, i FAQ:n och i LocalBusiness-blocket. */
+const omraden = [
+  { namn: 'Uppsala', text: 'Utgångspunkt' },
+  { namn: 'Knivsta', text: 'Fönsterputs och kontorsputs' },
+  { namn: 'Storvreta', text: 'Fönsterputs och kontorsputs' },
+  { namn: 'Enköping', text: 'Fönsterputs och kontorsputs' },
+  { namn: 'Östhammar', text: 'Fönsterputs och kontorsputs' },
+  { namn: 'Heby', text: 'Med omnejd' },
+];
+
+/**
+ * Galleriet. Bilderna med Linus i bild är hans egna foton. [BYT UT] kvarstår
+ * för de två kontorsbilderna (exempelbilder med fri Unsplash-licens) och för
+ * villafönsterbilden, som är AI-genererad och alltså inte ett foto från ett
+ * utfört jobb. Byt dem mot egna jobbfoton.
+ */
+const bilder = [
+  { src: '/bilder/linus-villa-sjoutsikt.jpg', bredd: 1600, hojd: 900, alt: 'Linus putsar ett stort villafönster med sjöutsikt i Uppsala län', tagg: 'Fönsterputs', titel: 'Fönsterputs på villa' },
+  { src: '/bilder/linus-modern-villa.jpg', bredd: 1280, hojd: 832, alt: 'Linus drar av tvålvatten från ett stort fönsterparti på en modern villa', tagg: 'Fönsterputs', titel: 'Stora fönsterpartier', under: 'Putsat glas in- och utvändigt' },
+  { src: '/bilder/villa-fonster-putsade.jpg', bredd: 1400, hojd: 840, alt: 'Nyputsade villafönster med vita karmar och fönsterbleck', tagg: 'Fönsterputs', titel: 'Villafönster med karmar och bleck' },
+  { src: '/bilder/linus-portratt.jpg', bredd: 880, hojd: 1100, alt: 'Linus putsar ett spröjsfönster på en villa i Uppsala län', tagg: 'Fönsterputs', titel: 'Spröjsfönster' },
+  { src: '/bilder/linus-tegelhus.jpg', bredd: 1280, hojd: 832, alt: 'Linus putsar fönster på ett tegelhus i kvällssol', tagg: 'Fönsterputs', titel: 'Karmar och lister', under: 'Tillval – torkas av och rengörs' },
+  { src: '/bilder/kontor-lokal-stadning.jpg', bredd: 900, hojd: 540, alt: 'Ljust kontorslandskap', tagg: 'Kontorsputs', titel: 'Kontor och lokaler' },
+  { src: '/bilder/kontorsputs-uppsala.jpg', bredd: 640, hojd: 416, alt: 'Ljust kontorslandskap med putsade glasväggar', tagg: 'Kontorsputs', titel: 'Kontor och lokaler', under: 'Månadsvis, kvartalsvis eller halvårsvis' },
+];
+---
+
+<BaseLayout
+  title="Fönsterputs i Uppsala – fast pris 1 500 kr"
+  description="Fönsterputs till fast pris 1 500 kr per hus inkl. RUT. Kontorsputs för företag i Uppsala med omnejd. Alltid samma person – boka direkt online."
+  path="/"
+  ogBild
+  ogBildAlt="Linus från Linus Fönsterputs med fönsterskrapa framför en glasfasad i Uppsala"
+  schema={[faq]}
+  home
+  mobCta
+  hoppaTill="#hero"
+>
+<main>
+
+{/* ==========================================================================
+     1. HERO
+     Rundat fotokort med texten till vänster och bokningskortet till höger.
+     Fotot är förankrat i högerkanten så att Linus står mellan texten och
+     kortet, se avsnitt 6 i stil.css.
+     ========================================================================== */}
+<section class="hero" id="hero">
+  <div class="ram hero-ram">
+
+    {/* Foto på Linus som putsar ett fönster från stegen, med ett
+         stående utsnitt på mobil. Den mörka gradienten i stil.css håller
+         texten läsbar ovanpå honom. Dekorativt: rubriken och citatet bär
+         innehållet. */}
+    <picture class="hero-bild">
+      <source media="(max-width: 809.98px)" srcset="/bilder/hero-mobil.jpg" width="1080" height="1910">
+      <img src="/bilder/hero-desktop.jpg" alt="" width="2560" height="1440" fetchpriority="high" decoding="async">
+    </picture>
+
+    <div class="wrap hero-inner">
+      <div class="hero-txt">
+
+        <ul class="hero-brickor hero-in">
+          <li class="hero-bricka"><svg aria-hidden="true"><use href="#i-plats"/></svg><span>Uppsala med omnejd</span></li>
+          <li class="hero-bricka"><svg aria-hidden="true"><use href="#i-kvitto"/></svg><span>Fast pris <b>1&nbsp;500&nbsp;kr</b> inkl. RUT</span></li>
+        </ul>
+
+        {/* Sista ordet skrivs om av rorelse.js (glasväggar, speglar,
+             glasdörrar – allt sådant som ingår i kontorsputsen). I HTML står
+             rubriken som förut, och det är den skärmläsare och sökmotorer
+             läser. */}
+        <h1 class="hero-rubrik hero-in">
+          <span class="hero-rad">Fönsterputs i Uppsala&nbsp;–</span>
+          <span class="hero-rad">skinande rena <span class="skrivmaskin" data-ord="glasväggar|speglar|glasdörrar">fönster</span></span>
+        </h1>
+
+        {/* Linus egna ord. Fotot i heron är på honom, så citatet får ett ansikte. */}
+        <p class="hero-citat hero-in" style="--d:.3s">
+          <span class="hero-citat-text">”Jag tycker alla förtjänar rena fönster.”</span>
+          <span class="hero-citat-namn">— Linus</span>
+        </p>
+
+        <div class="hero-knappar hero-in" style="--d:.4s">
+          <button class="knapp knapp-vit knapp-ikon" data-boka>
+            <span class="knapp-cirkel" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>
+            Boka nu
+          </button>
+          <a class="knapp knapp-glas" href="#tjanster">Se tjänster &amp; priser</a>
+        </div>
+
+        {/* Betygsbrickan. Innehållet byggs av app.js ur samma BETYG-objekt som
+             brickan i omdömessektionen, så siffrorna finns på ett enda ställe
+             och inte kan glida isär. Raden är dold tills brickan är fylld. */}
+        <div class="hero-botten hero-in" style="--d:.4s" hidden>
+          <p class="hero-botten-text">Omdömen från kunder i Uppsala med omnejd</p>
+          <a class="hero-betyg" id="hero-betyg" hidden></a>
+        </div>
+      </div>
+
+      {/* Bokningskortet. Tjänstevalen öppnar bokningsvyn med tjänsten förvald. */}
+      <aside class="hero-kort hero-in" style="--d:.4s" aria-labelledby="hero-kort-rubrik">
+        <p class="hero-kort-bar" id="hero-kort-rubrik">Se ditt pris direkt</p>
+        <div class="hero-kort-kropp">
+          <p class="hero-kort-under">Cirka två minuter · Kostnadsfri förfrågan</p>
+          <p class="hero-kort-fraga">Vad vill du ha hjälp med?</p>
+          <p class="hero-kort-etikett">Välj en tjänst så räknas priset fram.</p>
+          <div class="hero-val-lista">
+            <button type="button" class="hero-val" data-boka data-tjanst="fonster">
+              <span class="hero-val-ikon" aria-hidden="true"><svg><use href="#i-fonster"/></svg></span>
+              <span class="hero-val-txt"><b>Fönsterputs</b><small>Villa och hus. Fast pris 1&nbsp;500&nbsp;kr inkl.&nbsp;RUT.</small></span>
+              <span class="hero-val-pil" aria-hidden="true"><svg><use href="#i-pil-h"/></svg></span>
+            </button>
+            <button type="button" class="hero-val" data-boka data-tjanst="kontor">
+              <span class="hero-val-ikon" aria-hidden="true"><svg><use href="#i-kontor"/></svg></span>
+              <span class="hero-val-txt"><b>Kontorsputs</b><small>Företag. Från 515&nbsp;kr per tillfälle, ex.&nbsp;moms.</small></span>
+              <span class="hero-val-pil" aria-hidden="true"><svg><use href="#i-pil-h"/></svg></span>
+            </button>
+          </div>
+          <button class="knapp knapp-primar knapp-bred" data-boka>Boka nu – se ditt pris direkt</button>
+          <p class="hero-kort-fot">
+            <span>Du binder dig inte till något</span>
+            <span aria-hidden="true">|</span>
+            <a href="/integritetspolicy.html">Integritetspolicy</a>
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     2. OMDÖMESRAD
+
+     Ett urval av Google-omdömena som glider förbi vågrätt, direkt under
+     heron. Korten byggs av app.js ur samma OMDOMEN-lista som omdömes-
+     sektionen längre ned – texterna finns alltså bara på ett ställe och kan
+     inte glida isär.
+
+     Raden är aria-hidden med flit. Samma omdömen står i sin helhet i
+     sektionen längre ned, med rubrik och korrekt uppmärkning; att läsa upp
+     dem två gånger gör sidan sämre för den som lyssnar, inte bättre.
+     ========================================================================== */}
+<section class="omd-rad" id="omd-rad" hidden>
+  <div class="omd-rad-spar" id="omd-rad-spar" aria-hidden="true"></div>
+</section>
+
+
+{/* ==========================================================================
+     3. TJÄNSTER OCH PRISER
+     ========================================================================== */}
+<section id="tjanster" class="sektion tjanster">
+  <div class="wrap">
+    <div class="sekt-topp vanster">
+      <div class="sekt-topp-text">
+        <span class="etikett in">Tjänster</span>
+        <h2 class="tecken">Fönsterputs och kontorsputs i Uppsala med omnejd</h2>
+        <p class="in" style="--d:.2s">Fasta, tydliga priser – räkna ut ditt eget pris på 2 minuter. Som privatkund drar jag RUT-avdraget direkt på fakturan.</p>
+      </div>
+      <button class="pil-lank in" style="--d:.2s" data-boka>
+        Boka &amp; se ditt pris
+        <span class="pil-cirkel" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>
+      </button>
+    </div>
+  </div>
+
+  {/* Tjänsterna och tillvalen glider förbi åt höger och stannar vid hover.
+       Dekorativt för skärmläsare: samma uppgifter står i priskorten nedan
+       och i bokningsvyns steg. Uppsättningen ligger två gånger i spåret. */}
+  <div class="band band-tjanster in" style="--d:.3s;--takt:34s" aria-hidden="true">
+    <div class="band-spar">
+      {[...bandposter, ...bandposter].map((p) => (
+        <div class="band-kort">
+          <span class="band-ikon"><svg><use href={`#${p.ikon}`}/></svg></span>
+          <span><b>{p.namn}</b><small>{p.text}</small></span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="pris-grid in" style="--d:.3s">
+
+      {/* Kort 1: Fönsterputs */}
+      <article class="tjanst-kort popular" id="fonsterputs">
+        <span class="flagga"><svg aria-hidden="true"><use href="#i-eld"/></svg> Populärast</span>
+        <h3>Fönsterputs</h3>
+        <p class="ingress">Professionell fönsterputsning in- och utvändigt i Uppsala med omnejd – till samma pris oavsett hur många fönster du har.</p>
+
+        <div class="pris-rad">
+          <span class="pris-fran">Fast pris per hus</span>
+          <span class="pris-tal">1 500 kr</span>
+          <span class="pris-suffix">3 000 kr ex. RUT <small class="pris-villkor">Avser hus upp till 200 kvm boyta. Större hus offereras separat.</small></span>
+        </div>
+
+        <button class="knapp knapp-primar knapp-bred" data-boka data-tjanst="fonster">Boka &amp; se ditt pris</button>
+
+        <p class="ingar-rubrik">Detta ingår</p>
+        {/* Samma arbete som förut, men uppdelat i de moment det faktiskt
+             består av, i samma form som kontorsputskortet. Inga nya tjänster
+             har tillkommit – varje punkt beskriver något som redan ingår. */}
+        <ul class="bocklista">
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Glas invändigt:</strong> varje ruta tvättas ren från damm och fingermärken, putsas och torkas för hand</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Glas utvändigt:</strong> samma noggranna arbete på utsidan, där väder och vägdamm sitter hårdast</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Kanter och hörn:</strong> eftertorkning längs glasets kanter så det inte blir ränder eller vattendroppar</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Normalstort hus:</strong> upp till 200 kvm boyta – alla fönster ingår, samma pris oavsett antal rutor</span></li>
+        </ul>
+      </article>
+
+      {/* Kort 2: Kontorsputs */}
+      <article class="tjanst-kort" id="kontorsputs">
+        <h3>Kontorsputs</h3>
+        <p class="ingress">Allt glas invändigt – fönster, glasväggar, speglar och glasdörrar. Ett fräscht intryck och bättre arbetsmiljö.</p>
+
+        <div class="pris-rad">
+          <span class="pris-fran">Från</span>
+          <span class="pris-tal">515 kr</span>
+          <span class="pris-suffix">per tillfälle, ex. moms. Priset följer lokalens storlek.</span>
+        </div>
+
+        <button class="knapp knapp-gra knapp-bred" data-boka data-tjanst="kontor">Boka &amp; se ditt pris</button>
+
+        <p class="ingar-rubrik">Detta ingår</p>
+        <ul class="bocklista">
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Fönster invändigt:</strong> puts av insidan, samt mellan glasen där konstruktionen medger det. Utsidan offereras separat</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Glasväggar:</strong> innerväggar i glas och glasdörrar som samlar fingeravtryck</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Speglar:</strong> stora speglar i entré, badrum och omklädningsrum</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Kanter och lister:</strong> avtorkning av fönsterkarmar och lister</span></li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> Flexibla tider – även före och efter kontorstid</li>
+          <li><svg aria-hidden="true"><use href="#i-bock"/></svg> Avtal ger upp till 15 % rabatt per tillfälle</li>
+        </ul>
+      </article>
+
+    </div>
+
+    <p class="rut-rad in">
+      <svg aria-hidden="true"><use href="#i-kvitto"/></svg>
+      Privatkund? RUT-avdraget på 50 % dras direkt på priset för fönsterputs – du ser alltid slutpriset innan du bokar. Kontorsputs är en företagstjänst och visas exklusive moms.
+    </p>
+
+    {/* Prisjämförelse mot marknaden i Uppsala */}
+    <div class="jamfor in">
+      <h3><svg aria-hidden="true"><use href="#i-diagram"/></svg> Så ligger vi mot marknaden i Uppsala</h3>
+
+      <p class="jamfor-rad">
+        <span class="namn">Fönsterputs villa</span>
+        <span class="marknad">Marknaden ca 1 000–1 750 kr</span>
+        <span class="vi">Linus 1 500 kr fast inkl. RUT</span>
+      </p>
+      <p class="jamfor-rad">
+        <span class="namn">Kontorsputs</span>
+        <span class="marknad">Marknaden ca 400–550 kr/tim ex. moms</span>
+        <span class="vi">Linus ca 335–380 kr/tim</span>
+      </p>
+
+      <p class="kalla">Cirkanivåer från publika prislistor i Uppsala, aug 2026.</p>
+    </div>
+
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     4. SÅ FUNKAR DET
+     ========================================================================== */}
+<section id="sa-funkar-det" class="sektion sa-funkar">
+  <div class="wrap">
+
+    <div class="sekt-topp">
+      <span class="etikett in">Så funkar det</span>
+      <h2 class="tecken">Från förfrågan till rena fönster</h2>
+      <p class="in" style="--d:.2s">Se ditt pris och skicka en kostnadsfri förfrågan på cirka två minuter. Jag hör av mig inom 24 timmar för att bekräfta pris och tid.</p>
+    </div>
+
+    <ol class="steg-grid in" style="--d:.3s">
+
+      <li class="steg">
+        <span class="steg-nr" aria-hidden="true"><span>1</span></span>
+        <article class="steg-kort">
+          <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-kalkyl"/></svg></div>
+          <h3>Räkna ut ditt pris</h3>
+          <p>Svara på några snabba frågor om ditt hem eller kontor och se ditt uppskattade pris direkt på skärmen.</p>
+        </article>
+      </li>
+
+      <li class="steg">
+        <span class="steg-nr" aria-hidden="true"><span>2</span></span>
+        <article class="steg-kort">
+          <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-telefon"/></svg></div>
+          <h3>Vi kommer överens om en tid</h3>
+          <p>Skicka din förfrågan. Jag ringer inom 24 timmar så att vi kan bekräfta priset och hitta en tid som passar dig.</p>
+        </article>
+      </li>
+
+      <li class="steg">
+        <span class="steg-nr" aria-hidden="true"><span>3</span></span>
+        <article class="steg-kort">
+          <div class="ikon-cirkel"><svg aria-hidden="true"><use href="#i-person"/></svg></div>
+          <h3>Linus kommer och levererar</h3>
+          <p>När vi har bekräftat bokningen kommer jag på avtalad tid. Alltid samma person, alltid samma kvalitet.</p>
+        </article>
+      </li>
+
+    </ol>
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     5. OM LINUS
+     ========================================================================== */}
+<section id="om-linus" class="sektion om-linus">
+  <div class="wrap">
+
+    <div class="sekt-topp vanster">
+      <div class="sekt-topp-text">
+        <span class="etikett in">Om Linus</span>
+        <h2 class="tecken">Din lokala fönsterputsare i Uppsala</h2>
+      </div>
+      <button class="pil-lank in" style="--d:.2s" data-boka>
+        Boka nu
+        <span class="pil-cirkel" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>
+      </button>
+    </div>
+
+    <div class="varde-grid in" style="--d:.3s">
+      <div class="varde-kort">
+        <p class="varde-kort-rubrik"><svg aria-hidden="true"><use href="#i-dokument"/></svg>F-skattsedel</p>
+        <p>Hos Skatteverket</p>
+      </div>
+      <div class="varde-kort">
+        <p class="varde-kort-rubrik"><svg aria-hidden="true"><use href="#i-skold"/></svg>Ansvarsförsäkrad</p>
+        <p>Försäkrad vid skada</p>
+      </div>
+      <div class="varde-kort">
+        <p class="varde-kort-rubrik"><svg aria-hidden="true"><use href="#i-kvitto"/></svg>RUT-ansluten</p>
+        <p>50 % dras på fakturan</p>
+      </div>
+    </div>
+
+    {/* Riktigt foto på Linus i arbete, med hans egna ord ovanpå. */}
+    <figure class="om-foto in" style="--d:.3s">
+      <div class="om-foto-bild">
+        <img src="/bilder/linus-villa-sjoutsikt.jpg"
+             alt="Linus putsar ett stort villafönster med sjöutsikt i Uppsala län"
+             width="1600" height="900" loading="lazy" decoding="async">
+      </div>
+      <figcaption class="om-citat">
+        <blockquote>
+          <p>”När du bokar Linus Fönsterputs får du aldrig en firma med okända ansikten – du får mig.
+          Jag heter Linus, driver firman själv och gör varje jobb – hemma hos dig eller på kontoret – som om det vore mitt eget.
+          Det är jag som svarar när du ringer, jag som kommer på utsatt tid och jag som inte lämnar förrän du är nöjd.”</p>
+        </blockquote>
+        <div class="om-citat-person">
+          <img src="/bilder/linus-portratt.jpg" alt="" width="880" height="1100" loading="lazy" decoding="async">
+          <span><b>Linus</b><small>Linus Fönsterputs</small></span>
+        </div>
+      </figcaption>
+    </figure>
+
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     6. OMRÅDEN
+     ========================================================================== */}
+<section id="omraden" class="sektion omraden">
+  <div class="wrap">
+
+    <div class="sekt-topp vanster">
+      <div class="sekt-topp-text">
+        <span class="etikett in">Områden</span>
+        <h2 class="tecken">Uppsala med omnejd</h2>
+        <p class="in" style="--d:.2s">Jag utgår från Uppsala och tar uppdrag med fönsterputs och kontorsputs i Uppsala med omnejd. Osäker på om jag når dig? Ring så kollar vi!</p>
+      </div>
+      <a class="pil-lank in" style="--d:.2s" href="tel:+46762171833">
+        076-217 18 33
+        <span class="pil-cirkel" aria-hidden="true"><svg><use href="#i-telefon"/></svg></span>
+      </a>
+    </div>
+
+    <ul class="omrade-grid in" style="--d:.3s">
+      {omraden.map((o) => (
+        <li class="omrade-kort">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><use href="#i-stad"/></svg>
+          <span><b>{o.namn}</b><small>{o.text}</small></span>
+        </li>
+      ))}
+    </ul>
+
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     7. GALLERI
+     Ett band av foton som glider förbi åt vänster och stannar vid hover.
+     Första uppsättningen bär alt-texterna; kopian som gör skarven osynlig är
+     dold för skärmläsare.
+     ========================================================================== */}
+<section id="galleri" class="sektion galleri">
+  <div class="wrap">
+    <div class="sekt-topp vanster">
+      <div class="sekt-topp-text">
+        <span class="etikett in">Galleri</span>
+        <h2 class="tecken">Bilder på fönsterputsning</h2>
+        <p class="in" style="--d:.2s">Fönsterputs för villa och kontorsputs för företag i Uppsala med omnejd.</p>
+      </div>
+      <button class="knapp knapp-sekundar knapp-ikon in" style="--d:.2s" data-boka>
+        <span class="knapp-cirkel" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>
+        Boka &amp; se ditt pris
+      </button>
+    </div>
+  </div>
+
+  <div class="band galleri-band in" style="--d:.3s;--takt:70s">
+    <div class="band-spar">
+      {[...bilder, ...bilder].map((b, i) => {
+        const kopia = i >= bilder.length;
+        return (
+          <figure class="gal-bild" aria-hidden={kopia ? 'true' : undefined}>
+            <img src={b.src} alt={kopia ? '' : b.alt} width={b.bredd} height={b.hojd} loading="lazy" decoding="async">
+            <figcaption>
+              <span class="gal-tagg">{b.tagg}</span>
+              <span class="gal-titel">{b.titel}</span>
+              {b.under && <span class="gal-under">{b.under}</span>}
+            </figcaption>
+          </figure>
+        );
+      })}
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p class="galleri-notis in">Bilderna med Linus i bild är från utförda jobb. Övriga är exempelbilder tills egna foton finns på plats – fler läggs upp löpande.</p>
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     8. OMDÖMEN – Google-recensioner
+     ==========================================================================
+     Korten byggs av app.js utifrån listan OMDOMEN där. Ligger ingen
+     recension i listan döljer sig hela sektionen, så sidan kan gå live utan
+     tomma kort. Skriv aldrig in ett omdöme som inte kommer från en riktig
+     kund – påhittade omdömen är förbjudna enligt punkt 23 b i svarta listan
+     (bilaga I till direktiv 2005/29/EG, svensk lag via marknadsföringslagen).
+     ========================================================================== */}
+<section id="omdomen" class="omdomen" hidden>
+  <div class="ram omd-ram">
+    <div class="wrap">
+
+      <div class="sekt-topp vanster">
+        <div class="sekt-topp-text">
+          <span class="etikett in">Omdömen</span>
+          <h2 class="tecken">Vad kunderna säger</h2>
+        </div>
+        {/* Pilarna gör karusellen nåbar med tangentbord – att dra med musen
+             räcker inte för den som inte använder mus. */}
+        <div class="omd-pilar in" style="--d:.2s">
+          <button type="button" class="omd-pil bak" id="omd-bak" aria-label="Visa föregående omdömen"><svg aria-hidden="true"><use href="#i-pil-h"/></svg></button>
+          <button type="button" class="omd-pil fram" id="omd-fram" aria-label="Visa fler omdömen"><svg aria-hidden="true"><use href="#i-pil-h"/></svg></button>
+        </div>
+      </div>
+
+      {/* Visas bara så länge listan innehåller platshållare. Försvinner av sig
+           själv när alla omdömen är riktiga. */}
+      <p class="omd-notis" id="omd-notis" hidden>
+        <svg aria-hidden="true"><use href="#i-varning"/></svg>
+        <span><b>Platshållare.</b> Texterna nedan är exempel och kommer inte från Google. Byt ut dem mot riktiga kundomdömen i listan <code>OMDOMEN</code> i <code>app.js</code> innan sidan publiceras.</span>
+      </p>
+
+      <div class="omd-innehall in" style="--d:.3s">
+
+        {/* Sammanfattningen. Betygsbrickan byggs av app.js och länkar till
+             Google-profilen. */}
+        <div class="omd-summering">
+          <div class="omd-brickrad" id="omd-brickrad" hidden></div>
+          <p class="omd-summering-text">Omdömen från kunder i Uppsala med omnejd, ordagrant som de skrevs på Google.</p>
+          <button class="knapp knapp-primar knapp-bred" data-boka>Boka nu</button>
+        </div>
+
+        {/* Surfplatta och dator: löpande karusell. */}
+        <div class="omd-karusell">
+          <div class="omd-fonster" id="omd-fonster">
+            <div class="omd-spar" id="omd-spar"></div>
+          </div>
+        </div>
+
+        {/* Mobil: lodrät stapel som laddar fler i omgångar. */}
+        <div class="omd-mobil">
+          <div class="omd-stapel" id="omd-stapel"></div>
+          <div class="omd-mer" id="omd-mer" hidden>
+            <button type="button" class="knapp knapp-sekundar" id="omd-mer-knapp">Ladda fler omdömen</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     9. BLOGG
+     Korten hämtas ur src/data/inlagg.ts, samma källa som blogg.html.
+     ========================================================================== */}
+<section id="blogg" class="sektion blogg">
+  <div class="wrap">
+    <div class="sekt-topp vanster">
+      <div class="sekt-topp-text">
+        <span class="etikett in">Blogg</span>
+        <h2 class="tecken">Guider om fönsterputs</h2>
+        <p class="in" style="--d:.2s">Praktiska svar på det kunderna i Uppsala frågar mest – om putsning, priser och RUT-avdrag.</p>
+      </div>
+      <a class="pil-lank in" style="--d:.2s" href="/blogg.html">
+        Alla inlägg
+        <span class="pil-cirkel" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>
+      </a>
+    </div>
+
+    <div class="blogg-grid in" style="--d:.3s">
+      {INLAGG.map((i) => (
+        <article class="blogg-kort">
+          <div class="blogg-bild">
+            <img src={i.bild.src} alt={i.bild.alt} width={i.bild.bredd} height={i.bild.hojd} loading="lazy" decoding="async">
+          </div>
+          <p class="inlagg-meta"><time datetime={i.publicerad}>{datumSv(i.publicerad)}</time> · {i.minuter} min läsning</p>
+          <h3><a href={sokvag(i)}>{i.rubrik}</a></h3>
+          <p>{i.ingress}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     10. FAQ – accordion
+     ========================================================================== */}
+<section id="faq" class="sektion faq-sektion">
+  <div class="wrap faq-layout">
+
+    <div class="faq-sida">
+      <div>
+        <span class="etikett in">Vanliga frågor</span>
+        <h2 class="tecken">Vanliga frågor om fönsterputs</h2>
+        <p class="in" style="--d:.2s">Hittar du inte svaret? Ring mig så reder vi ut det direkt.</p>
+      </div>
+      <div class="faq-kontakt in" style="--d:.3s">
+        <div class="faq-person">
+          <img src="/bilder/linus-portratt.jpg" alt="" width="880" height="1100" loading="lazy" decoding="async">
+          <span><b>Linus</b><small>Linus Fönsterputs</small></span>
+        </div>
+        <a class="faq-tel" href="tel:+46762171833"><svg aria-hidden="true"><use href="#i-telefon"/></svg>076-217 18 33</a>
+      </div>
+    </div>
+
+    <div class="faq" id="faq-lista">
+
+      <div class="faq-post in" style="--d:.2s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s1" id="faq-f1">
+            <span>Hur fungerar RUT-avdraget?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s1" role="region" aria-labelledby="faq-f1">
+          <div class="faq-svar-inner">
+            Du betalar bara halva arbetskostnaden för fönsterputs hemma hos dig – avdraget på 50 % dras direkt på fakturan och jag sköter allt pappersarbete med Skatteverket. Taket är 75 000 kr per person och år, och det delas med ett eventuellt ROT-avdrag. Priset du ser i bokningen är redan uträknat med RUT. Kontorsputs är en företagstjänst och omfattas inte av RUT.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-post in" style="--d:.3s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s2" id="faq-f2">
+            <span>Måste jag vara hemma när du kommer?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s2" role="region" aria-labelledby="faq-f2">
+          <div class="faq-svar-inner">
+            Nej, det behövs inte. Många kunder lämnar en nyckel eller uppger portkod i bokningen. Jag låser alltid efter mig och skickar ett SMS när jobbet är klart.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-post in" style="--d:.4s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s3" id="faq-f3">
+            <span>Vad händer om det regnar på putsdagen?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s3" role="region" aria-labelledby="faq-f3">
+          <div class="faq-svar-inner">
+            Modern putsteknik gör att resultatet håller även om det duggar. Vid kraftigt regn eller hård vind hör jag av mig och vi hittar en ny tid – kostnadsfritt såklart.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-post in" style="--d:.5s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s4" id="faq-f4">
+            <span>Har du med egen utrustning och medel?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s4" role="region" aria-labelledby="faq-f4">
+          <div class="faq-svar-inner">
+            Ja, jag tar med allt som behövs: skrapor, dukar, stege och miljömärkta rengöringsmedel. Du behöver inte förbereda någonting.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-post in" style="--d:.6s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s5" id="faq-f5">
+            <span>Hur avbokar eller ombokar jag?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s5" role="region" aria-labelledby="faq-f5">
+          <div class="faq-svar-inner">
+            Kostnadsfritt fram till 24 timmar före bokad tid – ring eller sms:a mig på
+            <a href="tel:+46762171833">076-217 18 33</a> så löser vi det direkt.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-post in" style="--d:.7s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s6" id="faq-f6">
+            <span>Är det verkligen fast pris på fönsterputsen?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s6" role="region" aria-labelledby="faq-f6">
+          <div class="faq-svar-inner">
+            Ja – för ett standardhus. 1 500 kr per hus inkl. RUT-avdrag (3 000 kr ex. RUT) gäller oavsett hur många fönster du har. Grundpriset täcker putsning av glaset in- och utvändigt. Vill du ha mer än så finns tillval: avtorkning av fönsterkarmar, avtorkning av fönsterbleck, fönster med spröjs, spröjstvätt, inglasad balkong eller uterum, samt en vattenavvisande behandling som håller rutan ren längre. Varje tillval syns direkt i priset när du kryssar i det – inga överraskningar efteråt.
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-post in" style="--d:.8s">
+        <h3 style="margin:0;">
+          <button class="faq-fraga" aria-expanded="false" aria-controls="faq-s7" id="faq-f7">
+            <span>Vilka områden jobbar du i?</span>
+            <span class="faq-ikon" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-pil-ner-rak"/></svg></span>
+          </button>
+        </h3>
+        <div class="faq-svar" id="faq-s7" role="region" aria-labelledby="faq-f7">
+          <div class="faq-svar-inner">
+            Uppsala med omnejd: Uppsala, Knivsta, Storvreta, Enköping, Östhammar och Heby. Osäker på om jag når dig? Ring så kollar vi!
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+{/* ==========================================================================
+     11. AVSLUTANDE CTA
+     Siffrorna är sidans egna uppgifter – fast pris, svarstid och RUT – och
+     räknas upp av rorelse.js när kortet rullas in i bild. I HTML står
+     slutvärdet.
+     ========================================================================== */}
+<section class="sektion cta">
+  <div class="wrap">
+    <div class="cta-kort">
+      <h2 class="tecken">Redo för skinande rena fönster?</h2>
+
+      <ul class="siffror in" style="--d:.2s">
+        <li class="siffra-kort">
+          <span class="siffra-rad"><svg aria-hidden="true"><use href="#i-prislapp"/></svg><span class="siffra" data-raknare="1500" data-efter="&nbsp;kr">1&nbsp;500&nbsp;kr</span></span>
+          <span class="siffra-etikett">Fast pris per hus inkl. RUT</span>
+        </li>
+        <li class="siffra-kort">
+          <span class="siffra-rad"><svg aria-hidden="true"><use href="#i-klocka"/></svg><span class="siffra" data-raknare="24" data-efter="&nbsp;h">24&nbsp;h</span></span>
+          <span class="siffra-etikett">Svar inom 24 timmar</span>
+        </li>
+        <li class="siffra-kort">
+          <span class="siffra-rad"><svg aria-hidden="true"><use href="#i-kvitto"/></svg><span class="siffra" data-raknare="50" data-efter="&nbsp;%">50&nbsp;%</span></span>
+          <span class="siffra-etikett">RUT-avdrag på arbetskostnaden</span>
+        </li>
+      </ul>
+
+      <p class="in" style="--d:.3s">Se ditt pris och skicka en kostnadsfri förfrågan. Jag hör av mig inom 24 timmar för att bekräfta pris och tid.</p>
+      <button class="knapp knapp-primar in" style="--d:.3s" data-boka>Boka nu</button>
+      <p class="tel-rad in" style="--d:.3s">För mer avancerade projekt – ring på mig: <a href="tel:+46762171833">076-217 18 33</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+</BaseLayout>

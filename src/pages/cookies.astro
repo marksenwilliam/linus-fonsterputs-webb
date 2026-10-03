@@ -1,0 +1,52 @@
+---
+import InlaggLayout from '../layouts/InlaggLayout.astro';
+---
+
+<InlaggLayout
+  typ="juridik"
+  title="Kakor (cookies)"
+  description="Vilka kakor Linus Fönsterputs webbplats använder, vilka som kräver ditt samtycke och hur du ändrar ditt val."
+  path="/cookies.html"
+  rubrik="Kakor och spårning"
+  brodsmula="Kakor"
+  ingress="Kort sagt: du väljer själv. Utan ditt ja sätts bara de kakor som sidan inte fungerar utan."
+  uppdaterad="2026-09-18"
+>
+<div class="juridik-ruta">
+  <p><strong>Du väljer själv.</strong> Första gången du besöker sidan får du en samtyckesruta. Säger du nej sätts bara de kakor som sidan inte fungerar utan – ingen statistik och ingen karta laddas. Du kan ändra dig när som helst via <strong>Kakinställningar</strong> längst ned på varje sida.</p>
+</div>
+
+<h2>Vad är kakor?</h2>
+<p>En kaka (cookie) är en liten textfil som en webbplats sparar i din webbläsare, till exempel för att komma ihåg inställningar eller för att räkna besökare. Enligt 9 kap. 28 § lagen (2022:482) om elektronisk kommunikation måste en webbplats informera om kakor och hämta in ditt samtycke innan andra kakor än de strikt nödvändiga används.</p>
+
+<h2>Kakorna på den här sidan</h2>
+
+<h3>Nödvändiga – sätts alltid</h3>
+<p>De här behövs för att sidan ska fungera och kräver inget samtycke.</p>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>CookieConsent</strong> (Cookiebot, Cybot A/S) – sparar vad du svarat i samtyckesrutan, så att du slipper frågan varje gång. Ligger kvar i ett år.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Cloudflare Turnstile</strong> – skiljer människor från spamrobotar i offertformuläret. Utan den skulle formuläret dränkas i skräppost.</span></li>
+</ul>
+
+<h3>Statistik – bara om du säger ja</h3>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Google Analytics 4</strong> (kakorna <code>_ga</code> och <code>_ga_*</code>, mätnings-ID G-L9W1RTLRWV). Visar hur många som besöker sidan, vilka sidor som läses och ungefär varifrån besökarna kommer. Din IP-adress kortas av av Google innan den lagras, och statistiken är inte kopplad till ditt namn. Kakorna ligger kvar i två år.</span></li>
+</ul>
+
+<h3>Marknadsföring – bara om du säger ja</h3>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Google Maps</strong> – kartan i sidfoten. Säger du nej laddas den inte alls, och inget anrop går till Google. Du ser i stället en ruta med en vanlig länk till Google Maps, som du själv väljer om du vill klicka på.</span></li>
+</ul>
+
+<p>Ingen annonsspårning används, ingen Meta-pixel finns på sidan och inga uppgifter säljs vidare. Typsnitt, bilder och stilmallar laddas från den här domänen, så de skickar ingenting vidare till någon annan.</p>
+
+<h2>Hur fungerar bokningen då?</h2>
+<p>Uppgifterna du fyller i under bokningen finns bara i webbläsarens arbetsminne så länge fliken är öppen. Varken localStorage eller sessionStorage används. Stänger du fliken innan du skickat bokningen försvinner allt – ingenting sparas på din dator och ingenting skickas i förväg.</p>
+<p>Först när du trycker på <em>Skicka förfrågan</em> skickas uppgifterna till mig. Hur de hanteras därefter beskrivs i <a href="/integritetspolicy.html">integritetspolicyn</a>.</p>
+
+<h2>Så här ändrar eller tar du bort dem</h2>
+<p>Klicka på <strong>Kakinställningar</strong> längst ned på sidan för att ändra ditt val, eller ta tillbaka det helt. Du kan också radera kakor direkt i webbläsaren: öppna utvecklarverktygen med F12, gå till fliken <em>Application</em> eller <em>Lagring</em> och titta under Cookies. Där ser du exakt vad som ligger sparat.</p>
+
+<h2>Om det ändras</h2>
+<p>Läggs någon ny tjänst till som kräver kakor uppdateras den här sidan, och du får välja i samtyckesrutan innan något sätts.</p>
+</InlaggLayout>

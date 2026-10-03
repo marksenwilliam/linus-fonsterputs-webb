@@ -1,0 +1,111 @@
+---
+import InlaggLayout from '../layouts/InlaggLayout.astro';
+---
+
+<InlaggLayout
+  typ="juridik"
+  title="Integritetspolicy"
+  description="Så behandlar Linus Fönsterputs dina personuppgifter: vad som samlas in, varför, hur länge det sparas och vilka rättigheter du har enligt GDPR."
+  path="/integritetspolicy.html"
+  rubrik="Integritetspolicy"
+  ingress="Vilka uppgifter jag samlar in när du bokar, varför jag gör det och vad du har för rättigheter."
+  uppdaterad="2026-09-18"
+>
+<div class="juridik-ruta">
+  <p><strong>Kort sammanfattning.</strong> Jag samlar bara in det jag behöver för att utföra ditt uppdrag, fakturera och sköta RUT-ansökan. Jag säljer aldrig dina uppgifter vidare. Webbplatsen mäter besök med Google Analytics 4 och visar en karta från Google – men bara om du säger ja i samtyckesrutan. Säger du nej sätts inga sådana kakor och inga anrop går till Google.</p>
+</div>
+
+<h2>1. Vem ansvarar för dina personuppgifter?</h2>
+<p>Personuppgiftsansvarig är:</p>
+{/* [BYT UT] Fyll i den geografiska adressen (org.nr är på plats).
+     Adressen är obligatorisk enligt både GDPR artikel 13 och
+     8 § lagen om elektronisk handel. */}
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Linus Fönsterputs</strong>, org.nr 031221-5551</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><span class="platshallare">Gatuadress, postnummer och ort</span></span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>E-post: <a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>Telefon: <a href="tel:+46762171833">076-217 18 33</a></span></li>
+</ul>
+<p>Har du frågor om hur dina uppgifter hanteras, hör av dig så svarar jag. Jag har ingen utsedd dataskyddsombud – verksamheten är för liten för att omfattas av det kravet.</p>
+
+<h2>2. Vilka uppgifter samlas in?</h2>
+<p><strong>När du bokar:</strong> namn, telefonnummer, e-postadress, gatuadress och postort, eventuell portkod eller meddelande, samt uppgifter om själva uppdraget (tjänst, antal fönster, tillval, vald tid och pris).</p>
+<p><strong>När RUT-avdrag ska användas:</strong> personnummer samt fastighetsbeteckning eller lägenhetsnummer och bostadsrättsföreningens organisationsnummer. Dessa uppgifter samlas in i samband med att arbetet utförs eller faktureras – inte i bokningsformuläret – eftersom Skatteverket kräver dem för att bevilja avdraget.</p>
+<p><strong>När du ringer eller mejlar:</strong> de uppgifter du själv väljer att lämna.</p>
+<p><strong>När du besöker webbplatsen och godkänt statistikkakor:</strong> din IP-adress (som Google kortar av innan den lagras), vilka sidor du besöker, hur länge du stannar, ungefärlig ort, samt vilken webbläsare och enhet du använder. Uppgifterna samlas in av Google Analytics 4 och är inte kopplade till ditt namn. Säger du nej samlas ingenting in.</p>
+<p>Jag samlar inte in några känsliga personuppgifter enligt GDPR artikel 9, och gör ingen profilering eller automatiserat beslutsfattande.</p>
+
+<h2>3. Varför, och med vilken rättslig grund?</h2>
+<table class="juridik-tabell">
+  <thead><tr><th>Ändamål</th><th>Rättslig grund</th></tr></thead>
+  <tbody>
+    <tr><td>Utföra det uppdrag du bokat, kontakta dig om tiden och komma till rätt adress</td><td>Fullgörande av avtal (art. 6.1 b)</td></tr>
+    <tr><td>Skicka bokningsbekräftelse och den information distansavtalslagen kräver</td><td>Rättslig förpliktelse (art. 6.1 c)</td></tr>
+    <tr><td>Fakturera och bokföra</td><td>Rättslig förpliktelse – bokföringslagen (art. 6.1 c)</td></tr>
+    <tr><td>Ansöka om RUT-avdrag hos Skatteverket å dina vägnar</td><td>Rättslig förpliktelse och fullgörande av avtal (art. 6.1 b och c)</td></tr>
+    <tr><td>Svara på offertförfrågningar som ännu inte lett till bokning</td><td>Åtgärder på din begäran före avtal (art. 6.1 b)</td></tr>
+    <tr><td>Hantera reklamationer och rättsliga anspråk</td><td>Berättigat intresse att kunna försvara rättsliga krav (art. 6.1 f)</td></tr>
+    <tr><td>Föra besöksstatistik med Google Analytics 4 och visa kartan i sidfoten</td><td>Ditt samtycke (art. 6.1 a), som du lämnar i samtyckesrutan och kan ta tillbaka när som helst</td></tr>
+    <tr><td>Skydda offertformuläret mot spamrobotar (Cloudflare Turnstile)</td><td>Berättigat intresse av att hålla formuläret användbart (art. 6.1 f)</td></tr>
+  </tbody>
+</table>
+<p>Att lämna uppgifterna är frivilligt, men utan namn, kontaktuppgift och adress kan jag inte utföra uppdraget.</p>
+
+<h2>4. Hur länge sparas uppgifterna?</h2>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Bokningar och kunduppgifter:</strong> under uppdraget och därefter i 24 månader, så att jag kan hantera reklamationer och göra om ett återkommande jobb.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Fakturor och annat bokföringsunderlag:</strong> till och med det sjunde året efter utgången av det kalenderår räkenskapsåret avslutades. Det följer av 7 kap. 2 § bokföringslagen och går inte att förkorta.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Underlag för RUT-avdrag:</strong> så länge Skatteverket kan begära in det, i praktiken samma tid som bokföringen.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Förfrågningar som inte leder till bokning:</strong> 12 månader, sedan raderas de.</span></li>
+</ul>
+
+<h2>5. Vem får ta del av uppgifterna?</h2>
+<p>Jag lämnar aldrig ut dina uppgifter för marknadsföring och säljer dem inte vidare. Uppgifter delas bara i den utsträckning det behövs, med:</p>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Skatteverket</strong> – vid ansökan om RUT-avdrag.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Faktura- och bokföringssystem samt redovisningskonsult</strong> – som personuppgiftsbiträden, med personuppgiftsbiträdesavtal.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Webbhotell och e-postleverantör</strong> – som personuppgiftsbiträden, i den mån uppgifter passerar deras system.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>HighLevel Inc (CRM-systemet GoHighLevel)</strong> – som personuppgiftsbiträde. Offertförfrågningar och bokningsuppgifter registreras där för att jag ska kunna hantera dem.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Google Ireland Limited</strong> – som personuppgiftsbiträde för Google Analytics 4 och för kartan i sidfoten, men bara om du godkänt statistik- respektive marknadsföringskakor. Ingenting du fyller i under bokningen delas med Google.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Cybot A/S (Cookiebot)</strong> – som personuppgiftsbiträde. Hanterar samtyckesrutan och sparar ditt val.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Cloudflare</strong> – som personuppgiftsbiträde för spamskyddet Turnstile i offertformuläret.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Inkassoombud eller Kronofogden</strong> – bara om en faktura inte betalas.</span></li>
+</ul>
+{/* [BYT UT] Lista de faktiska leverantörerna här när de är valda (webbhotell,
+     e-postleverantör, bokföring), och se till att personuppgiftsbiträdesavtal
+     finns med var och en av dem. */}
+<p><strong>Överföring utanför EU/EES:</strong> uppgifterna behandlas i huvudsak inom EU/EES. CRM-systemet GoHighLevel drivs av HighLevel Inc, som är baserat i USA – uppgifter som lämnas i offertförfrågningar och bokningar överförs därför dit. Överföringen sker med stöd av EU–U.S. Data Privacy Framework, som HighLevel Inc är anslutet till (kan kontrolleras i det officiella registret på dataprivacyframework.gov). Samma sak gäller besöksstatistiken: avtalsparten är Google Ireland Limited, men uppgifterna kan behandlas av Google LLC i USA, och Google är anslutet till samma ramverk. Om ytterligare leverantörer i framtiden innebär överföring till tredje land sker den bara med en giltig skyddsmekanism, till exempel EU-kommissionens standardavtalsklausuler, och den här policyn uppdateras då.</p>
+
+<h2>6. Dina rättigheter</h2>
+<p>Du har enligt GDPR rätt att:</p>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>få veta vilka uppgifter jag har om dig och få en kopia (registerutdrag),</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>få felaktiga uppgifter rättade,</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>få uppgifter raderade, i den mån de inte måste sparas enligt lag,</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>begära att behandlingen begränsas,</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>invända mot behandling som stödjer sig på berättigat intresse,</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span>få ut uppgifter du lämnat i ett maskinläsbart format och flytta dem (dataportabilitet).</span></li>
+</ul>
+<p>Hör av dig på <a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a> så svarar jag utan onödigt dröjsmål och senast inom en månad. Det kostar ingenting.</p>
+
+<h2>7. Om du är missnöjd</h2>
+<p>Säg gärna till mig först. Du har också alltid rätt att klaga till tillsynsmyndigheten:</p>
+<p><strong>Integritetsskyddsmyndigheten (IMY)</strong><br>
+Box 8114, 104 20 Stockholm<br>
+Telefon 08-657 61 00 · <a href="mailto:imy@imy.se">imy@imy.se</a> · <a href="https://www.imy.se" rel="noopener">imy.se</a></p>
+
+<h2>8. Kakor och besöksstatistik</h2>
+<p>Webbplatsen använder kakor, och du väljer själv vilka. Samtyckesrutan visas första gången du besöker sidan, och du kan ändra dig när som helst via <strong>Kakinställningar</strong> längst ned på varje sida.</p>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Nödvändiga</strong> – Cookiebot sparar ditt samtyckesval, och Cloudflare Turnstile skiljer människor från spamrobotar i offertformuläret. De behövs för att sidan ska fungera och kräver därför inget samtycke.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Statistik</strong> – <strong>Google Analytics 4</strong> (mätnings-ID G-L9W1RTLRWV) visar hur många som besöker sidan, vilka sidor som läses och ungefär varifrån besökarna kommer. Det hjälper mig se vad som är värt att förbättra. Kakorna sätts <em>först</em> när du godkänt statistik.</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><strong>Marknadsföring</strong> – kartan från <strong>Google Maps</strong> i sidfoten. Den laddas först när du godkänt marknadsföring; innan dess går inget anrop till Google och du ser en ruta med en vanlig länk i stället.</span></li>
+</ul>
+<p>Jag använder ingen annonsspårning, ingen Meta-pixel och säljer inga uppgifter vidare. Vilken kaka som gör vad, och hur länge den ligger kvar, står på sidan <a href="/cookies.html">Kakor</a>.</p>
+
+<h2>9. Säkerhet</h2>
+<p>Uppgifterna skyddas med lösenordsskyddade enheter och konton, och webbplatsen ska alltid nås över krypterad anslutning (HTTPS). Bara jag har tillgång till kunduppgifterna.</p>
+
+<h2>10. Ändringar i policyn</h2>
+<p>Om behandlingen ändras uppdateras den här sidan och datumet överst. Väsentliga ändringar meddelas dig som är kund direkt.</p>
+</InlaggLayout>

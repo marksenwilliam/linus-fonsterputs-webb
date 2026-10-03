@@ -1,0 +1,99 @@
+---
+/**
+ * Toppbannern, sidhuvudet och mobilmenyn. Samma på alla sidor, med två undantag:
+ *   home     Startsidans länkar är ankare i samma sida (#galleri). På övriga
+ *            sidor går de via startsidan (/#galleri).
+ *   bokning  Sidor utan bokningsflöde (tack-sidan) har en länk till
+ *            prislistan i stället för en "Boka nu"-knapp.
+ *
+ * Sidhuvudet ligger i flödet och rullar undan med sidan, som i förlagan
+ * (Movers). På mobil finns i stället den fasta "Boka nu"-knappen längst ned.
+ */
+interface Props {
+  home?: boolean;
+  bokning?: boolean;
+}
+
+const { home = false, bokning = true } = Astro.props;
+const start = home ? '' : '/';
+---
+
+{/* Toppbannern. Texten byggs av app.js ur BETYG, samma siffror som i heron
+    och omdömessektionen, så den kan aldrig visa något annat betyg än sidan
+    i övrigt. Dold tills dess – och på sidor utan app.js. Krysset döljer den
+    för resten av besöket på sidan (rorelse.js); inget sparas. */}
+<div class="toppbanner" id="toppbanner" hidden>
+  <div class="wrap toppbanner-inner">
+    <p id="toppbanner-text"></p>
+    <button type="button" class="toppbanner-stang" id="toppbanner-stang" aria-label="Stäng meddelandet">
+      <svg aria-hidden="true"><use href="#i-kryss"/></svg>
+    </button>
+  </div>
+</div>
+
+<header class="topp" id="topp">
+  <div class="wrap topp-inner">
+
+    <a href="/" class="logga" aria-label="Linus Fönsterputs – till startsidan">
+      {/* Linus logotyp. Länkens aria-label bär namnet, bilden är dekorativ. */}
+      <span class="logga-bild mork" aria-hidden="true"></span>
+    </a>
+
+    <nav class="nav" aria-label="Huvudmeny">
+      {/* Tjänsterna samlade under en meny, som förlagans "Services". */}
+      <div class="nav-meny" id="nav-meny">
+        <button type="button" class="nav-knapp" aria-expanded="false" aria-controls="nav-tjanster">
+          Tjänster <svg aria-hidden="true"><use href="#i-pil-ner"/></svg>
+        </button>
+        <div class="nav-panel" id="nav-tjanster">
+          <a href={`${start}#fonsterputs`}><b>Fönsterputs</b><small>Villa och hus. Fast pris 1&nbsp;500&nbsp;kr inkl.&nbsp;RUT.</small></a>
+          <a href={`${start}#kontorsputs`}><b>Kontorsputs</b><small>Företag. Från 515&nbsp;kr per tillfälle, ex.&nbsp;moms.</small></a>
+          <a href={`${start}#sa-funkar-det`}><b>Så funkar det</b><small>Från förfrågan till rena fönster</small></a>
+          <a href={`${start}#faq`}><b>Vanliga frågor</b><small>Vanliga frågor om fönsterputs</small></a>
+        </div>
+      </div>
+      <a href={`${start}#galleri`}>Galleri</a>
+      <a href={`${start}#omdomen`}>Omdömen</a>
+      <a href={`${start}#om-linus`}>Om Linus</a>
+      <a href="/blogg.html">Blogg</a>
+      <a href={`${start}#kontakt`}>Kontakt</a>
+    </nav>
+
+    <div class="topp-hoger">
+      <a class="knapp knapp-kontur topp-tel" href="tel:+46762171833">
+        <svg aria-hidden="true"><use href="#i-telefon"/></svg> 076-217 18 33
+      </a>
+      {bokning
+        ? <button class="knapp knapp-sekundar knapp-ikon topp-cta" data-boka><span class="knapp-cirkel gra" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>Boka nu</button>
+        : <a class="knapp knapp-sekundar knapp-ikon topp-cta" href="/#tjanster"><span class="knapp-cirkel gra" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>Boka nu</a>}
+    </div>
+
+    <button class="burgare" id="burgare" aria-expanded="false" aria-controls="mobmeny" aria-label="Öppna meny">
+      <span></span><span></span><span></span>
+    </button>
+
+  </div>
+</header>
+
+{/* Mobilmeny */}
+<div class="mobmeny" id="mobmeny" aria-label="Mobilmeny">
+  <div class="mobmeny-ark">
+    <nav>
+      <a class="mlank" href={`${start}#fonsterputs`}>Fönsterputs i Uppsala</a>
+      <a class="mlank" href={`${start}#kontorsputs`}>Kontorsputs i Uppsala</a>
+      <a class="mlank" href={`${start}#sa-funkar-det`}>Så funkar det</a>
+      <a class="mlank" href={`${start}#galleri`}>Galleri</a>
+      <a class="mlank" href={`${start}#omdomen`}>Omdömen</a>
+      <a class="mlank" href={`${start}#om-linus`}>Om Linus</a>
+      <a class="mlank" href="/blogg.html">Blogg</a>
+      <a class="mlank" href={`${start}#kontakt`}>Kontakt</a>
+    </nav>
+    <div class="mobmeny-knappar">
+      {bokning
+        ? <button class="knapp knapp-primar knapp-bred" data-boka>Boka nu – se ditt pris direkt</button>
+        : <a class="knapp knapp-primar knapp-bred" href="/#tjanster">Boka nu – se ditt pris direkt</a>}
+      <a class="knapp knapp-sekundar knapp-bred" href={`${start}#tjanster`}>Se tjänster &amp; priser</a>
+      <a class="knapp knapp-kontur knapp-bred mob-tel" href="tel:+46762171833"><svg aria-hidden="true"><use href="#i-telefon"/></svg> 076-217 18 33</a>
+    </div>
+  </div>
+</div>

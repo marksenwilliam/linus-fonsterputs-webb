@@ -1,0 +1,272 @@
+---
+/**
+ * Bokningsvyn: en egen helskärmsvy som öppnas ovanpå sidan när besökaren
+ * trycker på en "Boka nu"-knapp (data-boka). Det här är bara markupen – steg,
+ * prisberäkning och inskick ligger i src/scripts/app.js.
+ *
+ * Fanns tidigare kopierad i nio HTML-filer. Nu finns den på ett ställe.
+ */
+---
+
+<div id="bokning">
+
+  {/* Minimal header */}
+  <header class="bok-topp">
+    <div class="wrap bok-topp-inner">
+      <span class="logga" aria-hidden="true">
+        <span class="logga-bild mork" aria-hidden="true"></span>
+      </span>
+      <button class="tillbaka-lank" id="stang-bokning">
+        <svg aria-hidden="true"><use href="#i-pil-v"/></svg> <span>Tillbaka till hemsidan</span>
+      </button>
+    </div>
+  </header>
+
+  {/* Tunn stegmätare. Håller låg höjd så att varje steg får plats i vyn. */}
+  <div class="stegrad" id="stegrad">
+    <div class="wrap">
+      <div class="stegspar"><span id="stegspar-fyll"></span></div>
+      <p class="stegtext" id="stegtext">Steg 1 av 9</p>
+    </div>
+  </div>
+
+  <div class="bok-kropp">
+    <form id="kundform" novalidate>
+
+      {/* 1. KONTAKT OCH ADRESS */}
+      <section class="bok-steg" id="steg-kontakt" data-steg="kontakt" aria-labelledby="r-kontakt">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-kontakt">Vem är du, och var?</h2>
+            <p>Linus svarar inom 24 timmar.</p>
+          </div>
+          <div class="falt-par">
+            <div class="ffalt" data-falt="fornamn">
+              <label for="k-fornamn">Förnamn</label>
+              <input type="text" id="k-fornamn" name="fornamn" autocomplete="given-name" placeholder="Anna" required aria-describedby="fel-fornamn">
+              <p class="faltfel" id="fel-fornamn"></p>
+            </div>
+            <div class="ffalt" data-falt="efternamn">
+              <label for="k-efternamn">Efternamn</label>
+              <input type="text" id="k-efternamn" name="efternamn" autocomplete="family-name" placeholder="Andersson" required aria-describedby="fel-efternamn">
+              <p class="faltfel" id="fel-efternamn"></p>
+            </div>
+          </div>
+          <div class="falt-par">
+            <div class="ffalt" data-falt="telefon">
+              <label for="k-telefon">Telefon</label>
+              <input type="tel" id="k-telefon" name="telefon" autocomplete="tel" placeholder="070-123 45 67" required aria-describedby="fel-telefon">
+              <p class="faltfel" id="fel-telefon"></p>
+            </div>
+            <div class="ffalt" data-falt="epost">
+              <label for="k-epost">E-post</label>
+              <input type="email" id="k-epost" name="epost" autocomplete="email" placeholder="anna@exempel.se" required aria-describedby="fel-epost">
+              <p class="faltfel" id="fel-epost"></p>
+            </div>
+          </div>
+          <div class="falt-par en">
+            <div class="ffalt" data-falt="adress">
+              <label for="k-adress">Gatuadress och ort</label>
+              <input type="text" id="k-adress" name="adress" autocomplete="street-address" placeholder="Storgatan 12, Uppsala" required aria-describedby="fel-adress">
+              <p class="faltfel" id="fel-adress"></p>
+            </div>
+          </div>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-avbryt>Avbryt</button>
+          <button type="button" class="knapp knapp-primar" data-fram>Nästa</button>
+        </div>
+      </section>
+
+      {/* 4. TJÄNST */}
+      <section class="bok-steg" id="steg-tjanst" data-steg="tjanst" aria-labelledby="r-tjanst">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-tjanst">Vad vill du ha hjälp med?</h2>
+            <p>Välj en tjänst så räknas priset fram.</p>
+          </div>
+          <div class="val-lista" role="radiogroup" aria-labelledby="r-tjanst">
+            <button type="button" class="val-kort" data-valj="fonster" aria-pressed="false">
+              <span class="val-ikon"><svg aria-hidden="true"><use href="#i-fonster"/></svg></span>
+              <span class="val-txt">
+                <b>Fönsterputs</b>
+                <small>Villa och hus. Fast pris 1 500 kr inkl. RUT.</small>
+              </span>
+              <span class="val-bock" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-bock"/></svg></span>
+            </button>
+            <button type="button" class="val-kort" data-valj="kontor" aria-pressed="false">
+              <span class="val-ikon"><svg aria-hidden="true"><use href="#i-kontor"/></svg></span>
+              <span class="val-txt">
+                <b>Kontorsputs</b>
+                <small>Företag. Från 515 kr per tillfälle, ex. moms.</small>
+              </span>
+              <span class="val-bock" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-bock"/></svg></span>
+            </button>
+          </div>
+          <div class="felruta" id="fel-tjanst"><svg aria-hidden="true"><use href="#i-varning"/></svg><span>Välj en tjänst för att gå vidare.</span></div>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-bak>Tillbaka</button>
+          <button type="button" class="knapp knapp-primar" data-fram>Nästa</button>
+        </div>
+      </section>
+
+      {/* 3. FÖNSTER: antal och spröjs */}
+      <section class="bok-steg" id="steg-fonster" data-steg="fonster" data-bara="fonster" aria-labelledby="r-fonster">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-fonster">Hur många fönster?</h2>
+            <p>Antalet styr tiden, spröjsen påverkar priset.</p>
+          </div>
+          <div class="tal-par">
+            <div class="tal-grupp">
+              <p class="tal-etikett">Totalt antal fönster</p>
+              <div class="stepper">
+                <button type="button" data-stepper="f-antal" data-delta="-1" aria-label="Minska antal fönster"><svg aria-hidden="true"><use href="#i-minus"/></svg></button>
+                <span class="varde" id="f-antal-varde" aria-live="polite">15</span>
+                <button type="button" data-stepper="f-antal" data-delta="1" aria-label="Öka antal fönster"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+              </div>
+              <input type="range" id="f-antal-slider" min="1" max="60" value="15" step="1" aria-label="Antal fönster">
+            </div>
+            <div class="tal-grupp">
+              <p class="tal-etikett">Varav med spröjs <span>+70 kr styck</span></p>
+              <div class="stepper">
+                <button type="button" data-stepper="f-sprojs" data-delta="-1" aria-label="Minska antal spröjsfönster"><svg aria-hidden="true"><use href="#i-minus"/></svg></button>
+                <span class="varde" id="f-sprojs-varde" aria-live="polite">0</span>
+                <button type="button" data-stepper="f-sprojs" data-delta="1" aria-label="Öka antal spröjsfönster"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+              </div>
+              <input type="range" id="f-sprojs-slider" min="0" max="15" value="0" step="1" aria-label="Antal fönster med spröjs">
+            </div>
+          </div>
+          <p class="falt-not">Går båda halvorna av ett tvådelat fönster att öppna var för sig räknas det som två.</p>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-bak>Tillbaka</button>
+          <button type="button" class="knapp knapp-primar" data-fram>Nästa</button>
+        </div>
+      </section>
+
+      {/* 3b. LOKALYTA */}
+      <section class="bok-steg" id="steg-yta" data-steg="yta" data-bara="kontor" aria-labelledby="r-yta">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-yta">Hur stor är lokalen?</h2>
+            <p>Priset följer ytan. Alla priser visas exklusive moms.</p>
+          </div>
+          <div class="ffalt">
+            <p class="stort-varde" id="k-yta-varde">120 m²</p>
+            <input type="range" id="k-yta" min="20" max="400" value="120" step="10" aria-label="Kontorets storlek i kvadratmeter">
+            <p class="falt-not">Ungefärlig golvyta räcker – Linus bekräftar på plats.</p>
+          </div>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-bak>Tillbaka</button>
+          <button type="button" class="knapp knapp-primar" data-fram>Nästa</button>
+        </div>
+      </section>
+
+      {/* 4b. FREKVENS */}
+      <section class="bok-steg" id="steg-frekvens" data-steg="frekvens" data-bara="kontor" aria-labelledby="r-frekvens">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-frekvens">Hur ofta vill du ha putsat?</h2>
+            <p>Avtal ger rabatt per tillfälle.</p>
+          </div>
+          <div class="val-lista" role="radiogroup" aria-labelledby="r-frekvens">
+            <label class="val-kort"><input type="radio" name="k-frekvens" value="engang" checked>
+              <span class="val-txt"><b>Engångsputs</b><small>En gång, utan avtal</small></span></label>
+            <label class="val-kort"><input type="radio" name="k-frekvens" value="manad">
+              <span class="val-txt"><b>Varje månad</b><small>Alltid fräscha glasytor</small></span><span class="val-chip">−15 %</span></label>
+            <label class="val-kort"><input type="radio" name="k-frekvens" value="kvartal">
+              <span class="val-txt"><b>Varje kvartal</b><small>Vanligast för kontor</small></span><span class="val-chip">−10 %</span></label>
+            <label class="val-kort"><input type="radio" name="k-frekvens" value="halvar">
+              <span class="val-txt"><b>Två gånger per år</b><small>Vår och höst</small></span><span class="val-chip">−5 %</span></label>
+          </div>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-bak>Tillbaka</button>
+          <button type="button" class="knapp knapp-primar" data-fram>Nästa</button>
+        </div>
+      </section>
+
+      {/* 4. TILLÄGG */}
+      <section class="bok-steg" id="steg-tillagg" data-steg="tillagg" data-bara="fonster" aria-labelledby="r-tillagg">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-tillagg">Vill du lägga till något?</h2>
+            <p>Helt frivilligt. Hoppa över om du inte vill ha något.</p>
+          </div>
+          <div class="val-lista tat">
+            <label class="val-kort populart"><input type="checkbox" id="f-karmar">
+              <span class="val-txt"><b>Fönsterkarmar</b><span class="flagga"><svg aria-hidden="true"><use href="#i-eld"/></svg> Populärt</span></span><span class="val-chip">+300 kr</span></label>
+            <label class="val-kort populart"><input type="checkbox" id="f-balkong">
+              <span class="val-txt"><b>Inglasad balkong eller uterum</b><span class="flagga"><svg aria-hidden="true"><use href="#i-eld"/></svg> Populärt</span></span><span class="val-chip">+200 kr</span></label>
+            <label class="val-kort"><input type="checkbox" id="f-bleck">
+              <span class="val-txt"><b>Fönsterbleck</b></span><span class="val-chip">+200 kr</span></label>
+            <label class="val-kort" id="kort-sprojstvatt"><input type="checkbox" id="f-sprojstvatt">
+              <span class="val-txt"><b>Spröjstvätt</b></span><span class="val-chip">+300 kr</span></label>
+            <label class="val-kort"><input type="checkbox" id="f-behandling">
+              <span class="val-txt"><b>Vattenavvisande behandling</b></span><span class="val-chip">+375 kr</span></label>
+          </div>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-bak>Tillbaka</button>
+          <button type="button" class="knapp knapp-primar" data-fram>Nästa</button>
+        </div>
+      </section>
+
+      {/* 5. SKICKA */}
+      <section class="bok-steg" id="steg-skicka" data-steg="skicka" aria-labelledby="r-skicka">
+        <div class="steg-inner">
+          <div class="steg-fraga">
+            <h2 id="r-skicka">Ditt uppskattade pris</h2>
+            <p>Linus bekräftar priset innan arbetet börjar.</p>
+          </div>
+
+          <div class="prisruta">
+            <p class="pris-stor" id="pris-stor">–</p>
+            <p class="pris-under" id="pris-under"></p>
+            <button type="button" class="pris-lank" id="pris-toggle" aria-expanded="false" aria-controls="pris-rader">Visa specifikation</button>
+            <div class="pris-rader" id="pris-rader" hidden></div>
+          </div>
+
+          {/* Honungsfälla mot robotar. Dold för människor och skärmläsare. */}
+          <div class="honung" aria-hidden="true">
+            <label for="k-foretag">Företag</label>
+            <input type="text" id="k-foretag" name="foretag" tabindex="-1" autocomplete="off">
+          </div>
+
+          {/* Cloudflare Turnstile - spamskydd. Renderas automatiskt av
+               skriptet i head. Token verifieras i api/offert.js. */}
+          <div class="turnstile-ruta">
+            <div class="cf-turnstile" id="turnstile-ruta"
+                 data-sitekey="0x4AAAAAAE1mnkgxauk_GAQp"
+                 data-action="offertformular"
+                 data-callback="turnstileKlar"
+                 data-expired-callback="turnstileForfallen"
+                 data-error-callback="turnstileFel"></div>
+          </div>
+
+          <label class="gdpr-kort" id="gdpr-kort">
+            <input type="checkbox" id="k-gdpr" required>
+            <span class="check-ruta"><svg aria-hidden="true"><use href="#i-bock"/></svg></span>
+            <span>Jag godkänner <a href="/kopvillkor.html" target="_blank" rel="noopener">köpvillkoren</a> och har läst <a href="/integritetspolicy.html" target="_blank" rel="noopener">integritetspolicyn</a>.</span>
+          </label>
+
+          <p class="steg-not">Det här är en förfrågan, inte en bokning. Du binder dig inte till något.</p>
+
+          <div class="felruta" id="fel-skicka"><svg aria-hidden="true"><use href="#i-varning"/></svg><span id="fel-skicka-txt">Kontrollera uppgifterna innan du skickar.</span></div>
+        </div>
+        <div class="steg-nav">
+          <button type="button" class="knapp knapp-sekundar" data-bak>Tillbaka</button>
+          <button type="submit" class="knapp knapp-primar" id="bekrafta-knapp">
+            <span class="spinner" aria-hidden="true"></span><span class="etikett-txt">Skicka förfrågan</span>
+          </button>
+        </div>
+      </section>
+
+    </form>
+
+  </div>
+
+</div>

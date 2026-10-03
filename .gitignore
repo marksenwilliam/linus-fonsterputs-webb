@@ -8,8 +8,16 @@ desktop.ini
 .idea/
 *.swp
 
-# Beroenden och byggartefakter (sajten har inget byggsteg, men om något
-# verktyg läggs till senare ska det inte följa med i historiken)
+# Beroenden och byggresultat
 node_modules/
 dist/
+.astro/
+.vercel/
 *.log
+
+# Lokala miljövariabler, t.ex. FORHANDSVISNING=true (se README.md)
+.env
+.env.production
+
+# Designreferens (skärmdumpar, ca 47 MB) – ligger bara lokalt
+_design-reference/

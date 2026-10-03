@@ -1,0 +1,161 @@
+---
+/**
+ * Sidskalet som alla sidor delar: <head>, ikonsymboler, sidhuvud, sidfot och
+ * bokningsvyn. Sidans eget innehåll (<main>…</main>) kommer in via <slot />.
+ *
+ * Det mesta följer av tre val:
+ *   bokning={false}  sidan har inget bokningsflöde (tack-sidan) – då utgår
+ *                    bokningsvyn, Turnstile-skriptet och app.js
+ *   home             startsidan – menylänkarna är ankare i samma sida
+ *   noindex          sidan ska inte indexeras (404, tack)
+ */
+import '../styles/stil.css';
+import Bokningsvy from '../components/Bokningsvy.astro';
+import Forhandsvisning from '../components/Forhandsvisning.astro';
+import Ikoner from '../components/Ikoner.astro';
+import LocalBusiness from '../components/LocalBusiness.astro';
+import Sidfot from '../components/Sidfot.astro';
+import Sidhuvud from '../components/Sidhuvud.astro';
+import { FORETAG_NAMN, FORHANDSVISNING, absolut } from '../config';
+
+interface Props {
+  /** Sidans titel utan företagsnamnet – " | Linus Fönsterputs" läggs på här. */
+  title: string;
+  description: string;
+  /** Sidans adress från roten ("/", "/blogg.html"). Ger canonical och og:url. */
+  path: string;
+  /** Delningskort (Open Graph). Av på tack-sidan. */
+  og?: boolean;
+  ogType?: 'website' | 'article';
+  /** Med delningsbild (og-bild.jpg) och twitter:card. */
+  ogBild?: boolean;
+  ogBildAlt?: string;
+  noindex?: boolean;
+  /** Sidans egen strukturerade data (JSON-LD), utöver företagsblocket. */
+  schema?: Record<string, unknown>[];
+  /** Företagsblocket. Utelämnas på sidor som är noindex. */
+  localBusiness?: boolean;
+  home?: boolean;
+  bokning?: boolean;
+  /** Fast "Boka nu"-knapp längst ned på mobilen. */
+  mobCta?: boolean;
+  /** Vart "Hoppa till innehåll"-länken pekar. */
+  hoppaTill?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  og = true,
+  ogType = 'website',
+  ogBild = false,
+  ogBildAlt,
+  noindex = false,
+  schema = [],
+  localBusiness = true,
+  home = false,
+  bokning = true,
+  mobCta = false,
+  hoppaTill = '#innehall',
+} = Astro.props;
+
+const sidtitel = `${title} | ${FORETAG_NAMN}`;
+const canonical = absolut(path);
+const robots = noindex ? 'noindex,follow' : FORHANDSVISNING ? 'noindex,nofollow' : undefined;
+---
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script is:inline id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="bdfa4981-d4d9-4202-a9ee-197f54f63b16" data-blockingmode="auto" type="text/javascript"></script>
+
+{/* Google Analytics (GA4). Cookiebots auto-blockering håller detta borta
+    tills besökaren godkänt statistikkakor. */}
+<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-L9W1RTLRWV"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-L9W1RTLRWV');
+</script>
+
+{/* Cloudflare Turnstile - spamskydd i offertformuläret. Nödvändig
+    säkerhetsfunktion (inte statistik/marknadsföring), blockeras därför
+    inte av Cookiebot innan samtycke. Behövs bara där bokningsvyn finns. */}
+{bokning && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer data-cookieconsent="necessary"></script>}
+
+<title>{sidtitel}</title>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonical}>
+<meta name="theme-color" content="#FFFFFF">
+{robots && <meta name="robots" content={robots}>}
+{og && <>
+<meta property="og:type" content={ogType}>
+<meta property="og:locale" content="sv_SE">
+<meta property="og:site_name" content={FORETAG_NAMN}>
+<meta property="og:title" content={sidtitel}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonical}>
+{ogBild && <>
+<meta property="og:image" content={absolut('/og-bild.jpg')}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+{ogBildAlt && <meta property="og:image:alt" content={ogBildAlt}>}
+<meta name="twitter:card" content="summary_large_image">
+</>}
+</>}
+
+{/* Ikoner. favicon.ico och apple-touch-icon.png ligger i roten - många
+    klienter hämtar just de sökvägarna utan att läsa sidans HTML. */}
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/ikoner/favicon.svg" type="image/svg+xml">
+<link rel="icon" type="image/png" sizes="16x16" href="/ikoner/favicon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/ikoner/favicon-32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/ikoner/favicon-96.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="msapplication-TileColor" content="#2563EB">
+<meta name="msapplication-TileImage" content="/ikoner/icon-144.png">
+
+{/* Typsnitten (Geist och Inter Display) serveras från egen domän. Inga
+    anrop till Google, alltså inga personuppgifter (IP-adresser) som lämnar
+    sidan och inga tredjepartskakor. */}
+<link rel="preload" href="/typsnitt/geist-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/typsnitt/inter-display-variabel-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/typsnitt/typsnitt.css">
+
+{schema.map((s) => <script is:inline type="application/ld+json" set:html={JSON.stringify(s, null, 2)} />)}
+{localBusiness && <LocalBusiness />}
+</head>
+<body>
+
+<a class="hoppa" href={hoppaTill}>Hoppa till innehåll</a>
+
+<Ikoner />
+
+<div id="hemsida">
+
+{FORHANDSVISNING && <Forhandsvisning />}
+
+<Sidhuvud home={home} bokning={bokning} />
+
+<slot />
+
+<Sidfot home={home} />
+
+{mobCta && <div class="mob-cta" id="mob-cta">
+  <button class="knapp knapp-primar knapp-bred" data-boka>Boka nu – se ditt pris</button>
+</div>}
+
+</div>
+
+{bokning && <Bokningsvy />}
+{/* Rörelserna (scroll-in, rubriker, skrivmaskin, räknare och tjänstemenyn)
+    finns på alla sidor, även tack-sidan. Laddas före app.js. */}
+<script>import '../scripts/rorelse.js';</script>
+{bokning && <script>import '../scripts/app.js';</script>}
+</body>
+</html>

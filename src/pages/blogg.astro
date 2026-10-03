@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { FORETAG_NAMN, absolut, datumSv } from '../config';
+import { INLAGG, sokvag } from '../data/inlagg';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: 'Guider om fönsterputs',
+  url: absolut('/blogg.html'),
+  inLanguage: 'sv-SE',
+  publisher: { '@id': absolut('/#business'), '@type': 'Organization', name: FORETAG_NAMN },
+  blogPost: INLAGG.map((i) => ({
+    '@type': 'BlogPosting',
+    headline: i.rubrik,
+    datePublished: i.publicerad,
+    url: absolut(sokvag(i)),
+  })),
+};
+---
+
+<BaseLayout
+  title="Blogg – guider om fönsterputs i Uppsala"
+  description="Praktiska guider om fönsterputsning och RUT-avdrag. Hur ofta du bör putsa, vad det kostar i Uppsala och hur avdraget fungerar."
+  path="/blogg.html"
+  ogType="article"
+  ogBild
+  schema={[schema]}
+  mobCta
+>
+<main id="innehall">
+<header class="sid-topp">
+  <div class="ram sid-topp-ram">
+    <div class="wrap">
+      <nav class="smulor" aria-label="Brödsmulor">
+        <a href="/">Start</a> <span aria-hidden="true">›</span> <span>Blogg</span>
+      </nav>
+      <h1 class="tecken">Blogg: guider om fönsterputs</h1>
+      <p class="sid-ingress in" style="--d:.2s">Praktiska svar på det kunderna i Uppsala frågar mest – om putsning, priser och RUT-avdrag.</p>
+    </div>
+  </div>
+</header>
+
+<section class="sektion">
+  <div class="wrap">
+    <div class="blogg-grid in" style="--d:.3s">
+      {INLAGG.map((i) => (
+        <article class="blogg-kort">
+          <div class="blogg-bild">
+            <img src={i.bild.src} alt={i.bild.alt} width={i.bild.bredd} height={i.bild.hojd} loading="lazy" decoding="async">
+          </div>
+          <p class="inlagg-meta"><time datetime={i.publicerad}>{datumSv(i.publicerad)}</time> · {i.minuter} min läsning</p>
+          <h2><a href={sokvag(i)}>{i.rubrik}</a></h2>
+          <p>{i.ingress}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+</main>
+</BaseLayout>

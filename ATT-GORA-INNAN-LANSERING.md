@@ -5,7 +5,7 @@ och företagsinformation finns på plats. Det som återstår är uppgifter som b
 du kan fylla i, plus två saker som måste vara gjorda innan sidan får gå live.
 
 Sök på `[BYT UT]` i projektet för att hitta varje ställe. Just nu finns
-**27 träffar** fördelade enligt listan längst ned.
+**5 träffar** fördelade enligt listan längst ned.
 
 ---
 
@@ -51,9 +51,11 @@ Linus kan lämna – sidan kan inte gå live utan dem.
 > nedan är avklarade – den geografiska adressen är fortfarande
 > platshållartext.
 
-Vill du tillfälligt tillbaka till granskningsläge: `node forhandsvisning.js pa`.
-Skriptets omdömesmärkning har inget att märka ut längre, men bannern och
-noindex fungerar som förut.
+Vill du tillfälligt tillbaka till granskningsläge: bygg med
+`FORHANDSVISNING=true` (miljövariabel i Vercel, eller i en lokal `.env`). Då
+får alla sidor en banner och `noindex`, och `robots.txt` stänger ute alla
+robotar – se README.md. Skriptet `forhandsvisning.js` är borttaget, och
+`X-Robots-Tag` i `vercel.json` sätts inte längre.
 
 ---
 
@@ -116,7 +118,7 @@ och enligt **GDPR artikel 13**. De ska stå på sidan, lätt att hitta.
 |---|---|---|
 | Organisationsnummer | Sidfoten på alla sidor, `kopvillkor.html`, `integritetspolicy.html`, strukturerad data | **Klart** – `031221-5551` |
 | Momsregistreringsnummer | Sidfoten, `kopvillkor.html`, strukturerad data | **Klart** – `SE031221555101`. Numret är härlett ur org.nr enligt standardregeln (`SE` + tio siffror + `01`). Stäm av mot registerutdraget från Skatteverket. |
-| Geografisk adress | Sidfoten, `kopvillkor.html`, `integritetspolicy.html` | Kvarstår – platshållartext |
+| Geografisk adress | Sidfoten (`src/components/Sidfot.astro`), `kopvillkor.html`, `integritetspolicy.html` | Kvarstår – platshållartext |
 | Riktig e-postadress | Sidfoten och samtliga policysidor | **Klart** – `kontakt@linusfonsterputs.se`. Brevlådan måste finnas innan sidan går live. |
 | Firmanamn enligt registreringsbevis | Om det skiljer sig från "Linus Fönsterputs" | Kontrollera |
 
@@ -137,15 +139,16 @@ till Google är värre än ingen alls. Fyll på med `streetAddress`, `postalCode
 och `geo` bara om Linus vill publicera en riktig, offentlig besöksadress
 (annars är det en typisk service-area-verksamhet, vilket `areaServed` täcker).
 
-**Blocket är duplicerat i åtta filer.** Ändrar du en uppgift i det – e-post,
-telefon, priser, öppettider – måste ändringen speglas i samtliga, precis som
-för sidfoten och bokningsvyn.
+**Blocket ligger på ett ställe:** `src/components/LocalBusiness.astro`. Ändrar
+du en uppgift där – e-post, telefon, priser, öppettider – slår det igenom på
+alla åtta sidor. Telefonnummer och priser står också i löptexten på flera
+sidor och måste ändras där för hand.
 
 ## 3. Domän och delningsbild
 
 | Uppgift | Var |
 |---|---|
-| Riktig domän | `canonical` och `og:url` i alla HTML-filer, `sitemap.xml`, `robots.txt`, `@id` och `url` i `LocalBusiness`-blocket |
+| Riktig domän | `site` i `astro.config.mjs`. Canonical, `og:url`, `og:image`, `sitemap.xml`, `robots.txt` och `LocalBusiness`-blocket räknas ut därifrån. E-postadresserna (`kontakt@…`) står som vanlig text och byts för hand. |
 | Delningsbild 1200×630 px | `og:image` – filen `og-bild.jpg` finns inte än |
 
 ## 3.1 Google-kartan i sidfoten – klar
@@ -195,7 +198,7 @@ personuppgiftsbiträdesavtal med var och en:
 Unsplash med fri licens. De är lagliga att använda, men byt gärna till egna
 jobbfoton.
 
-`villa-fonster-putsade.jpg` i bildspelet är **AI-genererad** (Higgsfield,
+`villa-fonster-putsade.jpg` i galleriet (och på blogginlägget om RUT) är **AI-genererad** (Higgsfield,
 nano_banana_pro, 2 krediter) och ersätter den tidigare glasfasadbilden.
 Motivet är en villafasad med nyputsade fönster, men det är inget foto från
 ett verkligt jobb.
@@ -209,15 +212,14 @@ avsnittet märkas så att det framgår vilka bilder som är illustrationer.
 
 Fönsterputsbilderna med Linus i bild är redan hans egna.
 
-## 6. Ta bort Agentation innan lansering
+## 6. Agentation – klart, inget att ta bort
 
-`agentation-lokal.js` är ett utvecklingsverktyg som hämtar React och
+`src/dev/agentation-dev.js` är ett utvecklingsverktyg som hämtar React och
 Agentation från esm.sh och visar ett verktygsfält där du kan klicka på
-element och lämna kommentarer. Det kör bara på `localhost` – första raden
-avbryter på alla andra domäner, så besökare laddar aldrig något.
-
-Radera ändå filen och script-taggen längst ned i de nio HTML-sidorna innan
-sidan går live, så att ingen utvecklingskod följer med i produktionen.
+element och lämna kommentarer. Det läggs bara in av dev-servern (`npm run dev`)
+via integrationen `agentation-dev` i `astro.config.mjs`, så ingen
+utvecklingskod följer med i bygget och ingenting behöver tas bort inför
+lansering.
 
 ## 7. Omdömen – riktiga, och så här håller du dem aktuella
 
@@ -229,7 +231,7 @@ ordagrant med emojier och egna signaturer i behåll. Brickan överst visar
 
 ### Var innehållet ligger
 
-Allt på ett ställe: avsnitt 7 i `app.js`.
+Allt på ett ställe: avsnitt 7 i `src/scripts/app.js`.
 
 | Vad | Var | Att veta |
 |---|---|---|
@@ -300,8 +302,8 @@ Google-profilen; sektionen på sidan länkar dit i stället.
   Analytics 4) och marknadsföring efter samtycke (Google-kartan i sidfoten).
   Samtycket hanteras av Cookiebot och kan ändras via *Kakinställningar* i
   sidfoten på varje sida.
-- **Typsnittet Inter hostas lokalt** i stället för från Google. Inga
-  besökar-IP-adresser lämnar sidan för typsnittens skull.
+- **Typsnitten Geist och Inter Display hostas lokalt** i stället för från
+  Google. Inga besökar-IP-adresser lämnar sidan för typsnittens skull.
 - **Priser** anges inklusive moms och RUT för privatpersoner, och exklusive
   moms för företag – enligt prisinformationslagen.
 - **robots.txt**, **sitemap.xml** och en **404-sida**.
@@ -339,21 +341,18 @@ behöver alltså ingenting byggas om.
 
 | Fil | Antal |
 |---|---|
-| index.html | 5 |
-| integritetspolicy.html | 4 |
-| kopvillkor.html | 3 |
-| cookies.html | 2 |
-| 404.html | 2 |
-| tack.html | 2 |
-| blogg.html | 2 |
-| blogg-hur-ofta-putsa-fonster.html | 2 |
-| blogg-vad-kostar-fonsterputs-uppsala.html | 2 |
-| blogg-rut-avdrag-fonsterputs-stad.html | 2 |
-| sitemap.xml | 1 |
-| **Totalt** | **27** |
+| src/components/Sidfot.astro | 1 |
+| src/pages/index.astro | 1 |
+| src/pages/integritetspolicy.astro | 2 |
+| src/pages/kopvillkor.astro | 1 |
+| **Totalt** | **5** |
 
-Kvar är två saker: domänen (som ska bytas överallt när den är klar) och den
-geografiska adressen. Org.nr, momsnummer, e-postadress och kartan är klara.
+Kvar är den geografiska adressen (sidfoten, köpvillkoren och
+integritetspolicyn), leverantörslistan i integritetspolicyn (punkt 4) och de
+bilder som inte är foton från egna jobb (punkt 5). Domänen står numera bara i
+`site` i `astro.config.mjs` och behöver bytas där om den ändras – den har
+därför ingen `[BYT UT]`-markering längre. Org.nr, momsnummer, e-postadress och
+kartan är klara.
 
-Omdömena räknas inte in här: de är riktiga och ligger i `OMDOMEN` i `app.js`,
-inte bakom en `[BYT UT]`-markering. Se punkt 7.
+Omdömena räknas inte in här: de är riktiga och ligger i `OMDOMEN` i
+`src/scripts/app.js`, inte bakom en `[BYT UT]`-markering. Se punkt 7.

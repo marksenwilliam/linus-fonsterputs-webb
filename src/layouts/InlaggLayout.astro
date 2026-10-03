@@ -1,0 +1,128 @@
+---
+/**
+ * Artikelskalet för blogginlägg, juridiska sidor och 404: brödsmulor, rubrik,
+ * ingress, meta-rad, brödtext (<slot />) och en länk tillbaka.
+ *
+ *   typ="inlagg"   Allt hämtas ur src/data/inlagg.ts via `slug`. Ger även
+ *                  BlogPosting-schema, og:type=article och fast mobil-CTA.
+ *   typ="juridik"  Policy- och villkorssidor, med "Senast uppdaterad".
+ *   typ="404"      Felsidan. noindex och utan företagsblock.
+ */
+import BaseLayout from './BaseLayout.astro';
+import { FORETAG_NAMN, absolut, datumSv } from '../config';
+import { hittaInlagg, sokvag } from '../data/inlagg';
+
+type Props =
+  | { typ: 'inlagg'; slug: string }
+  | {
+      typ: 'juridik';
+      title: string;
+      description: string;
+      path: string;
+      rubrik: string;
+      /** Texten sist i brödsmulorna, om den ska skilja sig från rubriken. */
+      brodsmula?: string;
+      ingress: string;
+      /** ISO-datum för "Senast uppdaterad". */
+      uppdaterad: string;
+    }
+  | { typ: '404'; title: string; description: string; path: string; rubrik: string; ingress: string };
+
+/** Sidans uppgifter, oavsett typ. Inlägg hämtas ur datafilen, övriga sidor anger dem själva. */
+function sidaFor(p: Props) {
+  if (p.typ === 'inlagg') {
+    const i = hittaInlagg(p.slug);
+    return {
+      inlagg: i,
+      title: i.titel ?? i.rubrik,
+      description: i.beskrivning,
+      path: sokvag(i),
+      rubrik: i.rubrik,
+      brodsmula: i.rubrik,
+      ingress: i.ingress,
+      uppdaterad: undefined,
+    };
+  }
+  return {
+    inlagg: undefined,
+    title: p.title,
+    description: p.description,
+    path: p.path,
+    rubrik: p.rubrik,
+    brodsmula: ('brodsmula' in p && p.brodsmula) || p.rubrik,
+    ingress: p.ingress,
+    uppdaterad: p.typ === 'juridik' ? p.uppdaterad : undefined,
+  };
+}
+
+const { typ } = Astro.props;
+const { inlagg, uppdaterad, ...sida } = sidaFor(Astro.props);
+
+const schema = inlagg
+  ? [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: inlagg.rubrik,
+        description: inlagg.beskrivning,
+        datePublished: inlagg.publicerad,
+        dateModified: inlagg.uppdaterad ?? inlagg.publicerad,
+        inLanguage: 'sv-SE',
+        author: { '@type': 'Person', name: 'Linus' },
+        publisher: {
+          '@id': absolut('/#business'),
+          '@type': 'Organization',
+          name: FORETAG_NAMN,
+          logo: { '@type': 'ImageObject', url: absolut('/bilder/logga-mork.png') },
+        },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': absolut(sida.path) },
+      },
+    ]
+  : [];
+
+const tillbaka = inlagg
+  ? { href: '/blogg.html', text: '← Alla inlägg' }
+  : { href: '/', text: '← Till startsidan' };
+---
+
+<BaseLayout
+  title={sida.title}
+  description={sida.description}
+  path={sida.path}
+  ogType={inlagg ? 'article' : 'website'}
+  ogBild={!!inlagg}
+  noindex={typ === '404'}
+  schema={schema}
+  localBusiness={typ !== '404'}
+  mobCta={!!inlagg}
+>
+<main id="innehall">
+<article class="inlagg">
+  <header class="sid-topp">
+    <div class="ram sid-topp-ram">
+      <div class="wrap">
+        <nav class="smulor" aria-label="Brödsmulor">
+          <a href="/">Start</a> <span aria-hidden="true">›</span>
+          {inlagg && <><a href="/blogg.html">Blogg</a> <span aria-hidden="true">›</span> </>}<span>{sida.brodsmula}</span>
+        </nav>
+        <h1 class="tecken">{sida.rubrik}</h1>
+        <p class="sid-ingress in" style="--d:.2s">{sida.ingress}</p>
+        {inlagg && <p class="inlagg-meta in" style="--d:.3s"><time datetime={inlagg.publicerad}>{datumSv(inlagg.publicerad)}</time> · {inlagg.minuter} min läsning · Linus</p>}
+        {uppdaterad && <p class="inlagg-meta in" style="--d:.3s">Senast uppdaterad <time datetime={uppdaterad}>{datumSv(uppdaterad)}</time></p>}
+      </div>
+    </div>
+  </header>
+
+  <div class:list={['wrap', 'inlagg-kropp', { juridik: typ !== 'inlagg' }]}>
+    <slot />
+    {inlagg && <aside class="inlagg-cta">
+      <h2>Räkna ut ditt pris på två minuter</h2>
+      <p>Fast pris innan du bokar, med RUT-avdraget redan avdraget.</p>
+      <button class="knapp knapp-primar knapp-ikon" data-boka><span class="knapp-cirkel" aria-hidden="true"><svg><use href="#i-pil-snett"/></svg></span>Boka nu – se ditt pris direkt</button>
+    </aside>}
+
+    <p class="tillbaka-blogg"><a href={tillbaka.href}>{tillbaka.text}</a></p>
+  </div>
+</article>
+</main>
+</BaseLayout>

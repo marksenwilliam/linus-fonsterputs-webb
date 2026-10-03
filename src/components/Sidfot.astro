@@ -1,0 +1,114 @@
+---
+/**
+ * Sidfoten. Samma på alla sidor; bara snabblänkarna skiljer. På startsidan
+ * (home) är de ankare i samma sida (#galleri), på övriga sidor går de via
+ * startsidan (/#galleri).
+ */
+interface Props {
+  home?: boolean;
+}
+
+const { home = false } = Astro.props;
+const start = home ? '' : '/';
+---
+
+<footer class="footer" id="kontakt">
+  <div class="ram footer-ram">
+    <div class="wrap">
+      <div class="footer-grid">
+
+        <div class="footer-om">
+          <a href="/" class="logga" aria-label="Linus Fönsterputs">
+            <span class="logga-bild ljus" aria-hidden="true"></span>
+          </a>
+          <p>Fönsterputsning för villa och kontorsputs för företag i Uppsala med omnejd. Enmansfirma – alltid samma person på plats.</p>
+          {/* [BYT UT] Fyll i den geografiska adressen. Uppgiften är
+               obligatorisk enligt 8 § lagen om elektronisk handel och
+               ska finnas lätt tillgänglig på sidan. */}
+          <p class="fskatt">Innehar F-skattsedel och ansvarsförsäkring<br>
+            Org.nr&nbsp;031221-5551 · Momsreg.nr&nbsp;SE031221555101<br>
+            Gatuadress, postnummer och ort</p>
+        </div>
+
+        <div>
+          <h4>Snabblänkar</h4>
+          <ul>
+            <li><a href={`${start}#tjanster`}>Tjänster</a></li>
+            <li><a href={`${start}#sa-funkar-det`}>Så funkar det</a></li>
+            <li><a href={`${start}#galleri`}>Galleri</a></li>
+            <li><a href={`${start}#omdomen`}>Omdömen</a></li>
+            <li><a href={`${start}#om-linus`}>Om Linus</a></li>
+            <li><a href="/blogg.html">Blogg</a></li>
+            <li><a href={`${start}#faq`}>Vanliga frågor</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Kontakt</h4>
+          <ul class="kontakt">
+            <li><svg aria-hidden="true"><use href="#i-telefon"/></svg><a href="tel:+46762171833">076-217 18 33</a></li>
+            <li><svg aria-hidden="true"><use href="#i-kuvert"/></svg><a href="mailto:kontakt@linusfonsterputs.se">kontakt@linusfonsterputs.se</a></li>
+            <li><svg aria-hidden="true"><use href="#i-klocka"/></svg><span>Mån–fre 07–17<br>Lör 09–14</span></li>
+            <li><svg aria-hidden="true"><use href="#i-plats"/></svg><span>Utgångspunkt: Uppsala</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Områden</h4>
+          <ul>
+            <li>Uppsala</li><li>Knivsta</li><li>Storvreta</li>
+            <li>Enköping</li><li>Östhammar</li><li>Heby med omnejd</li>
+          </ul>
+        </div>
+
+      </div>
+
+      {/* Google-karta låst till företagsprofilen. Adressen är kopierad ur
+           Google Företagsprofil (Dela -> Bädda in en karta) och pekar på
+           profilens plats-id, så kortet visar namn, betyg och antal omdömen.
+           Byt den ALDRIG mot en adress av formen maps.google.com/maps?q=<text>.
+           Den formen gör en vanlig sökning och bygger ett eget kort av träffen,
+           som inte är kopplat till profilen och skriver ut "Inga recensioner"
+           hur många omdömen profilen än har. En giltig ersättare börjar med
+           https://www.google.com/maps/embed?pb=. Adressen står bara här och gäller alla sidor.
+           Kartan laddas först när besökaren godkänt marknadsföringskakor:
+           Cookiebot byter då data-cookieblock-src mot src. Fram till dess visas
+           rutan under, och inget anrop går till Google. */}
+      <div class="footer-karta">
+        <h4>Linus Fönsterputs på kartan</h4>
+        <div class="karta-ram">
+          <iframe
+            title="Karta som visar Linus Fönsterputs på Google Maps"
+            data-cookieblock-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d128316.84966204678!2d17.49364153455702!3d59.83334900943022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1a9c670f3e917a7%3A0xd2cdf096e53caba3!2sLinus%20F%C3%B6nsterputs%20Uppsala!5e0!3m2!1sen!2sse!4v1789751348973!5m2!1sen!2sse"
+            data-cookieconsent="marketing"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+          <p class="karta-av">
+            <svg aria-hidden="true"><use href="#i-plats"/></svg>
+            <span>Kartan kommer från Google och laddas först när du godkänt marknadsföringskakor.</span>
+            <span class="karta-knappar">
+              <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Ändra kakinställningar</button>
+              <a href="https://share.google/U0JNifvViv9w0H4gy" target="_blank" rel="noopener">Öppna i Google Maps</a>
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-botten">
+        <p class="footer-slut">© 2026 Linus Fönsterputs · Priser till privatpersoner anges inklusive moms och RUT-avdrag. Företagspriser anges exklusive moms.</p>
+        <nav class="footer-juridik" aria-label="Villkor och integritet">
+          <a href="/kopvillkor.html">Köpvillkor och ångerrätt</a>
+          <a href="/integritetspolicy.html">Integritetspolicy</a>
+          <a href="/cookies.html">Kakor</a>
+          <button type="button" class="samtycke-fotlank" onclick="if(window.Cookiebot)Cookiebot.renew();">Kakinställningar</button>
+        </nav>
+      </div>
+
+      {/* Stor logotyp nere till höger, som i förlagan. Dekorativ – loggan
+           högst upp i sidfoten bär redan länken och namnet. */}
+      <div class="footer-slutlogga" aria-hidden="true">
+        <span class="logga-bild ljus"></span>
+      </div>
+    </div>
+  </div>
+</footer>

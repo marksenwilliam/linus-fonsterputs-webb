@@ -1,0 +1,26 @@
+---
+import InlaggLayout from '../layouts/InlaggLayout.astro';
+---
+
+<InlaggLayout
+  typ="404"
+  title="Sidan hittades inte"
+  description="Sidan du sökte finns inte. Gå till startsidan eller boka fönsterputs direkt."
+  path="/404.html"
+  rubrik="Sidan hittades inte"
+  ingress="Länken kan vara gammal eller feltstavad. Här är vägarna vidare."
+>
+<h2>Hittade du inte rätt?</h2>
+<ul class="bocklista">
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><a href="/">Startsidan</a> – tjänster, priser och bokning</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><a href="/#tjanster">Tjänster och priser</a></span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><a href="/blogg.html">Bloggen</a> – guider om fönsterputs</span></li>
+  <li><svg aria-hidden="true"><use href="#i-bock"/></svg> <span><a href="/#faq">Vanliga frågor</a></span></li>
+</ul>
+<aside class="inlagg-cta">
+  <h2>Ville du boka?</h2>
+  <p>Räkna ut ditt pris och välj en tid på två minuter.</p>
+  <button class="knapp knapp-primar" data-boka>Boka nu – se ditt pris direkt</button>
+</aside>
+<p>Går det snabbare att prata? Ring <a href="tel:+46762171833">076-217 18 33</a>.</p>
+</InlaggLayout>

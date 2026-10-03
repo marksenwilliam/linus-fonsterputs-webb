@@ -1,0 +1,44 @@
+/* ==========================================================================
+   TYPSNITT – egen hosting
+   Båda typsnitten serveras från vår egen domän. Ingen begäran går till Google
+   eller någon annan tredje part, alltså skickas inga besökares IP-adresser
+   vidare och sidan sätter inga tredjepartskakor. CSP-regeln font-src 'self'
+   behöver därför inte luckras upp.
+
+   Endast delmängden latin ingår i båda filerna – den täcker å, ä och ö.
+
+   GEIST – rubriker, siffror och etiketter
+   Copyright (c) 2023 Vercel, in collaboration with basement.studio
+   Licensierat under SIL Open Font License 1.1. Hela licensen finns i
+   OFL-Geist.txt i samma mapp, och den filen ska följa med varje kopia.
+   Variabelt typsnitt: en fil täcker vikterna 100–900.
+
+   INTER DISPLAY – brödtext, knappar och formulär
+   Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
+   Licensierat under SIL Open Font License 1.1. Hela licensen finns i OFL.txt
+   i samma mapp, och den filen ska följa med varje kopia.
+   Filen har två axlar: vikt (100–900) och optisk storlek (14–32). "Inter
+   Display" är optisk storlek 32 – stil.css sätter den på body med
+   font-variation-settings, så även den lilla texten får den täta
+   displayvarianten som designen bygger på.
+   ========================================================================== */
+
+@font-face{
+  font-family:'Geist';
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url(geist-variabel-latin.woff2) format('woff2-variations'),
+      url(geist-variabel-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face{
+  font-family:'Inter Display';
+  font-style:normal;
+  font-weight:100 900;
+  font-display:swap;
+  src:url(inter-display-variabel-latin.woff2) format('woff2-variations'),
+      url(inter-display-variabel-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}

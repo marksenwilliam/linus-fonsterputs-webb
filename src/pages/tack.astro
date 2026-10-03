@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+{/* Sidan som kunden hamnar på efter att förfrågan skickats (se src/scripts/app.js).
+    Adressen /tack skrivs om till tack.html i vercel.json. Ingen bokningsvy,
+    så ingen app.js och inget Turnstile-skript – bara skriptet nedan. */}
+<BaseLayout
+  title="Tack för din förfrågan"
+  description="Din förfrågan är mottagen. Linus hör av sig inom 24 timmar för att bekräfta din bokning."
+  path="/tack"
+  og={false}
+  noindex
+  localBusiness={false}
+  bokning={false}
+>
+<main id="innehall">
+  <div class="wrap tack-sida">
+    <div class="bock-cirkel tack-bock" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M4 12.5 9.5 18 20 6.5"/></svg>
+    </div>
+
+    <h1 id="tack-rubrik">Tack för din förfrågan!</h1>
+    <p id="tack-text" class="tack-text">
+      Jag hör av mig inom 24 timmar för att bekräfta din bokning och komma
+      överens om en tid för <span id="tack-tjanst">din fönsterputs</span>.
+      Jag ringer dig från <a href="tel:+46762171833">076-217 18 33</a>.
+    </p>
+
+    <div class="prisruta" id="tack-sammanfattning" hidden>
+      <p class="pris-under" style="margin-top:0">Din förfrågan</p>
+      <div class="pris-rader" id="tack-sam-rader"></div>
+    </div>
+
+    <p class="boknr" id="tack-boknr" hidden><span class="etik">Referensnummer</span><span class="nr" id="tack-ref"></span></p>
+
+    <p class="steg-not">Något du vill ändra under tiden? Ring <a href="tel:+46762171833">076-217 18 33</a>.</p>
+
+    <p class="tack-hem"><a class="knapp knapp-sekundar" href="/">Till startsidan</a></p>
+  </div>
+</main>
+
+<script>import '../scripts/tack.js';</script>
+</BaseLayout>
