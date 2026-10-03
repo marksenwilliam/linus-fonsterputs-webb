@@ -85,6 +85,9 @@
    ========================================================================== */
 *,*::before,*::after{box-sizing:border-box;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+/* Sidans rullningslist döljs; sidan går fortfarande att scrolla med hjul, pekplatta, tangentbord och touch. */
+html{-ms-overflow-style:none;scrollbar-width:none;}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;}
 body{
   margin:0;
   font-family:var(--font-text);
