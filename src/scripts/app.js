@@ -264,8 +264,8 @@
   /* Sammanfattningen överst. Siffrorna måste stämma med Google-profilen den
      dag sidan publiceras, och ses över när nya omdömen kommer in. */
   var BETYG = {
-    snitt: 5,            /* Snittbetyg på Google, samma siffra som profilen visar */
-    antal: 32,           /* Antal omdömen. 0 döljer hela brickan */
+    snitt: 4.9,          /* Snittbetyg på Google, samma siffra som profilen visar */
+    antal: 36,           /* Antal omdömen. 0 döljer hela brickan */
     profil: 'https://share.google/U0JNifvViv9w0H4gy'
   };
 
