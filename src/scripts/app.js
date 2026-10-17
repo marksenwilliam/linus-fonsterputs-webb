@@ -699,7 +699,7 @@
   var SPROJSTVATT = 600;
 
   /**
-   * FÖNSTERPUTS – alltid fast pris 1 500 kr inkl. RUT (3 000 kr ex. RUT).
+   * FÖNSTERPUTS – alltid fast pris 1 990 kr inkl. RUT (3 980 kr ex. RUT).
    * Formulärets fält påverkar ENDAST den beräknade arbetstiden.
    */
   function beraknaFonster() {
@@ -737,7 +737,7 @@
 
     /* Fast pris för själva huset, in- och utvändigt. Inglasad balkong och
        uterum ingår INTE utan läggs på som tillägg. */
-    var GRUND = 3000;
+    var GRUND = 3980;
     /* Alla belopp är ex. RUT och hålls JÄMNA – då blir halva summan exakt och
        radernas inkl-RUT-priser stämmer alltid mot totalen. */
     var BALKONG = 400, PER_SPROJS = 140, KARMAR = 600, BLECK = 400,

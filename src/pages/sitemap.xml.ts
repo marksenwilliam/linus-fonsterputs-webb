@@ -6,11 +6,11 @@ import { absolut } from '../config';
  * därför inte med. Nytt blogginlägg eller ny sida: lägg till en rad här.
  */
 const SIDOR = [
-  { sokvag: '/', lastmod: '2026-09-23', changefreq: 'weekly', prioritet: '1.0' },
+  { sokvag: '/', lastmod: '2026-10-17', changefreq: 'weekly', prioritet: '1.0' },
   { sokvag: '/blogg.html', lastmod: '2026-09-19', changefreq: 'monthly', prioritet: '0.7' },
   { sokvag: '/blogg-hur-ofta-putsa-fonster.html', lastmod: '2026-09-19', changefreq: 'yearly', prioritet: '0.6' },
-  { sokvag: '/blogg-vad-kostar-fonsterputs-uppsala.html', lastmod: '2026-09-19', changefreq: 'yearly', prioritet: '0.6' },
-  { sokvag: '/blogg-rut-avdrag-fonsterputs-stad.html', lastmod: '2026-09-19', changefreq: 'yearly', prioritet: '0.6' },
+  { sokvag: '/blogg-vad-kostar-fonsterputs-uppsala.html', lastmod: '2026-10-17', changefreq: 'yearly', prioritet: '0.6' },
+  { sokvag: '/blogg-rut-avdrag-fonsterputs-stad.html', lastmod: '2026-10-17', changefreq: 'yearly', prioritet: '0.6' },
   { sokvag: '/kopvillkor.html', lastmod: '2026-09-19', changefreq: 'yearly', prioritet: '0.3' },
   { sokvag: '/integritetspolicy.html', lastmod: '2026-09-19', changefreq: 'yearly', prioritet: '0.3' },
   { sokvag: '/cookies.html', lastmod: '2026-09-19', changefreq: 'yearly', prioritet: '0.2' },
